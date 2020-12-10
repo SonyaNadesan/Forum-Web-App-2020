@@ -10,3 +10,7 @@
 /Application/Application.Web/obj
 /Application/Application.Web/bin/Debug/netcoreapp3.1
 /Application/.vs/Application/config
+/Application/Application.Data/bin/Debug/netcoreapp3.1
+/Application/Application.Domain/bin/Debug/netcoreapp3.1
+/Application/Application.Services/bin/Debug/netcoreapp3.1
+/Application/Application.UnitTests/bin/Debug/netcoreapp3.1

@@ -8,3 +8,5 @@
 /Application/Application.Services/obj
 /Application/Application.UnitTests/obj
 /Application/Application.Web/obj
+/Application/Application.Web/bin/Debug/netcoreapp3.1
+/Application/.vs/Application/config

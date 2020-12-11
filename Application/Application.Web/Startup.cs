@@ -26,7 +26,7 @@ namespace Application.Web
         {
             services.AddControllersWithViews();
 
-            var connectionString = @"Data Source=(LocalDb)\MSSQLLocalDB;database=ApplicationIdentityDb;trusted_connection=yes";
+            var connectionString = Configuration.GetConnectionString("authentication");
             var migrationAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
             services.AddDbContext<ApplicationAuthenticationDbContext>(opt => opt.UseSqlServer(connectionString, sql => sql.MigrationsAssembly(migrationAssembly)));
             services.AddIdentityCore<ApplicationUser>(optuons => { });

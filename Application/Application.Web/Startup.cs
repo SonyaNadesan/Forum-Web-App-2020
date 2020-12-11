@@ -28,8 +28,18 @@ namespace Application.Web
 
             var connectionString = Configuration.GetConnectionString("authentication");
             var migrationAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
+            
             services.AddDbContext<ApplicationAuthenticationDbContext>(opt => opt.UseSqlServer(connectionString, sql => sql.MigrationsAssembly(migrationAssembly)));
-            services.AddIdentityCore<ApplicationUser>(optuons => { });
+            
+            services.AddIdentityCore<ApplicationUser>(options => {
+                options.Password.RequireDigit = false;
+                options.Password.RequiredLength = 5;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequiredUniqueChars = 1;
+            });
+
             services.AddScoped<IUserStore<ApplicationUser>, UserOnlyStore<ApplicationUser, ApplicationAuthenticationDbContext>>();
 
             //services.AddAuthentication("cookies").AddCookie("cookies", options => options.LoginPath = "/Home/Login");

@@ -3,6 +3,7 @@ using Application.Services.Email;
 using Application.Services.Shared;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using System;
 using System.Threading.Tasks;
 
 namespace Application.Services.Authentication
@@ -32,30 +33,30 @@ namespace Application.Services.Authentication
             {
                 Email = email,
                 UserName = email,
-                EmailConfirmed = false
+                EmailConfirmed = false,
+                Salt = Guid.NewGuid().ToString(),
+                RegistrationConfirmed = false
             };
 
-            var code = RandomStringGeneratorService.Generate(20);
+            var password = RandomStringGeneratorService.Generate(20);
 
-            var response = await _userManager.CreateAsync(user, code);
+            var response = await _userManager.CreateAsync(user, password + user.Salt);
 
             if (response.Succeeded)
             {
                 await _userManager.AddToRoleAsync(user, "user");
 
                 var fromEmail = Configuration.GetSection("FromEmail").Value;
-                var message = "Please confirm your account by logging in using the following password: " + code;
+                var message = "Please confirm your account by logging in using the following password: " + password;
                 var mail = _emailGeneratorService.CreateEmail(email, fromEmail, "Registration", message);
 
                 _emailService.Send(mail);
-
-                await _signInManager.SignInAsync(user, false);
             }
 
             return response;
         }
 
-        public async Task<ServiceResponse<IdentityResult>> ConfirmRegistration(string userId, string code)
+        public async Task<ServiceResponse<IdentityResult>> ConfirmRegistration(string userId, string password)
         {
             var user = await _userManager.FindByIdAsync(userId);
 
@@ -63,11 +64,12 @@ namespace Application.Services.Authentication
 
             if (user != null)
             {
-                var confirmEmail = await _userManager.ConfirmEmailAsync(user, code);
+                var confirmEmail = await _userManager.ConfirmEmailAsync(user, password + user.Salt);
 
                 if (confirmEmail.Succeeded)
                 {
                     response.Result = confirmEmail;
+                    await _signInManager.SignInAsync(user, false);
                     return response;
                 }
 

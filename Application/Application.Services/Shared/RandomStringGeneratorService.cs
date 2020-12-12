@@ -25,18 +25,15 @@ namespace Application.Services.Shared
         {
             var sb = new StringBuilder();
 
-            foreach (byte b in GetHash(inputString))
+            HashAlgorithm algorithm = SHA256.Create();
+            var hash = algorithm.ComputeHash(Encoding.UTF8.GetBytes(inputString));
+
+            foreach (byte b in hash)
             {
                 sb.Append(b.ToString("X2"));
             }
 
             return sb.ToString();
-        }
-
-        private static byte[] GetHash(string inputString)
-        {
-            HashAlgorithm algorithm = SHA256.Create();
-            return algorithm.ComputeHash(Encoding.UTF8.GetBytes(inputString));
         }
     }
 }

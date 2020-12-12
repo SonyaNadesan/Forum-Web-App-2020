@@ -5,7 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
     <Folder Include="Views\" />
   </ItemGroup>
 
@@ -22,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Application.Domain\Application.Domain.csproj" />
+    <ProjectReference Include="..\Application.Services\Application.Services.csproj" />
   </ItemGroup>
 
 </Project>

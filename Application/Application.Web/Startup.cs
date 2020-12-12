@@ -1,4 +1,6 @@
 using Application.Domain;
+using Application.Services.Authentication;
+using Application.Services.Email;
 using Application.Web.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -26,27 +28,11 @@ namespace Application.Web
         {
             services.AddControllersWithViews();
 
-            var connectionString = Configuration.GetConnectionString("authentication");
-            var migrationAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
-            
-            services.AddDbContext<ApplicationAuthenticationDbContext>(opt => opt.UseSqlServer(connectionString, sql => sql.MigrationsAssembly(migrationAssembly)));
-            
-            services.AddIdentityCore<ApplicationUser>(options => {
-                options.Password.RequireDigit = false;
-                options.Password.RequiredLength = 5;
-                options.Password.RequireLowercase = false;
-                options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequireUppercase = false;
-                options.Password.RequiredUniqueChars = 1;
-                options.User.RequireUniqueEmail = true;
-                options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@.-_";
-                options.Lockout = new LockoutOptions()
-                {
-                    MaxFailedAccessAttempts = 5
-                };
-            });
+            EnforceDependancyInjection(services);
 
-            services.AddScoped<IUserStore<ApplicationUser>, UserOnlyStore<ApplicationUser, ApplicationAuthenticationDbContext>>();
+            ConfigureIdentity(services);
+
+            //services.AddScoped<IUserStore<ApplicationUser>, UserOnlyStore<ApplicationUser, ApplicationAuthenticationDbContext>>();
 
             //services.AddAuthentication("cookies").AddCookie("cookies", options => options.LoginPath = "/Home/Login");
         }
@@ -69,6 +55,8 @@ namespace Application.Web
 
             app.UseRouting();
 
+            app.UseAuthentication();
+
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
@@ -77,6 +65,46 @@ namespace Application.Web
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
+        }
+
+        private void EnforceDependancyInjection(IServiceCollection services)
+        {
+            //Authentication
+            services.AddScoped<IRegistrationService, RegistrationService>();
+
+            //Email
+            services.AddScoped<IEmailGeneratorService, EmailGeneratorService>();
+            services.AddScoped<IEmailSenderService, EmailSenderService>();
+
+            //Common
+        }
+
+        private void ConfigureIdentity(IServiceCollection services)
+        {
+            var connectionString = Configuration.GetConnectionString("authentication");
+            var migrationAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
+
+            services.AddDbContext<ApplicationAuthenticationDbContext>(opt => opt.UseSqlServer(connectionString, sql => sql.MigrationsAssembly(migrationAssembly)));
+
+            services.AddIdentityCore<ApplicationUser>(options => {
+                options.Password.RequireDigit = false;
+                options.Password.RequiredLength = 5;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequiredUniqueChars = 1;
+                options.User.RequireUniqueEmail = true;
+                options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@.-_";
+
+                options.Lockout = new LockoutOptions()
+                {
+                    MaxFailedAccessAttempts = 5
+                };
+            });
+
+            services.AddIdentity<ApplicationUser, IdentityRole>()
+                    .AddEntityFrameworkStores<ApplicationAuthenticationDbContext>()
+                    .AddDefaultTokenProviders();
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using System;
 
 namespace Application.Domain
 {
@@ -9,7 +8,7 @@ namespace Application.Domain
         public string LastName { get; set; }
         public string Salt { get; set; }
         public bool RegistrationConfirmed { get; set; }
-
+        
         public ApplicationUser(string userName) : base(userName)
         {
             UserName = userName;

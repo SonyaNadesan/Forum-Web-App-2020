@@ -40,6 +40,10 @@ namespace Application.Web
                 options.Password.RequiredUniqueChars = 1;
                 options.User.RequireUniqueEmail = true;
                 options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@.-_";
+                options.Lockout = new LockoutOptions()
+                {
+                    MaxFailedAccessAttempts = 5
+                };
             });
 
             services.AddScoped<IUserStore<ApplicationUser>, UserOnlyStore<ApplicationUser, ApplicationAuthenticationDbContext>>();

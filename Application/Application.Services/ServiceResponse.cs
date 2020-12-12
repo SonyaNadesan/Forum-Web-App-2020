@@ -27,9 +27,9 @@
             IsValid = true;
         }
 
-        public ServiceResponse(TResult entityData)
+        public ServiceResponse(TResult result)
         {
-            Result = entityData;
+            Result = result;
             IsValid = true;
         }
     }

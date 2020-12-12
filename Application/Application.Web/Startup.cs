@@ -39,6 +39,7 @@ namespace Application.Web
                 options.Password.RequireUppercase = false;
                 options.Password.RequiredUniqueChars = 1;
                 options.User.RequireUniqueEmail = true;
+                options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@.-_";
             });
 
             services.AddScoped<IUserStore<ApplicationUser>, UserOnlyStore<ApplicationUser, ApplicationAuthenticationDbContext>>();

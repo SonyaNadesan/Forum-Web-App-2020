@@ -8,7 +8,12 @@ namespace Application.Domain
         public string LastName { get; set; }
         public string Salt { get; set; }
         public bool RegistrationConfirmed { get; set; }
-        
+
+        public ApplicationUser() : base()
+        {
+
+        }
+
         public ApplicationUser(string userName) : base(userName)
         {
             UserName = userName;

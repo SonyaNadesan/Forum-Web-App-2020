@@ -6,7 +6,7 @@ namespace Application.Web.Models
 {
     public class ApplicationAuthenticationDbContext : IdentityDbContext<ApplicationUser>
     {
-        public ApplicationAuthenticationDbContext(DbContextOptions options) : base(options)
+        public ApplicationAuthenticationDbContext(DbContextOptions<ApplicationAuthenticationDbContext> options) : base(options)
         {
         }
     }

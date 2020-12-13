@@ -1,5 +1,6 @@
 ﻿using Application.Services.Authentication;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace Application.Web.Controllers
 {
@@ -18,15 +19,15 @@ namespace Application.Web.Controllers
             return View();
         }
 
-        public IActionResult Register()
+        public async Task<IActionResult> Register()
         {
-            _registrationService.RegisterAccount("sonya@redford-avenue.co.uk");
+            await _registrationService.RegisterAccount("sonya@redford-avenue.co.uk");
             return View();
         }
 
-        public IActionResult Confirmn(string userId, string password)
+        public async Task<IActionResult> Confirm(string userId = "", string password = "")
         {
-            _registrationService.ConfirmRegistration(userId, password);
+            await _registrationService.ConfirmRegistration(userId, password);
             return View();
         }
     }

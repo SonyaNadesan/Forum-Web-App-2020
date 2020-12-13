@@ -40,7 +40,7 @@ namespace Application.Services.Authentication
                 RegistrationConfirmed = false
             };
 
-            var password = RandomStringGeneratorService.Generate(20);
+            var password = RandomStringGeneratorService.Generate(10);
 
             var creationResult = await _userManager.CreateAsync(user, password + user.Salt);
 
@@ -48,17 +48,19 @@ namespace Application.Services.Authentication
             {
                 response.Result = user;
 
-                var message = "Please confirm your account by logging in using the following password: " + password;
+                var message = "Please log into your account by using the following password: " + password;
+
                 var mail = _emailGeneratorService.CreateEmail(email, Configuration.GetSection("FromEmail").Value, "Registration", message);
+
                 _emailService.Send(mail);
             }
 
             return response;
         }
 
-        public async Task<ServiceResponse<ApplicationUser>> ConfirmRegistration(string userId, string password)
+        public async Task<ServiceResponse<ApplicationUser>> ConfirmRegistration(string email, string password)
         {
-            var user = await _userManager.FindByIdAsync(userId);
+            var user = await _userManager.FindByEmailAsync(email);
 
             var response = new ServiceResponse<ApplicationUser>()
             {
@@ -67,9 +69,9 @@ namespace Application.Services.Authentication
 
             if (user != null)
             {
-                var confirmEmail = await _userManager.ConfirmEmailAsync(user, password + user.Salt);
+                var registrationCompleted = await _userManager.CheckPasswordAsync(user, password + user.Salt);
 
-                if (confirmEmail.Succeeded)
+                if (registrationCompleted)
                 {
                     await _signInManager.SignInAsync(user, false);
                     return response;

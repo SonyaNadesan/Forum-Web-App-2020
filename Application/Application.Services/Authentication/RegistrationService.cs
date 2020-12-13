@@ -27,8 +27,10 @@ namespace Application.Services.Authentication
             _signInManager = signInManager;
         }
 
-        public async Task<IdentityResult> RegisterAccount(string email)
+        public async Task<ServiceResponse<ApplicationUser>> RegisterAccount(string email)
         {
+            var response = new ServiceResponse<ApplicationUser>();
+
             var user = new ApplicationUser(email)
             {
                 Email = email,
@@ -40,27 +42,28 @@ namespace Application.Services.Authentication
 
             var password = RandomStringGeneratorService.Generate(20);
 
-            var response = await _userManager.CreateAsync(user, password + user.Salt);
+            var creationResult = await _userManager.CreateAsync(user, password + user.Salt);
 
-            if (response.Succeeded)
+            if (creationResult.Succeeded)
             {
-                await _userManager.AddToRoleAsync(user, "user");
+                response.Result = user;
 
-                var fromEmail = Configuration.GetSection("FromEmail").Value;
                 var message = "Please confirm your account by logging in using the following password: " + password;
-                var mail = _emailGeneratorService.CreateEmail(email, fromEmail, "Registration", message);
-
+                var mail = _emailGeneratorService.CreateEmail(email, Configuration.GetSection("FromEmail").Value, "Registration", message);
                 _emailService.Send(mail);
             }
 
             return response;
         }
 
-        public async Task<ServiceResponse<IdentityResult>> ConfirmRegistration(string userId, string password)
+        public async Task<ServiceResponse<ApplicationUser>> ConfirmRegistration(string userId, string password)
         {
             var user = await _userManager.FindByIdAsync(userId);
 
-            var response = new ServiceResponse<IdentityResult>();
+            var response = new ServiceResponse<ApplicationUser>()
+            {
+                Result = user
+            };
 
             if (user != null)
             {
@@ -68,12 +71,11 @@ namespace Application.Services.Authentication
 
                 if (confirmEmail.Succeeded)
                 {
-                    response.Result = confirmEmail;
                     await _signInManager.SignInAsync(user, false);
                     return response;
                 }
 
-                response.Result = await _userManager.AccessFailedAsync(user);
+                await _userManager.AccessFailedAsync(user);
 
                 var isUserLockedOut = await _userManager.IsLockedOutAsync(user);
 

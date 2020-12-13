@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Application.Web.Migrations
 {
     [DbContext(typeof(ApplicationAuthenticationDbContext))]
-    [Migration("20201210220809_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20201212210206_update-db")]
+    partial class updatedb
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -67,6 +67,9 @@ namespace Application.Web.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("RegistrationConfirmed")
                         .HasColumnType("bit");
 
                     b.Property<string>("Salt")

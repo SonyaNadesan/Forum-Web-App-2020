@@ -67,6 +67,9 @@ namespace Application.Web.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("RegistrationConfirmed")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Salt")
                         .HasColumnType("nvarchar(max)");
 

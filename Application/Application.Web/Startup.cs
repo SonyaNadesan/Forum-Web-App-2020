@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
 using System.Reflection;
 
 namespace Application.Web
@@ -31,8 +32,6 @@ namespace Application.Web
             EnforceDependancyInjection(services);
 
             ConfigureIdentity(services);
-
-            //services.AddScoped<IUserStore<ApplicationUser>, UserOnlyStore<ApplicationUser, ApplicationAuthenticationDbContext>>();
 
             //services.AddAuthentication("cookies").AddCookie("cookies", options => options.LoginPath = "/Home/Login");
         }
@@ -75,8 +74,6 @@ namespace Application.Web
             //Email
             services.AddScoped<IEmailGeneratorService, EmailGeneratorService>();
             services.AddScoped<IEmailSenderService, EmailSenderService>();
-
-            //Common
         }
 
         private void ConfigureIdentity(IServiceCollection services)
@@ -86,7 +83,8 @@ namespace Application.Web
 
             services.AddDbContext<ApplicationAuthenticationDbContext>(opt => opt.UseSqlServer(connectionString, sql => sql.MigrationsAssembly(migrationAssembly)));
 
-            services.AddIdentityCore<ApplicationUser>(options => {
+            services.AddIdentityCore<ApplicationUser>(options =>
+            {
                 options.Password.RequireDigit = false;
                 options.Password.RequiredLength = 5;
                 options.Password.RequireLowercase = false;
@@ -102,9 +100,8 @@ namespace Application.Web
                 };
             });
 
-            services.AddIdentity<ApplicationUser, IdentityRole>()
-                    .AddEntityFrameworkStores<ApplicationAuthenticationDbContext>()
-                    .AddDefaultTokenProviders();
+            services.AddScoped<IUserStore<ApplicationUser>, UserOnlyStore<ApplicationUser, ApplicationAuthenticationDbContext>>();
+            services.AddIdentity<ApplicationUser, ApplicationRole>().AddEntityFrameworkStores<ApplicationAuthenticationDbContext>();
         }
     }
 }

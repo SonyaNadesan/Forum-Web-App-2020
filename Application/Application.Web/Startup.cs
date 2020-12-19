@@ -1,6 +1,8 @@
 using Application.Domain;
 using Application.Services.Authentication;
+using Application.Services.Documents;
 using Application.Services.Email;
+using Application.Services.Shared;
 using Application.Web.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -74,6 +76,12 @@ namespace Application.Web
             //Email
             services.AddScoped<IEmailGeneratorService, EmailGeneratorService>();
             services.AddScoped<IEmailSenderService, EmailSenderService>();
+
+            //Documents
+            services.AddScoped<IPdfGeneratorService<string>, PdfGeneratorFromHtmlService>();
+
+            //Shared
+            services.AddScoped<IRandomStringGeneratorService, RandomStringGeneratorService>();
         }
 
         private void ConfigureIdentity(IServiceCollection services)

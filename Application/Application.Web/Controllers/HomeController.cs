@@ -24,11 +24,5 @@ namespace Application.Web.Controllers
             await _registrationService.RegisterAccount("sonya@redford-avenue.co.uk");
             return View();
         }
-
-        public async Task<IActionResult> Confirm(string userId = "", string password = "")
-        {
-            await _registrationService.ConfirmRegistration(userId, password);
-            return View();
-        }
     }
 }

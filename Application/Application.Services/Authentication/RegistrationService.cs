@@ -1,9 +1,11 @@
 ﻿using Application.Domain;
+using Application.Services.Documents;
 using Application.Services.Email;
 using Application.Services.Shared;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace Application.Services.Authentication
@@ -14,16 +16,20 @@ namespace Application.Services.Authentication
         private readonly IEmailSenderService _emailService;
         private readonly IEmailGeneratorService _emailGeneratorService;
         private readonly IRandomStringGeneratorService _randomStringGeneratorService;
+        private readonly IPdfGeneratorService<string> _pdfGeneratorService;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
 
-        public RegistrationService(IConfiguration configuration, IEmailSenderService emailService,
-                                   IEmailGeneratorService emailGeneratorService, IUserStore<ApplicationUser> userStore,
-                                   UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+        public RegistrationService(IConfiguration configuration, IEmailSenderService emailService, IEmailGeneratorService emailGeneratorService, 
+                                   IUserStore<ApplicationUser> userStore, IRandomStringGeneratorService randomStringGeneratorService,
+                                   IPdfGeneratorService<string> pdfGeneratorService, UserManager<ApplicationUser> userManager, 
+                                   SignInManager<ApplicationUser> signInManager)
         {
             Configuration = configuration;
             _emailService = emailService;
             _emailGeneratorService = emailGeneratorService;
+            _randomStringGeneratorService = randomStringGeneratorService;
+            _pdfGeneratorService = pdfGeneratorService;
             _userManager = userManager;
             _signInManager = signInManager;
         }
@@ -49,11 +55,13 @@ namespace Application.Services.Authentication
             {
                 response.Result = user;
 
-                var message = "Please log into your account by using the following password: " + password;
+                var htmlTemplate = Configuration.GetSection("RegistrationEmail").Value;
 
-                var htmlTemplate = Configuration.GetSection("BaseUrl").Value + "Views/EmailTemplates/Registration.htm";
+                var body = File.ReadAllText(htmlTemplate).Replace("#password#", password);
 
-                var mail = _emailGeneratorService.CreateEmailByRetrievingBodyFromFile(htmlTemplate, email, "Registration", new System.IO.MemoryStream());
+                var attachment = _pdfGeneratorService.GenerateFromFile(htmlTemplate);
+
+                var mail = _emailGeneratorService.CreateEmail(body, email, "Registration", attachment, "Registration Confirmation PDF");
 
                 _emailService.Send(mail);
             }

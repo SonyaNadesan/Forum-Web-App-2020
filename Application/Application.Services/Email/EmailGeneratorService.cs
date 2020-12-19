@@ -42,11 +42,5 @@ namespace Application.Services.Email
 
             return msg;
         }
-
-        public MailMessage CreateEmailByRetrievingBodyFromFile(string bodyAsFilepath, string receipants, string subject, MemoryStream attachmentStream = null, string filename = "New File")
-        {
-            var bodyAsTxt = File.ReadAllText(bodyAsFilepath);
-            return CreateEmail(bodyAsTxt, receipants, subject, attachmentStream, filename);
-        }
     }
 }

@@ -6,6 +6,5 @@ namespace Application.Services.Email
     public interface IEmailGeneratorService
     {
         MailMessage CreateEmail(string bodyText, string receipants, string subject, MemoryStream attachmentStream = null, string filename = "New File");
-        MailMessage CreateEmailByRetrievingBodyFromFile(string bodyAsFilepath, string receipants, string subject, MemoryStream attachmentStream = null, string filename = "New File");
     }
 }

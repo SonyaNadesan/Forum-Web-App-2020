@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Net.Mail;
 
@@ -6,10 +7,18 @@ namespace Application.Services.Email
 {
     public class EmailSenderService : IEmailSenderService
     {
-        private readonly SmtpClient _smtpClient = new SmtpClient();
+        private readonly IConfiguration Configuration;
+        private readonly SmtpClient _smtpClient;
 
-        public EmailSenderService()
+        public EmailSenderService(IConfiguration configuration)
         {
+            Configuration = configuration;
+
+            _smtpClient = new SmtpClient()
+            {
+                DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory,
+                PickupDirectoryLocation = Configuration.GetSection("EmailDirectory").Value
+            };
         }
 
         public ServiceResponse<bool> Send(string from, IList<string> to, string subject, string body)

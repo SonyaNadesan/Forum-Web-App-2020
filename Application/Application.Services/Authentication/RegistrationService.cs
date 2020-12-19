@@ -51,7 +51,9 @@ namespace Application.Services.Authentication
 
                 var message = "Please log into your account by using the following password: " + password;
 
-                var mail = _emailGeneratorService.CreateEmail(message, email, "Registration", new System.IO.MemoryStream());
+                var htmlTemplate = Configuration.GetSection("BaseUrl").Value + "Views/EmailTemplates/Registration.htm";
+
+                var mail = _emailGeneratorService.CreateEmailByRetrievingBodyFromFile(htmlTemplate, email, "Registration", new System.IO.MemoryStream());
 
                 _emailService.Send(mail);
             }

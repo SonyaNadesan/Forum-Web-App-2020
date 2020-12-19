@@ -1,9 +1,11 @@
-﻿using System.Net.Mail;
+﻿using System.IO;
+using System.Net.Mail;
 
 namespace Application.Services.Email
 {
     public interface IEmailGeneratorService
     {
-        MailMessage CreateEmail(string toEmail, string fromEmail, string subject, string body);
+        MailMessage CreateEmail(string bodyText, string receipants, string subject, MemoryStream attachmentStream = null, string filename = "New File");
+        MailMessage CreateEmailByRetrievingBodyFromFile(string bodyAsFilepath, string receipants, string subject, MemoryStream attachmentStream = null, string filename = "New File");
     }
 }

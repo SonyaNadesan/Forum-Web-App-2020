@@ -1,19 +1,52 @@
-﻿using System.Net.Mail;
+﻿using Microsoft.Extensions.Configuration;
+using System;
+using System.IO;
+using System.Net.Mail;
 
 namespace Application.Services.Email
 {
     public class EmailGeneratorService : IEmailGeneratorService
     {
-        public MailMessage CreateEmail(string toEmail, string fromEmail, string subject, string body)
+        private readonly IConfiguration Configuration;
+
+        public EmailGeneratorService(IConfiguration configuration)
         {
-            var to = new MailAddress(toEmail);
-            var from = new MailAddress(fromEmail);
+            Configuration = configuration;
+        }
 
-            var mail = new MailMessage(from, to);
-            mail.Subject = subject;
-            mail.Body = body;
+        public MailMessage CreateEmail(string bodyAsText, string receipants, string subject, MemoryStream attachmentStream = null, string filename = "New File")
+        {
+            Attachment attachment = null;
 
-            return mail;
+            if (attachmentStream != null)
+            {
+                attachmentStream.Position = 0;
+
+                attachment = new Attachment(attachmentStream, filename, System.Net.Mime.MediaTypeNames.Application.Pdf);
+                attachment.ContentDisposition.FileName = filename + ".pdf";
+                attachment.ContentDisposition.CreationDate = DateTime.Now;
+                attachment.ContentDisposition.ModificationDate = DateTime.Now;
+            }
+
+            var msg = new MailMessage()
+            {
+                From = new MailAddress(Configuration.GetSection("FromEmail").Value),
+                Subject = subject,
+                Body = bodyAsText,
+                IsBodyHtml = true
+            };
+
+            msg.Attachments.Add(attachment);
+
+            msg.To.Add(receipants);
+
+            return msg;
+        }
+
+        public MailMessage CreateEmailByRetrievingBodyFromFile(string bodyAsFilepath, string receipants, string subject, MemoryStream attachmentStream = null, string filename = "New File")
+        {
+            var bodyAsTxt = File.ReadAllText(bodyAsFilepath);
+            return CreateEmail(bodyAsTxt, receipants, subject, attachmentStream, filename);
         }
     }
 }

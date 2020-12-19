@@ -60,8 +60,17 @@ namespace Application.Services.Authentication
 
                 var mail = _emailGeneratorService.CreateEmail(body, email, "Registration", attachment, "Registration Confirmation PDF");
 
-                _emailService.Send(mail);
+                var emailSent = _emailService.Send(mail);
+
+                if (!emailSent.IsValid)
+                {
+                    response.ErrorMessage = "User was created but email failed to send.";
+                }
+
+                return response;
             }
+
+            response.ErrorMessage = "Sorry, something went wrong. Please try again."
 
             return response;
         }

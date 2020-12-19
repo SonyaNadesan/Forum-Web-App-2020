@@ -52,13 +52,13 @@ namespace Application.Services.Authentication
             {
                 response.Result = user;
 
-                var htmlTemplate = Configuration.GetSection("RegistrationEmail").Value;
+                var htmlTemplateFilepath = Configuration.GetSection("RegistrationEmail").Value;
 
-                var body = File.ReadAllText(htmlTemplate).Replace("#password#", password);
+                var htmlBody = File.ReadAllText(htmlTemplateFilepath).Replace("#password#", password);
 
-                var attachment = _pdfGeneratorService.Generate(htmlTemplate);
+                var attachment = _pdfGeneratorService.Generate(htmlBody);
 
-                var mail = _emailGeneratorService.CreateEmail(body, email, "Registration", attachment, "Registration Confirmation PDF");
+                var mail = _emailGeneratorService.CreateEmail(htmlBody, email, "Registration", attachment, "Registration Confirmation PDF");
 
                 var emailSent = _emailService.Send(mail);
 

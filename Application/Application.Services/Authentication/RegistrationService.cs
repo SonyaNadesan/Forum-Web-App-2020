@@ -13,6 +13,7 @@ namespace Application.Services.Authentication
         private readonly IConfiguration Configuration;
         private readonly IEmailSenderService _emailService;
         private readonly IEmailGeneratorService _emailGeneratorService;
+        private readonly IRandomStringGeneratorService _randomStringGeneratorService;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
 
@@ -40,7 +41,7 @@ namespace Application.Services.Authentication
                 RegistrationConfirmed = false
             };
 
-            var password = RandomStringGeneratorService.Generate(10);
+            var password = _randomStringGeneratorService.Generate(10);
 
             var creationResult = await _userManager.CreateAsync(user, password + user.Salt);
 
@@ -50,43 +51,10 @@ namespace Application.Services.Authentication
 
                 var message = "Please log into your account by using the following password: " + password;
 
-                var mail = _emailGeneratorService.CreateEmail(email, Configuration.GetSection("FromEmail").Value, "Registration", message);
+                var mail = _emailGeneratorService.CreateEmail(message, email, "Registration", new System.IO.MemoryStream());
 
                 _emailService.Send(mail);
             }
-
-            return response;
-        }
-
-        public async Task<ServiceResponse<ApplicationUser>> ConfirmRegistration(string email, string password)
-        {
-            var user = await _userManager.FindByEmailAsync(email);
-
-            var response = new ServiceResponse<ApplicationUser>()
-            {
-                Result = user
-            };
-
-            if (user != null)
-            {
-                var registrationCompleted = await _userManager.CheckPasswordAsync(user, password + user.Salt);
-
-                if (registrationCompleted)
-                {
-                    await _signInManager.SignInAsync(user, false);
-                    return response;
-                }
-
-                await _userManager.AccessFailedAsync(user);
-
-                var isUserLockedOut = await _userManager.IsLockedOutAsync(user);
-
-                response.ErrorMessage = isUserLockedOut ? "User has been locked out." : "Sorry, please try again.";
-
-                return response;
-            }
-
-            response.ErrorMessage = "Sorry, somrthing went wrong.";
 
             return response;
         }

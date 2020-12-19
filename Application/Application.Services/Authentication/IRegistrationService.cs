@@ -6,6 +6,5 @@ namespace Application.Services.Authentication
     public interface IRegistrationService
     {
         Task<ServiceResponse<ApplicationUser>> RegisterAccount(string email);
-        Task<ServiceResponse<ApplicationUser>> ConfirmRegistration(string userId, string password);
     }
 }

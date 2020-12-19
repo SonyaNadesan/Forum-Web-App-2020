@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Application.Web.Migrations
 {
     [DbContext(typeof(ApplicationAuthenticationDbContext))]
-    [Migration("20201212210206_update-db")]
-    partial class updatedb
+    [Migration("20201219190610_RestoreDatabase")]
+    partial class RestoreDatabase
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

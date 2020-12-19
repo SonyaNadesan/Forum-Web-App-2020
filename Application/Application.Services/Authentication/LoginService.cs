@@ -36,9 +36,9 @@ namespace Application.Services.Authentication
                 return response;
             }
 
-            var passwordCheck = await _userManager.CheckPasswordAsync(user, password + user.Salt);
+            var isPasswordValid = await _userManager.CheckPasswordAsync(user, password + user.Salt);
 
-            if (!passwordCheck)
+            if (!isPasswordValid)
             {
                 await _userManager.AccessFailedAsync(user);
                 response.Status = LoginStatus.Failed;

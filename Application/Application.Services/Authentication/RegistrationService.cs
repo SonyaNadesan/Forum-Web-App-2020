@@ -56,7 +56,7 @@ namespace Application.Services.Authentication
 
                 var body = File.ReadAllText(htmlTemplate).Replace("#password#", password);
 
-                var attachment = _pdfGeneratorService.GenerateFromFile(htmlTemplate);
+                var attachment = _pdfGeneratorService.Generate(htmlTemplate);
 
                 var mail = _emailGeneratorService.CreateEmail(body, email, "Registration", attachment, "Registration Confirmation PDF");
 
@@ -70,7 +70,7 @@ namespace Application.Services.Authentication
                 return response;
             }
 
-            response.ErrorMessage = "Sorry, something went wrong. Please try again."
+            response.ErrorMessage = "Sorry, something went wrong. Please try again.";
 
             return response;
         }

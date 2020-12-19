@@ -12,18 +12,11 @@ namespace Application.Services.Documents
 
             var writer = new PdfWriter(msOutput);
 
-            var pdf = HtmlConverter.ConvertToDocument(html, writer);
+            HtmlConverter.ConvertToDocument(html, writer);
 
             msOutput.Flush();
 
             return msOutput;
-        }
-
-        public MemoryStream GenerateFromFile(string filepath)
-        {
-            var html = File.ReadAllText(filepath);
-
-            return Generate(html);
         }
     }
 }

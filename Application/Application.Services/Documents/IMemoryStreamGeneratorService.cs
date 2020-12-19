@@ -5,6 +5,5 @@ namespace Application.Services.Documents
     public interface IMemoryStreamGeneratorService<T>
     {
         MemoryStream Generate(T content);
-        MemoryStream GenerateFromFile(string filepath);
     }
 }

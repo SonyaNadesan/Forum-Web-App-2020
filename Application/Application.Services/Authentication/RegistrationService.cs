@@ -35,32 +35,17 @@ namespace Application.Services.Authentication
         {
             var response = new ServiceResponse<ApplicationUser>();
 
-            var user = new ApplicationUser(email)
-            {
-                Email = email,
-                UserName = email,
-                EmailConfirmed = false,
-                Salt = Guid.NewGuid().ToString(),
-                RegistrationConfirmed = false
-            };
+            var user = InitializeUser(email);
 
             var password = _randomStringGeneratorService.Generate(10);
 
-            var creationResult = await _userManager.CreateAsync(user, password + user.Salt);
+            var addUserToDbResponse = await _userManager.CreateAsync(user, password + user.Salt);
 
-            if (creationResult.Succeeded)
+            if (addUserToDbResponse.Succeeded)
             {
                 response.Result = user;
 
-                var htmlTemplateFilepath = Configuration.GetSection("RegistrationEmail").Value;
-
-                var htmlBody = File.ReadAllText(htmlTemplateFilepath).Replace("#password#", password);
-
-                var attachment = _pdfGeneratorService.Generate(htmlBody);
-
-                var mail = _emailGeneratorService.CreateEmail(htmlBody, email, "Registration", attachment, "Registration Confirmation PDF");
-
-                var emailSent = _emailService.Send(mail);
+                var emailSent = SendRegistrationConfirmationEmail(email, password);
 
                 if (!emailSent.IsValid)
                 {
@@ -73,6 +58,35 @@ namespace Application.Services.Authentication
             response.ErrorMessage = "Sorry, something went wrong. Please try again.";
 
             return response;
+        }
+
+        private ApplicationUser InitializeUser(string email)
+        {
+            return new ApplicationUser(email)
+            {
+                Email = email,
+                UserName = email,
+                EmailConfirmed = false,
+                Salt = Guid.NewGuid().ToString(),
+                RegistrationConfirmed = false
+            };
+        }
+
+        private ServiceResponse<bool> SendRegistrationConfirmationEmail(string email, string password)
+        {
+            var htmlBody = File.ReadAllText(Configuration.GetSection("RegistrationEmail").Value).Replace("#password#", password);
+
+            var attachment1 = new FileStreamAndName() { AttachmentStream = _pdfGeneratorService.Generate(htmlBody), FileName = "A1" };
+            var attachment2 = new FileStreamAndName() { AttachmentStream = _pdfGeneratorService.Generate(htmlBody), FileName = "A2" };
+
+            var mail = _emailGeneratorService.SetBody(htmlBody, Enums.EmailBodyType.HtmlString)
+                                             .SetSubject("Registration")
+                                             .SetRecipients(email)
+                                             .AddFile(attachment1)
+                                             .AddFile(attachment2)
+                                             .CreateEmail();
+
+            return _emailService.Send(mail);
         }
     }
 }

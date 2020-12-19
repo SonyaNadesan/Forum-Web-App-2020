@@ -9,5 +9,12 @@
             LockedOut,
             Failed
         };
+
+        public enum EmailBodyType
+        {
+            RegularString,
+            HtmlString,
+            HtmlFile
+        }
     }
 }

@@ -4,9 +4,9 @@ using System.Text;
 
 namespace Application.Services.Shared
 {
-    public class RandomStringGeneratorService
+    public class RandomStringGeneratorService : IRandomStringGeneratorService
     {
-        public static string Generate(int length = -1)
+        public string Generate(int length = -1)
         {
             var rand = new Random();
             var randomNumber = rand.Next();
@@ -21,7 +21,7 @@ namespace Application.Services.Shared
             return password;
         }
 
-        private static string GetHashString(string inputString)
+        private string GetHashString(string inputString)
         {
             var sb = new StringBuilder();
 

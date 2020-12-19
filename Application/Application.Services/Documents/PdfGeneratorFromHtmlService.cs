@@ -8,15 +8,19 @@ namespace Application.Services.Documents
     {
         public MemoryStream Generate(string html)
         {
-            MemoryStream msOutput = new MemoryStream();
+            var memoryStream = new MemoryStream();
 
-            var writer = new PdfWriter(msOutput);
+            using (var pdfWriter = new PdfWriter(memoryStream))
+            {
+                pdfWriter.SetCloseStream(false);
 
-            HtmlConverter.ConvertToDocument(html, writer);
+                using (var document = HtmlConverter.ConvertToDocument(html, pdfWriter))
+                {
+                }
+            }
 
-            msOutput.Flush();
-
-            return msOutput;
+            memoryStream.Position = 0;
+            return memoryStream;
         }
     }
 }

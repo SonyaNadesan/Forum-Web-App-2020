@@ -18,12 +18,10 @@ namespace Application.Services.Authentication
         private readonly IRandomStringGeneratorService _randomStringGeneratorService;
         private readonly IPdfGeneratorService<string> _pdfGeneratorService;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
 
         public RegistrationService(IConfiguration configuration, IEmailSenderService emailService, IEmailGeneratorService emailGeneratorService, 
                                    IUserStore<ApplicationUser> userStore, IRandomStringGeneratorService randomStringGeneratorService,
-                                   IPdfGeneratorService<string> pdfGeneratorService, UserManager<ApplicationUser> userManager, 
-                                   SignInManager<ApplicationUser> signInManager)
+                                   IPdfGeneratorService<string> pdfGeneratorService, UserManager<ApplicationUser> userManager)
         {
             Configuration = configuration;
             _emailService = emailService;
@@ -31,7 +29,6 @@ namespace Application.Services.Authentication
             _randomStringGeneratorService = randomStringGeneratorService;
             _pdfGeneratorService = pdfGeneratorService;
             _userManager = userManager;
-            _signInManager = signInManager;
         }
 
         public async Task<ServiceResponse<ApplicationUser>> RegisterAccount(string email)

@@ -16,7 +16,7 @@ namespace Application.Services.Authentication
             _signInManager = signInManager;
         }
 
-        public async Task<ValidationResult<ApplicationUser, LoginStatus>> IsLoginCredentialsValid(string username, string password)
+        public async Task<ValidationResult<ApplicationUser, LoginStatus>> Login(string username, string password)
         {
             var user = await _userManager.FindByNameAsync(username);
 
@@ -36,7 +36,7 @@ namespace Application.Services.Authentication
                 return response;
             }
 
-            var isPasswordValid = await _userManager.CheckPasswordAsync(user, password + user.Salt);
+            var isPasswordValid = await _userManager.CheckPasswordAsync(user, PasswordSaltService.GetPasswordWithSalt(password, user.Salt));
 
             if (!isPasswordValid)
             {

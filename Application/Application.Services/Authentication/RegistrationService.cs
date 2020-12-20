@@ -20,8 +20,8 @@ namespace Application.Services.Authentication
         private readonly UserManager<ApplicationUser> _userManager;
 
         public RegistrationService(IConfiguration configuration, IEmailSenderService emailService, IEmailGeneratorService emailGeneratorService, 
-                                   IUserStore<ApplicationUser> userStore, IRandomStringGeneratorService randomStringGeneratorService,
-                                   IPdfGeneratorService<string> pdfGeneratorService, UserManager<ApplicationUser> userManager)
+                                   IRandomStringGeneratorService randomStringGeneratorService, IPdfGeneratorService<string> pdfGeneratorService, 
+                                   UserManager<ApplicationUser> userManager)
         {
             Configuration = configuration;
             _emailService = emailService;
@@ -39,7 +39,7 @@ namespace Application.Services.Authentication
 
             var password = _randomStringGeneratorService.Generate(10);
 
-            var addUserToDbResponse = await _userManager.CreateAsync(user, password + user.Salt);
+            var addUserToDbResponse = await _userManager.CreateAsync(user, PasswordSaltService.GetPasswordWithSalt(password, user.Salt));
 
             if (addUserToDbResponse.Succeeded)
             {
@@ -55,7 +55,9 @@ namespace Application.Services.Authentication
                 return response;
             }
 
-            response.ErrorMessage = "Sorry, something went wrong. Please try again.";
+            var isEmailInUse = await _userManager.FindByNameAsync(email);
+
+            response.ErrorMessage = isEmailInUse != null ? "There is already an account against that email." : "Failed to create user.";
 
             return response;
         }

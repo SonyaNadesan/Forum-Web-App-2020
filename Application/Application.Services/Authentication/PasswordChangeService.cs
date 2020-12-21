@@ -1,4 +1,5 @@
 ﻿using Application.Domain;
+using Application.Services.Shared;
 using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;
 
@@ -7,13 +8,15 @@ namespace Application.Services.Authentication
     public class PasswordChangeService : IPasswordChangeService
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IRandomStringGeneratorService _randomStringGeneratorService;
 
-        public PasswordChangeService(UserManager<ApplicationUser> userManager)
+        public PasswordChangeService(UserManager<ApplicationUser> userManager, IRandomStringGeneratorService randomStringGeneratorService)
         {
             _userManager = userManager;
+            _randomStringGeneratorService = randomStringGeneratorService;
         }
 
-        public async Task<ServiceResponse<ApplicationUser>> ChangePassword(string username, string password, string newPassword)
+        public async Task<ServiceResponse<ApplicationUser>> ChangePassword(string username, string password, string newPassword, string confirmPassword)
         {
             var response = new ServiceResponse<ApplicationUser>();
 
@@ -25,9 +28,20 @@ namespace Application.Services.Authentication
                 return response;
             }
 
+            response.Result = user;
+
+            if(newPassword != confirmPassword)
+            {
+                response.ErrorMessage = "Passwords do not match.";
+                return response;
+            }
+
             if (password != newPassword)
             {
-                var passwordChangeResponse = await _userManager.ChangePasswordAsync(user, password, newPassword);
+                var passwordWithSalt = PasswordSaltService.GetPasswordWithSalt(password, user.Salt);
+                var newPasswordWithSalt = PasswordSaltService.GetPasswordWithSalt(newPassword, user.Salt);
+
+                var passwordChangeResponse = await _userManager.ChangePasswordAsync(user, passwordWithSalt, newPasswordWithSalt);
 
                 if (!passwordChangeResponse.Succeeded)
                 {

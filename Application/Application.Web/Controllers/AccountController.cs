@@ -11,14 +11,16 @@ namespace Application.Web.Controllers
         private readonly ILoginService _loginService;
         private readonly IAccountRecoveryService _accountRecoveryService;
         private readonly IPasswordChangeService _passwordChangeService;
+        private readonly ILogoutService _logoutService;
 
         public AccountController(IRegistrationService registrationService, ILoginService loginService, IAccountRecoveryService accountRecoveryService,
-                                 IPasswordChangeService passwordChangeService)
+                                 IPasswordChangeService passwordChangeService, ILogoutService logoutService)
         {
             _registrationService = registrationService;
             _loginService = loginService;
             _accountRecoveryService = accountRecoveryService;
             _passwordChangeService = passwordChangeService;
+            _logoutService = logoutService;
         }
 
         public ActionResult Index()
@@ -35,7 +37,7 @@ namespace Application.Web.Controllers
         [HttpPost]
         public async Task<ActionResult> RegisterAccount(string email, string firstName, string lastName)
         {
-            var response = await _registrationService.RegisterAccount(email);
+            var response = await _registrationService.RegisterAccount(email, firstName, lastName);
 
             if (response.IsValid)
             {
@@ -121,6 +123,13 @@ namespace Application.Web.Controllers
             }
 
             return View();
+        }
+
+        [Microsoft.AspNetCore.Authorization.Authorize]
+        public ActionResult LogOut()
+        {
+            _logoutService.Logout(User.Identity.Name);
+            return RedirectToAction("Index");
         }
     }
 }

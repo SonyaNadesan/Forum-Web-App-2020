@@ -5,6 +5,6 @@ namespace Application.Services.Authentication
 {
     public interface IRegistrationService
     {
-        Task<ServiceResponse<ApplicationUser>> RegisterAccount(string email);
+        Task<ServiceResponse<ApplicationUser>> RegisterAccount(string email, string firstName, string lastName);
     }
 }

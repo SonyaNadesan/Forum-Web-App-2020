@@ -31,11 +31,11 @@ namespace Application.Services.Authentication
             _userManager = userManager;
         }
 
-        public async Task<ServiceResponse<ApplicationUser>> RegisterAccount(string email)
+        public async Task<ServiceResponse<ApplicationUser>> RegisterAccount(string email, string firstName, string lastName)
         {
             var response = new ServiceResponse<ApplicationUser>();
 
-            var user = InitializeUser(email);
+            var user = InitializeUser(email, firstName, lastName);
 
             var password = _randomStringGeneratorService.Generate(10);
 
@@ -62,7 +62,7 @@ namespace Application.Services.Authentication
             return response;
         }
 
-        private ApplicationUser InitializeUser(string email)
+        private ApplicationUser InitializeUser(string email, string firstName, string lastName)
         {
             return new ApplicationUser(email)
             {
@@ -70,7 +70,9 @@ namespace Application.Services.Authentication
                 UserName = email,
                 EmailConfirmed = false,
                 Salt = Guid.NewGuid().ToString(),
-                RegistrationConfirmed = false
+                RegistrationConfirmed = false,
+                FirstName = firstName,
+                LastName = lastName
             };
         }
 

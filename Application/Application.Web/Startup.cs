@@ -75,6 +75,7 @@ namespace Application.Web
             services.AddScoped<ILoginService, LoginService>();
             services.AddScoped<IAccountRecoveryService, AccountRecoveryService>();
             services.AddScoped<IPasswordChangeService, PasswordChangeService>();
+            services.AddScoped<ILogoutService, LogoutService>();
 
             //Email
             services.AddScoped<IEmailGeneratorService, EmailGeneratorService>();

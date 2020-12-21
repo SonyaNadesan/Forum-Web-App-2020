@@ -105,30 +105,23 @@ namespace Application.Web.Controllers
         [HttpPost]
         public async Task<ActionResult> ChangePassword(string password, string newPassword, string confirmPassword)
         {
-            if (newPassword == confirmPassword)
-            {
-                var response = await _passwordChangeService.ChangePassword(User.Identity.Name, password, newPassword);
+            var response = await _passwordChangeService.ChangePassword(User.Identity.Name, password, newPassword, confirmPassword);
 
-                if (response.IsValid)
-                {
-                    TempData["Password Change"] = "Your password has been changed successfully.";
-                    return RedirectToAction("Index", "Account");
-                }
-
-                TempData["Password Change"] = "Sorry, something went wrong.";
-            }
-            else
+            if (response.IsValid)
             {
-                TempData["Password Change"] = "Passwords do not match.";
+                TempData["Password Change"] = "Your password has been changed successfully.";
+                return RedirectToAction("Index", "Account");
             }
+
+            TempData["Password Change"] = response.ErrorMessage;
 
             return View();
         }
 
         [Microsoft.AspNetCore.Authorization.Authorize]
-        public ActionResult LogOut()
+        public async Task<ActionResult> LogOut()
         {
-            _logoutService.Logout(User.Identity.Name);
+            await _logoutService.Logout(User.Identity.Name);
             return RedirectToAction("Index");
         }
     }

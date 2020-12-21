@@ -51,7 +51,7 @@ namespace Application.Web.Controllers
 
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public async Task<ActionResult> LoginAsync(string username, string password)
+        public async Task<ActionResult> Login(string username, string password)
         {
             var response = await _loginService.Login(username, password);
             switch (response.Status)

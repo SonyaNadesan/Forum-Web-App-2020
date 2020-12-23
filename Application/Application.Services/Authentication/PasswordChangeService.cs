@@ -8,12 +8,10 @@ namespace Application.Services.Authentication
     public class PasswordChangeService : IPasswordChangeService
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IRandomStringGeneratorService _randomStringGeneratorService;
 
-        public PasswordChangeService(UserManager<ApplicationUser> userManager, IRandomStringGeneratorService randomStringGeneratorService)
+        public PasswordChangeService(UserManager<ApplicationUser> userManager)
         {
             _userManager = userManager;
-            _randomStringGeneratorService = randomStringGeneratorService;
         }
 
         public async Task<ServiceResponse<ApplicationUser>> ChangePassword(string username, string password, string newPassword, string confirmPassword)

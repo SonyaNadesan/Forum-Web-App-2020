@@ -1,10 +1,8 @@
 ﻿using Application.Domain;
 using Application.Services.Documents;
 using Application.Services.Email;
-using Application.Services.Shared;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
-using System;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -15,18 +13,18 @@ namespace Application.Services.Authentication
         private readonly IConfiguration Configuration;
         private readonly IEmailSenderService _emailService;
         private readonly IEmailGeneratorService _emailGeneratorService;
-        private readonly IRandomStringGeneratorService _randomStringGeneratorService;
+        private readonly IPasswordChangeService _passwordChangeService;
         private readonly IPdfGeneratorService<string> _pdfGeneratorService;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public RegistrationService(IConfiguration configuration, IEmailSenderService emailService, IEmailGeneratorService emailGeneratorService, 
-                                   IRandomStringGeneratorService randomStringGeneratorService, IPdfGeneratorService<string> pdfGeneratorService, 
+        public RegistrationService(IConfiguration configuration, IEmailSenderService emailService, IEmailGeneratorService emailGeneratorService,
+                                   IPasswordChangeService passwordChangeService, IPdfGeneratorService<string> pdfGeneratorService, 
                                    UserManager<ApplicationUser> userManager)
         {
             Configuration = configuration;
             _emailService = emailService;
             _emailGeneratorService = emailGeneratorService;
-            _randomStringGeneratorService = randomStringGeneratorService;
+            _passwordChangeService = passwordChangeService;
             _pdfGeneratorService = pdfGeneratorService;
             _userManager = userManager;
         }
@@ -37,22 +35,25 @@ namespace Application.Services.Authentication
 
             var user = InitializeUser(email, firstName, lastName);
 
-            var password = _randomStringGeneratorService.Generate(10);
+            var passwordChangeResponse = _passwordChangeService.AssignRandomlyGeneratedPassword(user, out string password);
 
-            var addUserToDbResponse = await _userManager.CreateAsync(user, PasswordSaltService.GetPasswordWithSalt(password, user.Salt));
-
-            if (addUserToDbResponse.Succeeded)
+            if (passwordChangeResponse.IsValid)
             {
                 response.Result = user;
 
-                var emailSent = SendRegistrationConfirmationEmail(email, password);
+                var updateDbResponse = await _userManager.CreateAsync(user);
 
-                if (!emailSent.IsValid)
+                if (updateDbResponse.Succeeded)
                 {
-                    response.ErrorMessage = "User was created but email failed to send.";
-                }
+                    var emailSent = SendRegistrationConfirmationEmail(email, password);
 
-                return response;
+                    if (!emailSent.IsValid)
+                    {
+                        response.ErrorMessage = "User was created but email failed to send. Please use the account recovery feature.";
+                    }
+
+                    return response;
+                }
             }
 
             var isEmailInUse = await _userManager.FindByNameAsync(email);
@@ -69,7 +70,6 @@ namespace Application.Services.Authentication
                 Email = email,
                 UserName = email,
                 EmailConfirmed = false,
-                Salt = Guid.NewGuid().ToString(),
                 RegistrationConfirmed = false,
                 FirstName = firstName,
                 LastName = lastName
@@ -80,8 +80,8 @@ namespace Application.Services.Authentication
         {
             var htmlBody = File.ReadAllText(Configuration.GetSection("RegistrationEmail").Value).Replace("#password#", password);
 
-            var attachment1 = new FileStreamAndName() { AttachmentStream = _pdfGeneratorService.Generate(htmlBody), FileName = "A1" };
-            var attachment2 = new FileStreamAndName() { AttachmentStream = _pdfGeneratorService.Generate(htmlBody), FileName = "A2" };
+            var attachment1 = new FileStreamAndName() { AttachmentStream = _pdfGeneratorService.Generate(htmlBody), FileName = "Attachment 1" };
+            var attachment2 = new FileStreamAndName() { AttachmentStream = _pdfGeneratorService.Generate(htmlBody), FileName = "Attachment 2" };
 
             var mail = _emailGeneratorService.SetBody(htmlBody, Enums.EmailBodyType.HtmlString)
                                              .SetSubject("Registration")

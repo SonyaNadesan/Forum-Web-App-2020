@@ -1,27 +1,23 @@
 ﻿using Application.Domain;
 using Application.Services.Email;
-using Application.Services.Shared;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
 
 namespace Application.Services.Authentication
 {
     public class AccountRecoveryService : IAccountRecoveryService
     {
-        private readonly IConfiguration Configuration;
         private readonly IEmailSenderService _emailSenderService;
         private readonly IEmailGeneratorService _emailGeneratorService;
-        private readonly IRandomStringGeneratorService _randomStringGeneratorService;
+        private readonly IPasswordChangeService _passwordChangeService;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public AccountRecoveryService(IConfiguration configuration, IEmailSenderService emailSenderService, IEmailGeneratorService emailGeneratorService,
-                                   IRandomStringGeneratorService randomStringGeneratorService, UserManager<ApplicationUser> userManager)
+        public AccountRecoveryService(IEmailSenderService emailSenderService, IEmailGeneratorService emailGeneratorService,
+                                   IPasswordChangeService passwordChangeService, UserManager<ApplicationUser> userManager)
         {
-            Configuration = configuration;
             _emailSenderService = emailSenderService;
             _emailGeneratorService = emailGeneratorService;
-            _randomStringGeneratorService = randomStringGeneratorService;
+            _passwordChangeService = passwordChangeService;
             _userManager = userManager;
         }
 
@@ -37,15 +33,16 @@ namespace Application.Services.Authentication
                 return response;
             }
 
-            var newPassword = _randomStringGeneratorService.Generate(10);
+            var passwordAssignmentResponse = _passwordChangeService.AssignRandomlyGeneratedPassword(user, out string password);
 
-            user.PasswordHash = _userManager.PasswordHasher.HashPassword(user, PasswordSaltService.GetPasswordWithSalt(newPassword, user.Salt));
-
-            var userUpdateResponse = await _userManager.UpdateAsync(user);
-
-            if (userUpdateResponse.Succeeded)
+            if (passwordAssignmentResponse.IsValid)
             {
-                response = SendEmail(user, newPassword);
+                var userUpdateResponse = await _userManager.UpdateAsync(user);
+
+                if (userUpdateResponse.Succeeded)
+                {
+                    response = SendEmail(user, password);
+                }
             }
 
             return response;

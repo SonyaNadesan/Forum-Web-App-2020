@@ -1,5 +1,4 @@
 ﻿using Application.Domain;
-using Application.Services.Shared;
 using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;
 

@@ -5,6 +5,11 @@
         public TValidatedEntity ValidatedEntity { get; set; }
         public TStatus Status { get; set; }
 
+        public ValidationResult()
+        {
+
+        }
+
         public ValidationResult(TValidatedEntity validatedEntity)
         {
             ValidatedEntity = validatedEntity;

@@ -19,11 +19,11 @@ namespace Application.Services.Authentication
         {
             var response = new ServiceResponse<ApplicationUser>();
 
-            var user = _userManager.FindByNameAsync(email);
+            var user = await _userManager.FindByNameAsync(email);
 
-            if (user.Result != null)
+            if (user != null)
             {
-                response.Result = user.Result;
+                response.Result = user;
                 await _signInManager.SignOutAsync();
                 return response;
             }

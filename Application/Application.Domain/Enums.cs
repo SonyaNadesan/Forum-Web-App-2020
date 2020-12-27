@@ -7,7 +7,8 @@
             Success,
             ConfirmedButNeedsPasswordChange,
             LockedOut,
-            Failed
+            Failed,
+            UserNotFound
         };
 
         public enum EmailBodyType

@@ -20,33 +20,81 @@ namespace Application.Services.Authentication
         {
             var user = await _userManager.FindByNameAsync(username);
 
-            var response = new ValidationResult<ApplicationUser, LoginStatus>(user);
-
             if (user == null)
             {
-                response.Status = LoginStatus.Failed;
-                return response;
+                return UserNotFound(user);
             }
 
             var isUserLockedOut = await _userManager.IsLockedOutAsync(user);
 
             if (isUserLockedOut)
             {
-                response.Status = LoginStatus.LockedOut;
-                return response;
+                return UserLockedOut(user);
             }
 
             var isPasswordValid = await _userManager.CheckPasswordAsync(user, PasswordSaltService.GetPasswordWithSalt(password, user.Salt));
 
             if (!isPasswordValid)
             {
-                await _userManager.AccessFailedAsync(user);
-                response.Status = LoginStatus.Failed;
-                return response;
+                return await InvalidPassword(user);
             }
 
+            var response = !user.RegistrationConfirmed ? await RequiresPasswordChange(user) : Success(user);
+
             await _signInManager.SignInAsync(user, false);
+
             return response;
+        }
+
+        private ValidationResult<ApplicationUser, LoginStatus> UserNotFound(ApplicationUser user)
+        {
+            return new ValidationResult<ApplicationUser, LoginStatus>()
+            {
+                ValidatedEntity = user,
+                Status = LoginStatus.UserNotFound
+            };
+        }
+
+        private ValidationResult<ApplicationUser, LoginStatus> UserLockedOut(ApplicationUser user)
+        {
+            return new ValidationResult<ApplicationUser, LoginStatus>()
+            {
+                ValidatedEntity = user,
+                Status = LoginStatus.LockedOut
+            };
+        }
+
+        private async Task<ValidationResult<ApplicationUser, LoginStatus>> InvalidPassword(ApplicationUser user)
+        {
+            await _userManager.AccessFailedAsync(user);
+
+            return new ValidationResult<ApplicationUser, LoginStatus>()
+            {
+                ValidatedEntity = user,
+                Status = LoginStatus.Failed
+            };
+        }
+
+        private async Task<ValidationResult<ApplicationUser, LoginStatus>> RequiresPasswordChange(ApplicationUser user)
+        {
+            user.RegistrationConfirmed = true;
+
+            await _userManager.UpdateAsync(user);
+
+            return new ValidationResult<ApplicationUser, LoginStatus>()
+            {
+                ValidatedEntity = user,
+                Status = LoginStatus.ConfirmedButNeedsPasswordChange
+            };
+        }
+
+        private ValidationResult<ApplicationUser, LoginStatus> Success(ApplicationUser user)
+        {
+            return new ValidationResult<ApplicationUser, LoginStatus>()
+            {
+                ValidatedEntity = user,
+                Status = LoginStatus.Success
+            };
         }
     }
 }

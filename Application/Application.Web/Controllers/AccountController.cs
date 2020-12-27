@@ -56,6 +56,7 @@ namespace Application.Web.Controllers
         public async Task<ActionResult> Login(string username, string password)
         {
             var response = await _loginService.Login(username, password);
+
             switch (response.Status)
             {
                 case Enums.LoginStatus.ConfirmedButNeedsPasswordChange:

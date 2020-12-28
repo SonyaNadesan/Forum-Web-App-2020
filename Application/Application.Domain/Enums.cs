@@ -16,6 +16,16 @@
             RegularString,
             HtmlString,
             HtmlFile
-        }
+        };
+
+        public enum ReactionTypes
+        {
+            LIKE,
+            LOVE,
+            WOW,
+            SAD,
+            ANGRY,
+            NONE
+        };
     }
 }

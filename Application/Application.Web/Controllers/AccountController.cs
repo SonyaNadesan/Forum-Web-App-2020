@@ -53,9 +53,9 @@ namespace Application.Web.Controllers
 
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public async Task<ActionResult> Login(string username, string password)
+        public async Task<ActionResult> Login(string email, string password)
         {
-            var response = await _loginService.Login(username, password);
+            var response = await _loginService.Login(email, password);
 
             switch (response.Status)
             {
@@ -76,9 +76,9 @@ namespace Application.Web.Controllers
 
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public async Task<ActionResult> RecoverAccount(string username)
+        public async Task<ActionResult> RecoverAccount(string email)
         {
-            var response = await _accountRecoveryService.Recover(username);
+            var response = await _accountRecoveryService.Recover(email);
 
             if (response.IsValid)
             {

@@ -14,9 +14,9 @@ namespace Application.Domain
 
         }
 
-        public ApplicationUser(string userName) : base(userName)
+        public ApplicationUser(string email) : base(email)
         {
-            UserName = userName;
+            UserName = email;
         }
     }
 }

@@ -6,6 +6,6 @@ namespace Application.Services.Authentication
 {
     public interface ILoginService
     {
-        Task<ValidationResult<ApplicationUser, LoginStatus>> Login(string username, string password);
+        Task<ValidationResult<ApplicationUser, LoginStatus>> Login(string email, string password);
     }
 }

@@ -16,9 +16,9 @@ namespace Application.Services.Authentication
             _signInManager = signInManager;
         }
 
-        public async Task<ValidationResult<ApplicationUser, LoginStatus>> Login(string username, string password)
+        public async Task<ValidationResult<ApplicationUser, LoginStatus>> Login(string email, string password)
         {
-            var user = await _userManager.FindByNameAsync(username);
+            var user = await _userManager.FindByNameAsync(email);
 
             if (user == null)
             {

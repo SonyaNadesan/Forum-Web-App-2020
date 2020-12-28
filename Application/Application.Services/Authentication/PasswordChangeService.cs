@@ -16,11 +16,11 @@ namespace Application.Services.Authentication
             _randomStringGeneratorService = randomStringGeneratorService;
         }
 
-        public async Task<ServiceResponse<ApplicationUser>> ChangePassword(string username, string password, string newPassword, string confirmPassword)
+        public async Task<ServiceResponse<ApplicationUser>> ChangePassword(string email, string password, string newPassword, string confirmPassword)
         {
             var response = new ServiceResponse<ApplicationUser>();
 
-            var user = await _userManager.FindByNameAsync(username);
+            var user = await _userManager.FindByNameAsync(email);
 
             if (user == null)
             {

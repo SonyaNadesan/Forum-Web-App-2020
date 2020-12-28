@@ -42,8 +42,8 @@
                         <form action="~/Account/Login" method="post">
                             @Html.AntiForgeryToken()
                             <div class="form-group">
-                                <label for="username">Username:</label>
-                                <input type="text" class="form-control" id="username" name="username">
+                                <label for="username">Email:</label>
+                                <input type="text" class="form-control" id="email" name="email">
                             </div>
                             <div class="form-group">
                                 <label for="password">Password:</label>
@@ -84,8 +84,8 @@
                     <form action="~/Account/RecoverAccount" method="post">
                         @Html.AntiForgeryToken()
                         <div class="form-group">
-                            <label for="username">Email:</label>
-                            <input type="text" class="form-control" id="accountRecovery_username" name="username">
+                            <label for="email">Email:</label>
+                            <input type="email" class="form-control" id="accountRecovery_email" name="username">
                         </div>
                         <button type="submit" class="btn btn-default">Recover</button>
                     </form><br />
@@ -107,8 +107,8 @@
                     <form action="~/Account/RegisterAccount" method="post">
                         @Html.AntiForgeryToken()
                         <div class="form-group">
-                            <label for="username">Email:</label>
-                            <input type="text" class="form-control" id="accountRegistration_username" name="email">
+                            <label for="email">Email:</label>
+                            <input type="text" class="form-control" id="accountRegistration_email" name="email">
                         </div>
                         <div class="form-group">
                             <label for="firstName">First Name:</label>

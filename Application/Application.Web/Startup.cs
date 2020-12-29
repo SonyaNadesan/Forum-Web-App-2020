@@ -40,6 +40,8 @@ namespace Application.Web
 
             ConfigureIdentity(services);
 
+            services.AddDbContext<ApplicationDbContext>();
+
             //services.AddAuthentication("cookies").AddCookie("cookies", options => options.LoginPath = "/Home/Login");
         }
 

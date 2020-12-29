@@ -3,6 +3,8 @@ using Application.Domain.ApplicationEntities;
 using Application.Services.Files;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Application.Services.UserProfile
 {
@@ -19,12 +21,12 @@ namespace Application.Services.UserProfile
             _imageUploadService = imageUploadService;
         }
 
-        public User Get(string userId)
+        public User Get(string email)
         {
-            return _unitOfWork.UserRepository.Get(userId);
+            return _unitOfWork.UserRepository.GetAll().SingleOrDefault(x => x.Email == email);
         }
 
-        public void AddUserProfile(string userId, string firstName, string lastName)
+        public ServiceResponse<User> AddUserProfile(string userId, string firstName, string lastName)
         {
             var newUser = new User()
             {
@@ -35,25 +37,35 @@ namespace Application.Services.UserProfile
 
             _unitOfWork.UserRepository.Add(newUser);
             _unitOfWork.Save();
+
+            return new ServiceResponse<User>(newUser);
         }
 
-        public async void UpdateUserProfile(User user, IFormFile profilePicture = null)
+        public async Task<ServiceResponse<FileInfo>> UpdateUserProfile(User user, IFormFile profilePicture = null)
         {
+            ServiceResponse<FileInfo> response = null;
+
             var userFromDb = _unitOfWork.UserRepository.Get(user.Id);
 
             if (profilePicture == null)
             {
                 user.ProfilePictureImageSrc = userFromDb.ProfilePictureImageSrc;
+
+                response = new ServiceResponse<FileInfo>(null);
             }
             else
             {
                 var fileNameUponDownload = "ProfilePicture_" + user.FirstName + user.LastName;
-                var response = await _imageUploadService.Upload(profilePicture, Configuration.GetSection("UserImageUploadPath").Value, fileNameUponDownload);
+
+                response = await _imageUploadService.Upload(profilePicture, Configuration.GetSection("UserImageUploadPath").Value, fileNameUponDownload);
+
                 user.ProfilePictureImageSrc = response.IsValid ? response.Result.FileName : string.Empty;
             }
 
             _unitOfWork.UserRepository.Edit(user);
             _unitOfWork.Save();
+
+            return response;
         }
     }
 }

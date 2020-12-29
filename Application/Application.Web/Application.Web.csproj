@@ -25,4 +25,8 @@
     <ProjectReference Include="..\Application.Services\Application.Services.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ImageUploads\" />
+  </ItemGroup>
+
 </Project>

@@ -107,7 +107,7 @@ namespace Application.Web
             //Shared
             services.AddScoped<IRandomStringGeneratorService, RandomStringGeneratorService>();
 
-            Repositories & Uit of Work
+            //Repositories & Uit of Work
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IThreadRepository, ThreadRepository>();

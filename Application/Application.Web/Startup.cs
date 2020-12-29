@@ -1,11 +1,17 @@
+using Application.Data;
+using Application.Data.Repositories;
 using Application.Domain;
 using Application.Services.Authentication;
 using Application.Services.Documents;
 using Application.Services.Email;
+using Application.Services.Files;
+using Application.Services.Filtering;
 using Application.Services.Shared;
+using Application.Services.UserProfile;
 using Application.Web.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -73,7 +79,7 @@ namespace Application.Web
             services.AddScoped<IRegistrationService, RegistrationService>();
             services.AddScoped<ILoginService, LoginService>();
             services.AddScoped<IAccountRecoveryService, AccountRecoveryService>();
-            services.AddScoped<IPasswordChangeService, PasswordChangeService>();
+            services.AddScoped<IPasswordAssignmentService, PasswordSettingService>();
             services.AddScoped<ILogoutService, LogoutService>();
 
             //Email
@@ -83,8 +89,30 @@ namespace Application.Web
             //Documents
             services.AddScoped<IPdfGeneratorService<string>, PdfGeneratorFromHtmlService>();
 
+            //Files
+            services.AddScoped<IFileDownloadService, FileDownloadService>();
+            services.AddScoped<IFileUploadService, FileUploadService>();
+            services.AddScoped<IFileSizeRestrictionService, FileSizeRestrictionService>();
+            services.AddScoped<IFileValidationService, FileValidationService>();
+            services.AddScoped<IImageFileValidationService, ImageFileValidationService>();
+            services.AddScoped<IImageUploadService, ImageUploadService>();
+            services.AddScoped<IFileFilterBuilder, FileFilterBuilder>();
+
+            //Filtering
+            services.AddScoped<IFilterService<IFormFile>, FilterService<IFormFile>>();
+
+            //Profile
+            services.AddScoped<IUserProfileService, UserProfileService>();
+
             //Shared
             services.AddScoped<IRandomStringGeneratorService, RandomStringGeneratorService>();
+
+            Repositories & Uit of Work
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IThreadRepository, ThreadRepository>();
+            services.AddScoped<IPostRepository, PostRepository>();
+            services.AddScoped<IReactionRepository, ReactionRepository>();
         }
 
         private void ConfigureIdentity(IServiceCollection services)

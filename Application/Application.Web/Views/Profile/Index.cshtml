@@ -1,6 +1,78 @@
-﻿@model Application.Domain.ApplicationUser
+﻿@model Application.Domain.ApplicationEntities.User
 @{
     ViewBag.Title = "Home Page";
 }
 
-<h1>hello, @Model.FirstName @Model.LastName</h1>
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-4" id="profilePictureBlock" style="width:180px;height:110px;overflow:hidden">
+            @if (string.IsNullOrEmpty(Model.ProfilePictureImageSrc))
+            {
+                <img id="profilePicture" src="~/Content/Images/empty-profile-picture.png"
+                     style="width:120px;height:100px;overflow:hidden" class="img-circle" />
+            }
+            else
+            {
+                <img id="profilePicture" src="~/Content/UserUploads/Images/@Model.ProfilePictureImageSrc"
+                     style="width:120px;height:100px;overflow:hidden" class="img-circle" />
+            }
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-4">
+            <!-- Trigger the modal with a button -->
+            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#imagePreviewModal">
+                <span class="glyphicon glyphicon-edit"></span> Change Profile Picutre
+            </button>
+            <br />
+        </div>
+        <div class="col-lg-8"></div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="imagePreviewModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <form action="~/Profile/UploadProfilePicture" method="post" enctype="multipart/form-data">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Profile Picture Preview</h4>
+                    <label style="display: inline-block" class="btn btn-default btn-file">
+                        <span class="glyphicon glyphicon-upload"></span>
+                        Select file to upload <input type="file" name="profilePicture" id="btnFile" style="display:none" />
+                    </label>
+                </div>
+                <div class="modal-body">
+                    <div id="imagePreviewBlock"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit">Submit</button>
+                </div>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("btnFile").onchange = displayProfilePicturePreview;
+        document.getElementById("profilePicture").onerror = displayDefaultProfilePicture;
+        function displayProfilePicturePreview() {
+            document.getElementById("imagePreviewBlock").innerHTML = '';
+            previewImageOnSelectingFile("btnFile", "imagePreviewBlock");
+        }
+        function displayDefaultProfilePicture() {
+            document.getElementById("profilePicture").src = '~/Content/Images/empty-profile-picture.png';
+        }
+    });
+</script>

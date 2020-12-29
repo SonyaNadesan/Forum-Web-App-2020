@@ -13,18 +13,18 @@ namespace Application.Services.Authentication
         private readonly IConfiguration Configuration;
         private readonly IEmailSenderService _emailService;
         private readonly IEmailGeneratorService _emailGeneratorService;
-        private readonly IPasswordChangeService _passwordChangeService;
+        private readonly IPasswordAssignmentService _passwordAssignmentService;
         private readonly IPdfGeneratorService<string> _pdfGeneratorService;
         private readonly UserManager<ApplicationUser> _userManager;
 
         public RegistrationService(IConfiguration configuration, IEmailSenderService emailService, IEmailGeneratorService emailGeneratorService,
-                                   IPasswordChangeService passwordChangeService, IPdfGeneratorService<string> pdfGeneratorService, 
+                                   IPasswordAssignmentService passwordAssignmentService, IPdfGeneratorService<string> pdfGeneratorService, 
                                    UserManager<ApplicationUser> userManager)
         {
             Configuration = configuration;
             _emailService = emailService;
             _emailGeneratorService = emailGeneratorService;
-            _passwordChangeService = passwordChangeService;
+            _passwordAssignmentService = passwordAssignmentService;
             _pdfGeneratorService = pdfGeneratorService;
             _userManager = userManager;
         }
@@ -35,7 +35,7 @@ namespace Application.Services.Authentication
 
             var user = InitializeUser(email, firstName, lastName);
 
-            var passwordChangeResponse = _passwordChangeService.AssignRandomlyGeneratedPassword(user, out string password);
+            var passwordChangeResponse = _passwordAssignmentService.AssignRandomlyGeneratedPassword(user, out string password);
 
             if (passwordChangeResponse.IsValid)
             {

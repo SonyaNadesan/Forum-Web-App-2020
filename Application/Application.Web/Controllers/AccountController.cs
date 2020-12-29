@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Application.Domain;
+using Application.Services.UserProfile;
 
 namespace Application.Web.Controllers
 {
@@ -10,17 +11,19 @@ namespace Application.Web.Controllers
         private readonly IRegistrationService _registrationService;
         private readonly ILoginService _loginService;
         private readonly IAccountRecoveryService _accountRecoveryService;
-        private readonly IPasswordChangeService _passwordChangeService;
+        private readonly IPasswordAssignmentService _passwordAssignmentService;
         private readonly ILogoutService _logoutService;
+        private readonly IUserProfileService _userProfileService;
 
         public AccountController(IRegistrationService registrationService, ILoginService loginService, IAccountRecoveryService accountRecoveryService,
-                                 IPasswordChangeService passwordChangeService, ILogoutService logoutService)
+                                 IPasswordAssignmentService passwordAssignmentService, ILogoutService logoutService, IUserProfileService userProfileService)
         {
             _registrationService = registrationService;
             _loginService = loginService;
             _accountRecoveryService = accountRecoveryService;
-            _passwordChangeService = passwordChangeService;
+            _passwordAssignmentService = passwordAssignmentService;
             _logoutService = logoutService;
+            _userProfileService = userProfileService;
         }
 
         public ActionResult Index()
@@ -41,6 +44,8 @@ namespace Application.Web.Controllers
 
             if (response.IsValid)
             {
+                _userProfileService.AddUserProfile(response.Result.Id, email, firstName, lastName);
+
                 TempData["Registration Status"] = "Registration Successful!";
             }
             else
@@ -106,7 +111,7 @@ namespace Application.Web.Controllers
         [HttpPost]
         public async Task<ActionResult> ChangePassword(string password, string newPassword, string confirmPassword)
         {
-            var response = await _passwordChangeService.ChangePassword(User.Identity.Name, password, newPassword, confirmPassword);
+            var response = await _passwordAssignmentService.ChangePassword(User.Identity.Name, password, newPassword, confirmPassword);
 
             if (response.IsValid)
             {

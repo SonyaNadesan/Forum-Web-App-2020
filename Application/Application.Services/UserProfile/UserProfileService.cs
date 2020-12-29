@@ -26,11 +26,12 @@ namespace Application.Services.UserProfile
             return _unitOfWork.UserRepository.GetAll().SingleOrDefault(x => x.Email == email);
         }
 
-        public ServiceResponse<User> AddUserProfile(string userId, string firstName, string lastName)
+        public ServiceResponse<User> AddUserProfile(string userId, string email, string firstName, string lastName)
         {
             var newUser = new User()
             {
                 Id = userId,
+                Email = email,
                 FirstName = firstName,
                 LastName = lastName
             };

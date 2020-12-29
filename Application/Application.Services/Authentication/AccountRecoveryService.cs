@@ -9,15 +9,15 @@ namespace Application.Services.Authentication
     {
         private readonly IEmailSenderService _emailSenderService;
         private readonly IEmailGeneratorService _emailGeneratorService;
-        private readonly IPasswordChangeService _passwordChangeService;
+        private readonly IPasswordAssignmentService _passwordAssignmentService;
         private readonly UserManager<ApplicationUser> _userManager;
 
         public AccountRecoveryService(IEmailSenderService emailSenderService, IEmailGeneratorService emailGeneratorService,
-                                   IPasswordChangeService passwordChangeService, UserManager<ApplicationUser> userManager)
+                                   IPasswordAssignmentService passwordAssignmentService, UserManager<ApplicationUser> userManager)
         {
             _emailSenderService = emailSenderService;
             _emailGeneratorService = emailGeneratorService;
-            _passwordChangeService = passwordChangeService;
+            _passwordAssignmentService = passwordAssignmentService;
             _userManager = userManager;
         }
 
@@ -33,7 +33,7 @@ namespace Application.Services.Authentication
                 return response;
             }
 
-            var passwordAssignmentResponse = _passwordChangeService.AssignRandomlyGeneratedPassword(user, out string password);
+            var passwordAssignmentResponse = _passwordAssignmentService.AssignRandomlyGeneratedPassword(user, out string password);
 
             if (passwordAssignmentResponse.IsValid)
             {

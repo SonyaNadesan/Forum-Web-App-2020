@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 
 namespace Application.Services.Authentication
 {
-    public class PasswordChangeService : IPasswordChangeService
+    public class PasswordSettingService : IPasswordAssignmentService
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IRandomStringGeneratorService _randomStringGeneratorService;
 
-        public PasswordChangeService(UserManager<ApplicationUser> userManager, IRandomStringGeneratorService randomStringGeneratorService)
+        public PasswordSettingService(UserManager<ApplicationUser> userManager, IRandomStringGeneratorService randomStringGeneratorService)
         {
             _userManager = userManager;
             _randomStringGeneratorService = randomStringGeneratorService;

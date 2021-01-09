@@ -59,6 +59,7 @@ namespace Application.Web
                 app.UseHsts();
             }
             app.UseHttpsRedirection();
+
             app.UseStaticFiles();
 
             app.UseRouting();
@@ -77,6 +78,8 @@ namespace Application.Web
 
         private void EnforceDependancyInjection(IServiceCollection services)
         {
+            services.AddControllersWithViews(x => x.SuppressAsyncSuffixInActionNames = false).AddRazorRuntimeCompilation();
+
             //Authentication
             services.AddScoped<IRegistrationService, RegistrationService>();
             services.AddScoped<ILoginService, LoginService>();

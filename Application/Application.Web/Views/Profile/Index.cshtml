@@ -15,12 +15,12 @@
         <div class="col-lg-4" id="profilePictureBlock" style="width:180px;height:110px;overflow:hidden">
             @if (string.IsNullOrEmpty(Model.ProfilePictureImageSrc))
             {
-                <img id="profilePicture" src="~/Content/Images/empty-profile-picture.png"
+                <img id="profilePicture" src=@Url.Content("~/Images/defaultProfilePic.jpg")
                      style="width:120px;height:100px;overflow:hidden" class="img-circle" />
             }
             else
             {
-                <img id="profilePicture" src="~/Content/UserUploads/Images/@Model.ProfilePictureImageSrc"
+                <img id="profilePicture" src=@Url.Content("~/Images/" + @Model.ProfilePictureImageSrc)
                      style="width:120px;height:100px;overflow:hidden" class="img-circle" />
             }
         </div>
@@ -48,7 +48,7 @@
                     <h4 class="modal-title">Profile Picture Preview</h4>
                     <label style="display: inline-block" class="btn btn-default btn-file">
                         <span class="glyphicon glyphicon-upload"></span>
-                        Select file to upload <input type="file" name="profilePicture" id="btnFile" style="display:none" />
+                        Select file to upload <input type="file" name="profilePicture" id="btnFile" style="display:block" />
                     </label>
                 </div>
                 <div class="modal-body">
@@ -66,13 +66,15 @@
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("btnFile").onchange = displayProfilePicturePreview;
-        document.getElementById("profilePicture").onerror = displayDefaultProfilePicture;
+        //document.getElementById("profilePicture").onerror = displayDefaultProfilePicture;
+
         function displayProfilePicturePreview() {
             document.getElementById("imagePreviewBlock").innerHTML = '';
             previewImageOnSelectingFile("btnFile", "imagePreviewBlock");
         }
+
         function displayDefaultProfilePicture() {
-            document.getElementById("profilePicture").src = '~/Content/Images/empty-profile-picture.png';
+            document.getElementById("profilePicture").src = '@Url.Content("~/Images/defaultProfilePic.jpg")';
         }
     });
 </script>

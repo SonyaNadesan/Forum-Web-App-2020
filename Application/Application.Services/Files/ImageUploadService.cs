@@ -25,13 +25,15 @@ namespace Application.Services.Files
                                          .Build();
         }
 
-        public async Task<ServiceResponse<FileInfo>> Upload(IFormFile file, string savePath, string fileNameToBeUsedOnUpload)
+        public async Task<ServiceResponse<FileInfo>> Upload(IFormFile file, string savePath, string baseNameToBeUsedOnUpload)
         {
+            var fileNameOnUpload = baseNameToBeUsedOnUpload + Path.GetExtension(file.FileName);
+
             var fileInfo = new FileInfo()
             {
                 File = file,
-                FileName = fileNameToBeUsedOnUpload + Path.GetExtension(file.FileName),
-                FilePath = Path.Combine(savePath, file.FileName)
+                FileName = fileNameOnUpload,
+                FilePath = Path.Combine(savePath, fileNameOnUpload)
             };
 
             var response = new ServiceResponse<FileInfo>(fileInfo);
@@ -44,7 +46,7 @@ namespace Application.Services.Files
                 return response;
             }
 
-            return await _fileUploadService.Upload(file, fileNameToBeUsedOnUpload, savePath);
+            return await _fileUploadService.Upload(file, fileNameOnUpload, savePath);
         }
     }
 }

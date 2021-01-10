@@ -5,6 +5,6 @@ namespace Application.Services.Files
 {
     public interface IImageUploadService
     {
-        Task<ServiceResponse<FileInfo>> Upload(IFormFile file, string savePath, string fileNameToBeUsedOnUpload);
+        Task<ServiceResponse<FileInfo>> Upload(IFormFile file, string savePath, string baseNameToBeUsedOnUpload);
     }
 }

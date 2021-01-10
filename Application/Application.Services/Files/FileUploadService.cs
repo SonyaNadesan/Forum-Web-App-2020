@@ -7,13 +7,13 @@ namespace Application.Services.Files
 {
     public class FileUploadService : IFileUploadService
     {
-        public async Task<ServiceResponse<FileInfo>> Upload(IFormFile file, string fileNameToBeUsedOnUpload, string savePath)
+        public async Task<ServiceResponse<FileInfo>> Upload(IFormFile file, string fileNameOnUpload, string savePath)
         {
             var fileInfo = new FileInfo()
             {
                 File = file,
-                FileName = fileNameToBeUsedOnUpload + Path.GetExtension(file.FileName),
-                FilePath = Path.Combine(savePath, file.FileName)
+                FileName = fileNameOnUpload,
+                FilePath = Path.Combine("wwwroot/" + savePath, fileNameOnUpload)
             };
 
             var response = new ServiceResponse<FileInfo>(fileInfo);

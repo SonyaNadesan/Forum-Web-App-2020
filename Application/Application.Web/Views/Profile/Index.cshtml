@@ -1,6 +1,7 @@
 ﻿@model Application.Domain.ApplicationEntities.User
 @{
     ViewBag.Title = "Home Page";
+    Layout = "_Layout";
 }
 
 <br />
@@ -15,13 +16,12 @@
         <div class="col-lg-4" id="profilePictureBlock" style="width:180px;height:110px;overflow:hidden">
             @if (string.IsNullOrEmpty(Model.ProfilePictureImageSrc))
             {
-                <img id="profilePicture" src="~/Content/Images/empty-profile-picture.png"
+                <img id="profilePicture" src="~/Images/defaultProfilePic.jpg"
                      style="width:120px;height:100px;overflow:hidden" class="img-circle" />
             }
             else
             {
-                <img id="profilePicture" src="~/Content/UserUploads/Images/@Model.ProfilePictureImageSrc"
-                     style="width:120px;height:100px;overflow:hidden" class="img-circle" />
+                <img id="profilePicture" src=@Url.Content("~/Images/" + Model.ProfilePictureImageSrc) style="width:120px;height:100px;overflow:hidden" class="img-circle" />
             }
         </div>
     </div>
@@ -66,13 +66,15 @@
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("btnFile").onchange = displayProfilePicturePreview;
-        document.getElementById("profilePicture").onerror = displayDefaultProfilePicture;
+        //document.getElementById("profilePicture").onerror = displayDefaultProfilePicture;
+
         function displayProfilePicturePreview() {
             document.getElementById("imagePreviewBlock").innerHTML = '';
             previewImageOnSelectingFile("btnFile", "imagePreviewBlock");
         }
+
         function displayDefaultProfilePicture() {
-            document.getElementById("profilePicture").src = '~/Content/Images/empty-profile-picture.png';
+            document.getElementById("profilePicture").src = '@Url.Content("~/Images/defaultProfilePic.jpg")';
         }
     });
 </script>

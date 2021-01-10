@@ -56,9 +56,9 @@ namespace Application.Services.UserProfile
             }
             else
             {
-                var fileNameUponDownload = "ProfilePicture_" + user.FirstName + user.LastName;
+                var fileNameUponUpload = "ProfilePicture_" + user.Id;
 
-                response = await _imageUploadService.Upload(profilePicture, Configuration.GetSection("UserImageUploadPath").Value, fileNameUponDownload);
+                response = await _imageUploadService.Upload(profilePicture, Configuration.GetSection("UserImageUploadPath").Value, fileNameUponUpload);
 
                 user.ProfilePictureImageSrc = response.IsValid ? response.Result.FileName : string.Empty;
             }

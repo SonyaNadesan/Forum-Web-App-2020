@@ -7,7 +7,6 @@ namespace Application.Services.UserProfile
 {
     public interface IUserProfileService
     {
-        User Get(string email);
         ServiceResponse<User> AddUserProfile(string userId, string email, string firstName, string lastName);
         Task<ServiceResponse<FileInfo>> UpdateUserProfile(User user, IFormFile profilePicture = null);
     }

@@ -13,9 +13,11 @@ namespace Application.Data.Repositories
             Context = context;
         }
 
-        public User Get(string userId)
+        public User Get(string email)
         {
-            return Context.Users.SingleOrDefault(u => u.Id == userId);
+            email = email.ToLower();
+
+            return Context.Users.SingleOrDefault(u => u.Email.ToLower() == email);
         }
 
         public IEnumerable<User> GetAll()

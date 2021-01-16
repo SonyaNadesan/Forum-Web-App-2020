@@ -3,7 +3,6 @@ using Application.Domain.ApplicationEntities;
 using Application.Services.Files;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Application.Services.UserProfile
@@ -19,11 +18,6 @@ namespace Application.Services.UserProfile
             Configuration = configuration;
             _unitOfWork = unitOfWork;
             _imageUploadService = imageUploadService;
-        }
-
-        public User Get(string email)
-        {
-            return _unitOfWork.UserRepository.GetAll().SingleOrDefault(x => x.Email == email);
         }
 
         public ServiceResponse<User> AddUserProfile(string userId, string email, string firstName, string lastName)
@@ -44,7 +38,7 @@ namespace Application.Services.UserProfile
 
         public async Task<ServiceResponse<FileInfo>> UpdateUserProfile(User user, IFormFile profilePicture = null)
         {
-            ServiceResponse<FileInfo> response = null;
+            ServiceResponse<FileInfo> response;
 
             var userFromDb = _unitOfWork.UserRepository.Get(user.Id);
 

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Application.Domain;
 using Application.Services.UserProfile;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Application.Web.Controllers
 {
@@ -124,7 +125,7 @@ namespace Application.Web.Controllers
             return View();
         }
 
-        [Microsoft.AspNetCore.Authorization.Authorize]
+        [Authorize]
         public async Task<ActionResult> LogOut()
         {
             await _logoutService.Logout(User.Identity.Name);

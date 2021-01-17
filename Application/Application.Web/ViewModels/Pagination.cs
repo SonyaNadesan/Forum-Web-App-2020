@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Application.Web.ViewModels
 {
@@ -69,5 +70,16 @@ namespace Application.Web.ViewModels
         }
 
         public string FormAction { get; set; }
+
+        public Pagination(IEnumerable<T> allResults, int page, int pageSeize, int startPage, string formAction, string query = "")
+        {
+            ItemsToDisplay = allResults.Skip((page - 1) * pageSeize).Take(pageSeize).ToList();
+            CurrentPage = page;
+            PageSize = pageSeize;
+            TotalNumberOfResults = allResults.Count();
+            Query = query;
+            FormAction = formAction;
+            StartPage = startPage;
+        }
     }
 }

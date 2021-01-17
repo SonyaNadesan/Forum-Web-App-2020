@@ -18,58 +18,40 @@ namespace Application.Web.Controllers
 
         public IActionResult Index(int page = 1, int startPage = 1, string query = "")
         {
-            int take = 2;
-            int skip = (page - 1) * take;
-
             var allThreads = _unitOfWork.ThreadRepository.GetAll();
 
-            var itemsToDisplay = allThreads.OrderByDescending(t => t.DateTime).Skip(skip).Take(take);
+            var results = allThreads.OrderByDescending(t => t.DateTime);
 
-            var viewModel = new Pagination<Thread>()
-            {
-                ItemsToDisplay = itemsToDisplay.ToList(),
-                CurrentPage = page,
-                PageSize = take,
-                TotalNumberOfResults = allThreads.Count(),
-                Query = query,
-                FormAction = "../Forum/Index",
-                StartPage = startPage
-            };
+            var viewModel = new Pagination<Thread>(results, page, 5, startPage, "../Forum/Index", query);
 
             return View(viewModel);
         }
 
         public IActionResult Thread(string threadId, int currentPage)
         {
-            var isThreadIdGuid = Guid.TryParse(threadId, out Guid treadIdAsGuid);
+            //var isThreadIdGuid = Guid.TryParse(threadId, out Guid treadIdAsGuid);
 
-            if (isThreadIdGuid)
-            {
-                var thread = _unitOfWork.ThreadRepository.Get(treadIdAsGuid);
+            //if (isThreadIdGuid)
+            //{
+            //    var thread = _unitOfWork.ThreadRepository.Get(treadIdAsGuid);
 
-                if (thread == null)
-                {
-                    return View("Index");
-                }
+            //    if (thread == null)
+            //    {
+            //        return View("Index");
+            //    }
 
-                var posts = _unitOfWork.PostRepository.GetAll().Where(p => p.ThreadId == treadIdAsGuid);
+            //    var posts = _unitOfWork.PostRepository.GetAll().Where(p => p.ThreadId == treadIdAsGuid);
 
-                var page = new Pagination<Post>()
-                {
-                    ItemsToDisplay = posts.Take(5).ToList(),
-                    CurrentPage = currentPage,
-                    PageSize = 2,
-                    TotalNumberOfResults = posts.Count()
-                };
+            //    var page = new Pagination<Post>();
 
-                var viewModel = new ViewModelWithPagination<Thread, Post>()
-                {
-                    PageData = thread,
-                    PaginationData = page
-                };
+            //    var viewModel = new ViewModelWithPagination<Thread, Post>()
+            //    {
+            //        PageData = thread,
+            //        PaginationData = page
+            //    };
 
-                return View(page);
-            }
+            //    return View(page);
+            //}
 
 
             return View("Index");

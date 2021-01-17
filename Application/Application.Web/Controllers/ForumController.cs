@@ -16,55 +16,94 @@ namespace Application.Web.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        public IActionResult Index(int currentPage = 1)
+        public IActionResult Index(int currentPage = 1, string query = "")
         {
             var allThreads = _unitOfWork.ThreadRepository.GetAll();
 
-            var page = new PaginationViewModel<Thread>()
+            var page = new Pagination<Thread>()
             {
                 ItemsToDisplay = allThreads.Take(5).ToList(),
                 CurrentPage = currentPage,
                 PageSize = 2,
-                TotalNumberOfResults = allThreads.Count()
+                TotalNumberOfResults = allThreads.Count(),
+                Query = query
             };
 
             return View(page);
         }
 
-        [ValidateAntiForgeryToken]
-        [HttpPost]
+        public IActionResult Thread(string threadId, int currentPage)
+        {
+            var isThreadIdGuid = Guid.TryParse(threadId, out Guid treadIdAsGuid);
+
+            if (isThreadIdGuid)
+            {
+                var thread = _unitOfWork.ThreadRepository.Get(treadIdAsGuid);
+
+                if (thread == null)
+                {
+                    return View("Index");
+                }
+
+                var posts = _unitOfWork.PostRepository.GetAll().Where(p => p.ThreadId == treadIdAsGuid);
+
+                var page = new Pagination<Post>()
+                {
+                    ItemsToDisplay = posts.Take(5).ToList(),
+                    CurrentPage = currentPage,
+                    PageSize = 2,
+                    TotalNumberOfResults = posts.Count()
+                };
+
+                var viewModel = new ViewModelWithPagination<Thread, Post>()
+                {
+                    PageData = thread,
+                    PaginationData = page
+                };
+
+                return View(page);
+            }
+
+
+            return View("Index");
+        }
+
         public IActionResult CreateThread(string heading, string body)
         {
             var currentUser = _unitOfWork.UserRepository.Get(User.Identity.Name);
 
-            var newThread = new Thread()
+            if(currentUser != null)
             {
-                Id = Guid.NewGuid(),
-                Heading = heading,
-                Body = body,
-                DateTime = DateTime.Now,
-                UserId = currentUser.Id,
-                User = currentUser
-            };
+                var newThread = new Thread()
+                {
+                    Id = Guid.NewGuid(),
+                    Heading = heading,
+                    Body = body,
+                    DateTime = DateTime.Now,
+                    User = currentUser,
+                    UserId = currentUser.Id
+                };
 
-            _unitOfWork.ThreadRepository.Add(newThread);
+                _unitOfWork.ThreadRepository.Add(newThread);
+
+                _unitOfWork.Save();
+            }
 
             return RedirectToAction("Index");
         }
 
-        [ValidateAntiForgeryToken]
-        [HttpPost]
         public IActionResult CreatePost(string content, string body, string threadId, string? parentPostId = "")
         {
-            var isThreadIdGuid = Guid.TryParse(threadId, out Guid threadIdAsGuid);
+            var thread = Guid.TryParse(threadId, out Guid threadIdAsGuid) ? _unitOfWork.ThreadRepository.Get(threadIdAsGuid) : null;
 
-            var thread = isThreadIdGuid ? _unitOfWork.ThreadRepository.Get(threadIdAsGuid) : null;
+            if (thread == null)
+            {
+                return RedirectToAction("Index");
+            }
 
             var currentUser = _unitOfWork.UserRepository.Get(User.Identity.Name);
 
-            var isParentPostIdGuid = Guid.TryParse(parentPostId, out Guid parentPostIdAsGuid);
-
-            var parentPost = isParentPostIdGuid ? _unitOfWork.PostRepository.Get(parentPostIdAsGuid) : null;
+            var parentPost = Guid.TryParse(parentPostId, out Guid parentPostIdAsGuid) ? _unitOfWork.PostRepository.Get(parentPostIdAsGuid) : null;
 
             var newPost = new Post()
             {
@@ -81,7 +120,9 @@ namespace Application.Web.Controllers
                 User = currentUser
             };
 
-            _unitOfWork.ThreadRepository.Add(newThread);
+            _unitOfWork.PostRepository.Add(newPost);
+
+            _unitOfWork.Save();
 
             return RedirectToAction("Index");
         }

@@ -16,21 +16,27 @@ namespace Application.Web.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        public IActionResult Index(int currentPage = 1, string query = "")
+        public IActionResult Index(int page = 1, int startPage = 1, string query = "")
         {
-            var allThreads = _unitOfWork.ThreadRepository.GetAll();
+            int take = 2;
+            int skip = (page - 1) * take;
 
-            var page = new Pagination<Thread>()
+            var allThreads = _unitOfWork.ThreadRepository.GetAll();
+                
+            var itemsToDisplay = allThreads.OrderByDescending(t => t.DateTime).Skip(skip).Take(take);
+
+            var viewModel = new Pagination<Thread>()
             {
-                ItemsToDisplay = allThreads.Take(5).ToList(),
-                CurrentPage = currentPage,
-                PageSize = 2,
+                ItemsToDisplay = itemsToDisplay.ToList(),
+                CurrentPage = page,
+                PageSize = take,
                 TotalNumberOfResults = allThreads.Count(),
                 Query = query,
-                FormAction = "Form/Index"
+                FormAction = "../Forum/Index",
+                StartPage = startPage
             };
 
-            return View(page);
+            return View(viewModel);
         }
 
         public IActionResult Thread(string threadId, int currentPage)
@@ -69,6 +75,13 @@ namespace Application.Web.Controllers
             return View("Index");
         }
 
+        public IActionResult CreateThread()
+        {
+            return View();
+        }
+
+        [ValidateAntiForgeryToken]
+        [HttpPost]
         public IActionResult CreateThread(string heading, string body)
         {
             var currentUser = _unitOfWork.UserRepository.Get(User.Identity.Name);

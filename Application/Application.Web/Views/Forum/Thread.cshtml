@@ -23,7 +23,8 @@
         <span name="spnLikeCount" id="spnLikeCount_@Model.PageData.Id" value="@Model.PageData.Id"></span>
     </div>
     <div>
-        <form action="/Thread/AddPost" method="post">
+        <form action="/Forum/CreatePost" method="post">
+            @Html.AntiForgeryToken()
             <input type="text" placeholder="Enter your comment here" name="content" />
             <input type="hidden" name="threadId" value="@Model.PageData.Id" />
             <button class="btn btn-primary" type="submit">Submit</button>

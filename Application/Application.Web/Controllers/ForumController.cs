@@ -88,7 +88,9 @@ namespace Application.Web.Controllers
             return RedirectToAction("Index");
         }
 
-        public IActionResult CreatePost(string content, string body, string threadId, string? parentPostId = "")
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public IActionResult CreatePost(string content, string threadId, string parentPostId = "")
         {
             var thread = Guid.TryParse(threadId, out Guid threadIdAsGuid) ? _unitOfWork.ThreadRepository.Get(threadIdAsGuid) : null;
 

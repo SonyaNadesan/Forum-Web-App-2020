@@ -43,12 +43,7 @@ namespace Application.Data.Repositories
             {
                 Context.Entry(post.User).State = EntityState.Unchanged;
                 Context.Entry(post.Thread).State = EntityState.Unchanged;
-
-                if (post.ParentPost != null)
-                {
-                    Context.Entry(post.ParentPost).State = EntityState.Unchanged;
-                }
-
+                Context.Entry(post.ParentPost).State = EntityState.Unchanged;
                 Context.Entry(post).State = EntityState.Added;
                 Context.Posts.Add(post);
             }

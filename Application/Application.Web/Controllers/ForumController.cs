@@ -22,7 +22,7 @@ namespace Application.Web.Controllers
             int skip = (page - 1) * take;
 
             var allThreads = _unitOfWork.ThreadRepository.GetAll();
-                
+
             var itemsToDisplay = allThreads.OrderByDescending(t => t.DateTime).Skip(skip).Take(take);
 
             var viewModel = new Pagination<Thread>()

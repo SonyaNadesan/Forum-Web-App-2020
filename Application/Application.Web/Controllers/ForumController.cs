@@ -27,31 +27,31 @@ namespace Application.Web.Controllers
             return View(viewModel);
         }
 
-        public IActionResult Thread(string threadId, int currentPage)
+        public IActionResult Thread(string threadId, int currentPage = 1, int startPage = 1, string query = "")
         {
-            //var isThreadIdGuid = Guid.TryParse(threadId, out Guid treadIdAsGuid);
+            var isThreadIdGuid = Guid.TryParse(threadId, out Guid treadIdAsGuid);
 
-            //if (isThreadIdGuid)
-            //{
-            //    var thread = _unitOfWork.ThreadRepository.Get(treadIdAsGuid);
+            if (isThreadIdGuid)
+            {
+                var thread = _unitOfWork.ThreadRepository.Get(treadIdAsGuid);
 
-            //    if (thread == null)
-            //    {
-            //        return View("Index");
-            //    }
+                if (thread == null)
+                {
+                    return View("Index");
+                }
 
-            //    var posts = _unitOfWork.PostRepository.GetAll().Where(p => p.ThreadId == treadIdAsGuid);
+                var posts = _unitOfWork.PostRepository.GetAll().Where(p => p.ThreadId == treadIdAsGuid);
 
-            //    var page = new Pagination<Post>();
+                var page = new Pagination<Post>(posts, currentPage, 2, startPage, "../Forum/Thread", query);
 
-            //    var viewModel = new ViewModelWithPagination<Thread, Post>()
-            //    {
-            //        PageData = thread,
-            //        PaginationData = page
-            //    };
+                var viewModel = new ViewModelWithPagination<Thread, Post>()
+                {
+                    PageData = thread,
+                    PaginationData = page
+                };
 
-            //    return View(page);
-            //}
+                return View(viewModel);
+            }
 
 
             return View("Index");

@@ -1,84 +1,42 @@
 ﻿@using Application.Domain.ApplicationEntities
 @using Application.Web.ViewModels
-@model Pagination<Thread>
+@model ViewModelWithPagination<Thread, Post>
 @{
     Layout = "_Layout";
 }
+<br />
+<br />
+<br />
+<br />
 
-<br />
-<br />
-<br />
-<br />
 <div class="container">
     <div>
-        <form action="~/Thread/Index" method="get" class="form-inline">
-            <input class="form-control" style="width:50%" type="text" value="@Model.Query" name="query" />
-            <button class="btn btn-primary" type="submit">Find</button>
-        </form>
+        <h1>@Model.PageData.Heading</h1>
+        <h3>By @Model.PageData.User.FirstName @Model.PageData.User.LastName @Model.PageData.DateTime</h3>
+        <h4>@Model.PageData.Body</h4>
+    </div>
+    <div class="display: flex;">
+        <button name="btnLike" id="btnLike_@Model.PageData.Id" value=@Model.PageData.Id><span class="glyphicon glyphicon-thumbs-up"></span></button>
+        <span id="likeAvatarDisplaySpan1_@Model.PageData.Id"><img src="" id="likeAvatarDisplay1_@Model.PageData.Id" style="border-radius:50%;width:30px;height:30px;z-index:1;" /></span>
+        <span id="likeAvatarDisplaySpan2_@Model.PageData.Id"><img src="" id="likeAvatarDisplay2_@Model.PageData.Id" style="border-radius:50%;width:30px;height:30px;z-index:0;" /></span>
+        <span id="likeAvatarDisplaySpan3_@Model.PageData.Id"><img src="" id="likeAvatarDisplay3_@Model.PageData.Id" style="border-radius:50%;width:30px;height:30px;z-index:-1;" /></span>
+        <span name="spnLikeCount" id="spnLikeCount_@Model.PageData.Id" value="@Model.PageData.Id"></span>
     </div>
     <div>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Title</th>
-                    <th>Post By</th>
-                    <th>Date</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var thread in Model.ItemsToDisplay)
-                {
-                    <tr>
-                        <td>@thread.Heading</td>
-                        <td>@thread.User.FirstName @thread.User.LastName</td>
-                        <td>@thread.DateTime.ToString("dddd, dd MMMM yyyy HH:mm")</td>
-                        <td>
-                            <form action="~/Forum/Thread" method="get">
-                                <button type="submit" name="threadId" value="@thread.Id" class="btn btn-link"><span class="glyphicon glyphicon-edit"></span></button>
-                            </form>
-                        </td>
-                        <td>
-                            @if (thread.User.Email == User.Identity.Name)
-                            {
-                                <!-- Trigger the modal with a button -->
-                                <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal_@thread.Id"><span class="glyphicon glyphicon-trash"></span></button>
-
-                                <!-- Modal -->
-                                <div id="myModal_@thread.Id" class="modal fade" role="dialog">
-                                    <div class="modal-dialog">
-
-                                        <!-- Modal content-->
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                                <h4 class="modal-title">Are you sure you want to delete the thread: @thread.Heading?</h4>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <div class="inline-block">
-                                                    <form action="~/Thread/Delete" method="post">
-                                                        @Html.AntiForgeryToken()
-                                                        <button type="submit" name="threadId" value="@thread.Id" class="btn btn-link jsBtnDelete"><span class="glyphicon glyphicon-trash"></span></button>
-                                                    </form>
-                                                    <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                </div>
-                            }
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+        <form action="/Thread/AddPost" method="post">
+            <input type="text" placeholder="Enter your comment here" name="content" />
+            <input type="hidden" name="threadId" value="@Model.PageData.Id" />
+            <button class="btn btn-primary" type="submit">Submit</button>
+        </form>
     </div>
-
-    <form action="~/Forum/CreateThread" method="get">
-        <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-plus"></span> Add New</button>
-    </form>
-
     <br /><br />
-    @await Html.PartialAsync("_Pagination", Model)
-    <br /><br />
+    <div>
+        @foreach (var post in Model.PaginationData.ItemsToDisplay)
+        {
+            <b>@post.User.FirstName @post.User.LastName commented on @post.DateTime</b>
+            <p>@post.Content</p>
+            <hr />
+        }
+    </div>
+    @await Html.PartialAsync("_Pagination", Model.PaginationData)
 </div>

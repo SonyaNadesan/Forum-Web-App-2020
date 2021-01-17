@@ -5,7 +5,7 @@ namespace Application.Data.Repositories
 {
     public interface IUserRepository
     {
-        User Get(string userId);
+        User Get(string email);
 
         IEnumerable<User> GetAll();
 

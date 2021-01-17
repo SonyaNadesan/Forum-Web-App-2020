@@ -1,0 +1,82 @@
+﻿@using Application.Domain.ApplicationEntities
+@using Application.Web.ViewModels
+@model Pagination<Thread>
+@{
+    Layout = "_Layout";
+}
+
+<br /><br /><br /><br />
+<div class="container">
+    <div>
+        <form action="~/Thread/Index" method="get" class="form-inline">
+            <input class="form-control" style="width:50%" type="text" value="@Model.Query" name="query" />
+            <button class="btn btn-primary" type="submit">Find</button>
+        </form>
+    </div>
+    <div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Post By</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var thread in Model.ItemsToDisplay)
+                {
+                    <tr>
+                        <td>@thread.Heading</td>
+                        <td>@thread.User.FirstName @thread.User.LastName</td>
+                        <td>@thread.DateTime.ToString("dddd, dd MMMM yyyy HH:mm")</td>
+                        <td>
+                            <form action="~/Thread/Details" method="get">
+                                <button type="submit" name="threadId" value="@thread.Id" class="btn btn-link"><span class="glyphicon glyphicon-edit"></span></button>
+                            </form>
+                        </td>
+                        <td>
+                            @if (thread.User.Email == User.Identity.Name)
+                            {
+                                <!-- Trigger the modal with a button -->
+                                <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal_@thread.Id"><span class="glyphicon glyphicon-trash"></span></button>
+
+                                <!-- Modal -->
+                                <div id="myModal_@thread.Id" class="modal fade" role="dialog">
+                                    <div class="modal-dialog">
+
+                                        <!-- Modal content-->
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                <h4 class="modal-title">Are you sure you want to delete the thread: @thread.Heading?</h4>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <div class="inline-block">
+                                                    <form action="~/Thread/Delete" method="post">
+                                                        @Html.AntiForgeryToken()
+                                                        <button type="submit" name="threadId" value="@thread.Id" class="btn btn-link jsBtnDelete"><span class="glyphicon glyphicon-trash"></span></button>
+                                                    </form>
+                                                    <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <form action="~/Forum/Add" method="get">
+        <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-plus"></span> Add New</button>
+    </form>
+
+    <br /><br />
+    @{ var pagination = (IPagination)Model; }
+     <partial name ="../../Shared/_Pagination.cshtml" model="pagination"></partial>
+    <br /><br />
+</div>

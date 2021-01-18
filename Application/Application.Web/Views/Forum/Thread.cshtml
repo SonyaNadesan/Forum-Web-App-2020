@@ -37,7 +37,13 @@
             <b>@post.User.FirstName @post.User.LastName commented on @post.DateTime</b>
             <p>@post.Content</p>
             <hr />
+            @*<form action="/Forum/CreatePost" method="post">
+                @Html.AntiForgeryToken()
+                <input type="text" placeholder="Enter your comment here" name="content" />
+                <input type="hidden" name="threadId" value="@Model.PageData.Id" />
+                <button class="btn btn-primary" type="submit" name="ParentPostId" value="@post.Id">Submit</button>
+            </form>*@
         }
     </div>
-    @await Html.PartialAsync("_Pagination", Model.PaginationData)
+    @await Html.PartialAsync("_PaginationWithId", Model.PaginationData)
 </div>

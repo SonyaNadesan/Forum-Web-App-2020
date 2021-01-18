@@ -1,0 +1,42 @@
+﻿@model Application.Web.ViewModels.IPaginationWithId
+
+<div class="inline-block">
+    <div class="inline-block">
+        @if (Model.NumberOfPages > 1)
+        {
+        <form action="@Model.FormAction" method="get" class="form-inline">
+            <input type="hidden" name="query" value="@Model.Query" />
+            <input type="hidden" name="startPage" value="@Model.StartPage" />
+            <input type="hidden" name="id" value="@Model.Id" />
+
+            @if (Model.StartPage > 10 && Model.NumberOfPages > 10)
+            {
+                <div class="form-group">
+                    <button type="submit" class="btn btn-link" name="page" value="@(Model.StartPage - 1)">Previous</button>
+                </div>
+            }
+
+            @for (var i = Model.StartPage; i <= Model.LastPage; i++)
+            {
+                <div class="form-group">
+                    @if (i == Model.CurrentPage)
+                    {
+                        <button type="submit" class="btn btn-primary" name="page" value="@i">@i</button>
+                    }
+                    else
+                    {
+                        <button type="submit" class="btn btn-link" name="page" value="@i">@i</button>
+                    }
+                </div>
+            }
+
+            @if (Model.LastPage < Model.NumberOfPages && Model.NumberOfPages > 10)
+            {
+                <div class="form-group">
+                    <button type="submit" class="btn btn-link" name="page" value="@(Model.LastPage + 1)">Next</button>
+                </div>
+            }
+        </form>
+        }
+    </div>
+</div>

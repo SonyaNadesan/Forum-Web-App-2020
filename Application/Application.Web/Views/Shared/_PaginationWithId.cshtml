@@ -7,7 +7,7 @@
         <form action="@Model.FormAction" method="get" class="form-inline">
             <input type="hidden" name="query" value="@Model.Query" />
             <input type="hidden" name="startPage" value="@Model.StartPage" />
-            <input type="hidden" name="id" value="@Model.Id" />
+            <input type="hidden" name="@Model.NameOfIdFieldInView" value="@Model.Id" />
 
             @if (Model.StartPage > 10 && Model.NumberOfPages > 10)
             {

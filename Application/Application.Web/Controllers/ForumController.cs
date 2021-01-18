@@ -27,9 +27,9 @@ namespace Application.Web.Controllers
             return View(viewModel);
         }
 
-        public IActionResult Thread(string id, int page = 1, int startPage = 1, string query = "")
+        public IActionResult Thread(string threadId, int page = 1, int startPage = 1, string query = "")
         {
-            var isThreadIdGuid = Guid.TryParse(id, out Guid treadIdAsGuid);
+            var isThreadIdGuid = Guid.TryParse(threadId, out Guid treadIdAsGuid);
 
             if (isThreadIdGuid)
             {
@@ -42,7 +42,11 @@ namespace Application.Web.Controllers
 
                 var posts = _unitOfWork.PostRepository.GetAll().Where(p => p.ThreadId == treadIdAsGuid && !p.HasParentPost);
 
-                var pagination = new PaginationWithId<Post>(posts, page, 2, startPage, "../Forum/Thread", id, query);
+                var pagination = new PaginationWithId<Post>(posts, page, 2, startPage, "../Forum/Thread", query)
+                {
+                    Id = threadId,
+                    NameOfIdFieldInView = "threadId"
+                };
 
                 var viewModel = new ViewModelWithPagination<Thread, Post>()
                 {

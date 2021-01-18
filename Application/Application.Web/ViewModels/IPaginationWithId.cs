@@ -2,6 +2,8 @@
 {
     public interface IPaginationWithId : IPagination
     {
-        public string Id { get; set; }
+        string Id { get; set; }
+
+        string NameOfIdFieldInView { get; set; }
     }
 }

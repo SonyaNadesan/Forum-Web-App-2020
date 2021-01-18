@@ -115,7 +115,8 @@ namespace Application.Web.Controllers
                 ThreadId = threadIdAsGuid,
                 DateTime = DateTime.Now,
                 UserId = currentUser.Id,
-                User = currentUser
+                User = currentUser,
+                HasParentPost = parentPost != null
             };
 
             _unitOfWork.PostRepository.Add(newPost);

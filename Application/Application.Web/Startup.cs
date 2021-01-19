@@ -115,6 +115,7 @@ namespace Application.Web
 
             //Forum
             services.AddScoped<IThreadService, ThreadService>();
+            services.AddScoped<IPostService, PostService>();
 
             //Repositories & Uit of Work
             services.AddScoped<IUnitOfWork, UnitOfWork>();

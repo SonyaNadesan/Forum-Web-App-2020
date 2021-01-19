@@ -1,5 +1,4 @@
-﻿using Application.Data;
-using Application.Domain.ApplicationEntities;
+﻿using Application.Domain.ApplicationEntities;
 using Application.Services.Forum;
 using Application.Web.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -10,14 +9,13 @@ namespace Application.Web.Controllers
 {
     public class ForumController : Controller
     {
-        private readonly IUnitOfWork _unitOfWork;
-
         private readonly IThreadService _threadService;
+        private readonly IPostService _postService;
 
-        public ForumController(IUnitOfWork unitOfWork, IThreadService threadService)
+        public ForumController(IThreadService threadService, IPostService postService)
         {
-            _unitOfWork = unitOfWork;
             _threadService = threadService;
+            _postService = postService;
         }
 
         public IActionResult Index(int page = 1, int startPage = 1, string query = "")
@@ -44,7 +42,7 @@ namespace Application.Web.Controllers
                     return View("Index");
                 }
 
-                var posts = _unitOfWork.PostRepository.GetAll().Where(p => p.ThreadId == treadIdAsGuid && !p.HasParentPost);
+                var posts = _postService.GetAll().Result.Where(p => p.ThreadId == treadIdAsGuid && !p.HasParentPost);
 
                 var pagination = new PaginationWithId<Post>(posts, page, 2, startPage, "../Forum/Thread", query)
                 {
@@ -88,38 +86,23 @@ namespace Application.Web.Controllers
         [HttpPost]
         public IActionResult CreatePost(string content, string threadId, string parentPostId = "")
         {
-            var thread = Guid.TryParse(threadId, out Guid threadIdAsGuid) ? _unitOfWork.ThreadRepository.Get(threadIdAsGuid) : null;
+            var threadIsGuid = Guid.TryParse(threadId, out Guid threadIdAsGuid);
 
-            if (thread == null)
+            if (!threadIsGuid)
             {
                 return RedirectToAction("Index");
             }
 
-            var currentUser = _unitOfWork.UserRepository.Get(User.Identity.Name);
+            Guid.TryParse(parentPostId, out Guid parentPostIdAsGuid);
 
-            var parentPost = Guid.TryParse(parentPostId, out Guid parentPostIdAsGuid) ? _unitOfWork.PostRepository.Get(parentPostIdAsGuid) : null;
+            var postCreationResponse = _postService.Create(User.Identity.Name, content, threadIdAsGuid, parentPostIdAsGuid);
 
-            var newPost = new Post()
+            if (postCreationResponse.IsValid)
             {
-                Id = Guid.NewGuid(),
-                Content = content,
-                ParentPostId = parentPostIdAsGuid,
-                ParentPost = parentPost,
-                HasBeenViewedByParentPostOwner = false,
-                HasBeenViewedByThreadOwner = false,
-                Thread = thread,
-                ThreadId = threadIdAsGuid,
-                DateTime = DateTime.Now,
-                UserId = currentUser.Id,
-                User = currentUser,
-                HasParentPost = parentPost != null
-            };
+                return RedirectToAction("Thread", new { threadId = threadId });
+            }
 
-            _unitOfWork.PostRepository.Add(newPost);
-
-            _unitOfWork.Save();
-
-            return RedirectToAction("Thread", new { threadId = threadId });
+            return RedirectToAction("Index");
         }
     }
 }

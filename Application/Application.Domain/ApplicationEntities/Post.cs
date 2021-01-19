@@ -21,7 +21,7 @@ namespace Application.Domain.ApplicationEntities
         [ForeignKey("ThreadId")]
         public virtual Thread Thread { get; set; }
 
-        public Guid ParentPostId { get; set; }
+        public Guid? ParentPostId { get; set; }
 
         public bool HasParentPost {get ; set;}
 

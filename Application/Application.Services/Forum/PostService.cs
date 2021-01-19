@@ -152,7 +152,7 @@ namespace Application.Services.Forum
 
             var drillDown = true;
 
-            var replies = _unitOfWork.PostRepository.GetAll().Where(p => p.ThreadId == post.ThreadId && !p.HasParentPost);
+            var replies = _unitOfWork.PostRepository.GetAll().Where(p => p.ThreadId == post.ThreadId && p.ParentPostId != p.Id && p.ParentPostId == post.Id).ToList();
 
             var repliesToDisplay = replies.ToList();
 
@@ -163,9 +163,29 @@ namespace Application.Services.Forum
             return response;
         }
 
+        public ServiceResponse<IEnumerable<Post>> GetPostHierarchy(Guid threadId)
+        {
+            var response = new ServiceResponse<IEnumerable<Post>>();
+
+            var posts = _unitOfWork.PostRepository.GetAll().Where(p => p.ThreadId == threadId && !p.HasParentPost).ToList();
+
+            var allPostsInOrder = new List<Post>();
+
+            foreach (var post in posts)
+            {
+                allPostsInOrder.Add(post);
+
+                allPostsInOrder.AddRange(GetReplies(post.Id).Result.ToList());
+            }
+
+            response.Result = allPostsInOrder;
+
+            return response;
+        }
+
         private void DrillDown(Post post, List<Post> results, ref bool drillDown)
         {
-            var replies = _unitOfWork.PostRepository.GetAll().Where(p => p.ThreadId == post.ThreadId && p.ParentPostId == post.Id);
+            var replies = _unitOfWork.PostRepository.GetAll().Where(p => p.ThreadId == post.ThreadId && p.ParentPostId != p.Id && p.ParentPostId == post.Id).ToList();
 
             drillDown = replies.Any();
 

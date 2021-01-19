@@ -22,7 +22,7 @@ namespace Application.Data.Repositories
 
         public IEnumerable<Post> GetAll()
         {
-            return Context.Posts.Include(p => p.User).Include(p => p.Thread);
+            return Context.Posts.Include(p => p.User).Include(p => p.Thread).Include(p => p.ParentPost);
         }
 
         public void Delete(Guid postId)

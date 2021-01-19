@@ -31,13 +31,34 @@
         </form>
     </div>
     <br /><br />
-    <div>
-        @foreach (var post in Model.PaginationData.ItemsToDisplay)
-        {
-            <b>@post.User.FirstName @post.User.LastName commented on @post.DateTime</b>
-            <p>@post.Content</p>
-            <hr />
-        }
-    </div>
+          <div>
+              @foreach (var post in Model.PaginationData.ItemsToDisplay)
+              {
+                  @if (!post.HasParentPost)
+                  {
+                      <div style="margin-left:5%">
+                          <b>@post.User.FirstName @post.User.LastName commented on @post.DateTime</b>
+                          <p>@post.Content</p>
+                          <hr />
+                      </div>
+                  }
+                  else
+                  {
+                      <div style="margin-left:15%">
+                          <b>@post.User.FirstName @post.User.LastName commented on @post.DateTime</b>
+                          <p>@post.Content</p>
+                          <hr />
+                      </div>
+                  }
+
+                  <form action="/Forum/CreatePost" method="post">
+                      @Html.AntiForgeryToken()
+                      <input type="text" placeholder="Enter your comment here" name="content" />
+                      <input type="hidden" name="threadId" value="@Model.PageData.Id" />
+                      <input type="hidden" name="ParentPostId" value="@post.Id" />
+                      <button class="btn btn-primary" type="submit">Submit</button>
+                  </form>
+              }
+          </div>
     @await Html.PartialAsync("_PaginationWithId", Model.PaginationData)
 </div>

@@ -3,6 +3,7 @@ using Application.Services.Forum;
 using Application.Web.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Application.Web.Controllers
@@ -42,9 +43,9 @@ namespace Application.Web.Controllers
                     return View("Index");
                 }
 
-                var posts = _postService.GetAll().Result.Where(p => p.ThreadId == treadIdAsGuid && !p.HasParentPost);
+                var postHierarchy = _postService.GetPostHierarchy(treadIdAsGuid).Result.ToList();
 
-                var pagination = new PaginationWithId<Post>(posts, page, 2, startPage, "../Forum/Thread", query)
+                var pagination = new PaginationWithId<Post>(postHierarchy, page, 2, startPage, "../Forum/Thread", query)
                 {
                     Id = threadId,
                     NameOfIdFieldInView = "threadId"
@@ -105,9 +106,18 @@ namespace Application.Web.Controllers
             return RedirectToAction("Index");
         }
 
-        public IActionResult GetRepliedOnPost(string postId)
+        public IActionResult GetRepliesOnPost(string postId, int from, int take)
         {
-           
+            var isPostIdGuid = Guid.TryParse(postId, out Guid postIdAsGuid);
+
+            if (!isPostIdGuid)
+            {
+                return RedirectToAction("Index");
+            }
+
+            var replies = _postService.GetReplies(postIdAsGuid).Result.Skip(from).Take(take);
+
+            return View();
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace Application.Services
+﻿using System;
+
+namespace Application.Services
 {
     public class ServiceResponse<TResult>
     {
@@ -31,6 +33,11 @@
         {
             Result = result;
             IsValid = true;
+        }
+
+        public object Skip()
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using Application.Data;
-using Application.Services.UserProfile;
+﻿using Application.Services.UserProfile;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

@@ -2,6 +2,7 @@
 using Application.Domain.ApplicationEntities;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Application.Services.Forum
 {
@@ -136,6 +137,49 @@ namespace Application.Services.Forum
             }
 
             return response;
+        }
+
+        public ServiceResponse<IEnumerable<Post>> GetReplies(Guid postId)
+        {
+            var post = _unitOfWork.PostRepository.Get(postId);
+
+            var response = new ServiceResponse<IEnumerable<Post>>();
+
+            if(post == null)
+            {
+                response.ErrorMessage = "Post Not Found.";
+            }
+
+            var drillDown = true;
+
+            var replies = _unitOfWork.PostRepository.GetAll().Where(p => p.ThreadId == post.ThreadId && !p.HasParentPost);
+
+            var repliesToDisplay = replies.ToList();
+
+            DrillDown(post, repliesToDisplay, ref drillDown);
+
+            response.Result = repliesToDisplay;
+
+            return response;
+        }
+
+        private void DrillDown(Post post, List<Post> results, ref bool drillDown)
+        {
+            var replies = _unitOfWork.PostRepository.GetAll().Where(p => p.ThreadId == post.ThreadId && p.ParentPostId == post.Id);
+
+            drillDown = replies.Any();
+
+            var children = new List<Post>();
+
+            while (drillDown)
+            {
+                foreach (var reply in replies)
+                {
+                    results.Add(reply);
+
+                    DrillDown(reply, results, ref drillDown);
+                }
+            }
         }
     }
 }

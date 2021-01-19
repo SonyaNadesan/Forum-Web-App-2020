@@ -104,5 +104,10 @@ namespace Application.Web.Controllers
 
             return RedirectToAction("Index");
         }
+
+        public IActionResult GetRepliedOnPost(string postId)
+        {
+           
+        }
     }
 }

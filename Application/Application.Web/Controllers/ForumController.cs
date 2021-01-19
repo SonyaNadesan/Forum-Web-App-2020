@@ -1,5 +1,6 @@
 ﻿using Application.Data;
 using Application.Domain.ApplicationEntities;
+using Application.Services.Forum;
 using Application.Web.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -11,16 +12,19 @@ namespace Application.Web.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public ForumController(IUnitOfWork unitOfWork)
+        private readonly IThreadService _threadService;
+
+        public ForumController(IUnitOfWork unitOfWork, IThreadService threadService)
         {
             _unitOfWork = unitOfWork;
+            _threadService = threadService;
         }
 
         public IActionResult Index(int page = 1, int startPage = 1, string query = "")
         {
-            var allThreads = _unitOfWork.ThreadRepository.GetAll();
+            var allThreads = _threadService.GetAll();
 
-            var results = allThreads.OrderByDescending(t => t.DateTime);
+            var results = allThreads.Result.OrderByDescending(t => t.DateTime);
 
             var viewModel = new Pagination<Thread>(results, page, 5, startPage, "../Forum/Index", query);
 
@@ -33,9 +37,9 @@ namespace Application.Web.Controllers
 
             if (isThreadIdGuid)
             {
-                var thread = _unitOfWork.ThreadRepository.Get(treadIdAsGuid);
+                var thread = _threadService.Get(treadIdAsGuid);
 
-                if (thread == null)
+                if (!thread.IsValid)
                 {
                     return View("Index");
                 }
@@ -50,7 +54,7 @@ namespace Application.Web.Controllers
 
                 var viewModel = new ViewModelWithPagination<Thread, Post>()
                 {
-                    PageData = thread,
+                    PageData = thread.Result,
                     PaginationData = pagination
                 };
 
@@ -70,23 +74,11 @@ namespace Application.Web.Controllers
         [HttpPost]
         public IActionResult CreateThread(string heading, string body)
         {
-            var currentUser = _unitOfWork.UserRepository.Get(User.Identity.Name);
+            var createThreadResponse = _threadService.Create(User.Identity.Name, heading, body);
 
-            if(currentUser != null)
+            if (!createThreadResponse.IsValid)
             {
-                var newThread = new Thread()
-                {
-                    Id = Guid.NewGuid(),
-                    Heading = heading,
-                    Body = body,
-                    DateTime = DateTime.Now,
-                    User = currentUser,
-                    UserId = currentUser.Id
-                };
-
-                _unitOfWork.ThreadRepository.Add(newThread);
-
-                _unitOfWork.Save();
+                return RedirectToAction("Index"); //Needs changing
             }
 
             return RedirectToAction("Index");

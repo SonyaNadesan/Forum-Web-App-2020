@@ -6,9 +6,10 @@ namespace Application.Services.Forum
 {
     public interface IThreadService
     {
-        ServiceResponse<List<Thread>> GetAll();
+        ServiceResponse<IEnumerable<Thread>> GetAll();
         ServiceResponse<Thread> Get(Guid threadId);
         ServiceResponse<Thread> Edit(Thread thread);
         ServiceResponse<Thread> Delete(Thread thread);
+        ServiceResponse<Thread> Create(string email, string heading, string body);
     }
 }

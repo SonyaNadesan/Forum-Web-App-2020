@@ -6,6 +6,7 @@ using Application.Services.Documents;
 using Application.Services.Email;
 using Application.Services.Files;
 using Application.Services.Filtering;
+using Application.Services.Forum;
 using Application.Services.Shared;
 using Application.Services.UserProfile;
 using Application.Web.Models;
@@ -111,6 +112,9 @@ namespace Application.Web
 
             //Shared
             services.AddScoped<IRandomStringGeneratorService, RandomStringGeneratorService>();
+
+            //Forum
+            services.AddScoped<IThreadService, ThreadService>();
 
             //Repositories & Uit of Work
             services.AddScoped<IUnitOfWork, UnitOfWork>();

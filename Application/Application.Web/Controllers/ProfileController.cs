@@ -9,29 +9,30 @@ namespace Application.Web.Controllers
 {
     public class ProfileController : Controller
     {
-        private readonly IUnitOfWork _unitOfWork;
         private readonly IUserProfileService _userProfileService;
 
-        public ProfileController(IUnitOfWork unitOfWork, IUserProfileService userProfileService)
+        public ProfileController(IUserProfileService userProfileService)
         {
-            _unitOfWork = unitOfWork;
             _userProfileService = userProfileService;
         }
 
         [Authorize]
         public ActionResult Index()
         {
-            var user = _unitOfWork.UserRepository.Get(User.Identity.Name);
+            var response = _userProfileService.Get(User.Identity.Name);
 
-            return View(user);
+            if (!response.IsValid)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            return View(response.Result);
         }
 
         [Authorize]
         public async Task<ActionResult> UploadProfilePicture(IFormFile profilePicture)
         {
-            var user = _unitOfWork.UserRepository.Get(User.Identity.Name);
-
-            await _userProfileService.UpdateUserProfile(user, profilePicture);
+            await _userProfileService.UpdateUserProfile(User.Identity.Name, profilePicture);
 
             return RedirectToAction("Index");
         }

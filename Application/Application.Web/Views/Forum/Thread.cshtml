@@ -1,6 +1,6 @@
 ﻿@using Application.Domain.ApplicationEntities
 @using Application.Web.ViewModels
-@model ViewModelWithPagination<Thread, Post>
+@model ViewModelWithPagination<Thread, RepliesViewModel>
 @{
     Layout = "_Layout";
 }
@@ -31,34 +31,40 @@
         </form>
     </div>
     <br /><br />
-          <div>
-              @foreach (var post in Model.PaginationData.ItemsToDisplay)
-              {
-                  @if (!post.HasParentPost)
-                  {
-                      <div style="margin-left:5%">
-                          <b>@post.User.FirstName @post.User.LastName commented on @post.DateTime</b>
-                          <p>@post.Content</p>
-                          <hr />
-                      </div>
-                  }
-                  else
-                  {
-                      <div style="margin-left:15%">
-                          <b>@post.User.FirstName @post.User.LastName commented on @post.DateTime</b>
-                          <p>@post.Content</p>
-                          <hr />
-                      </div>
-                  }
+    <div>
+        @foreach (var post in Model.PaginationData.ItemsToDisplay)
+        {
+            <div style="margin-left:5%">
+                <b>@post.TopLevelPost.User.FirstName @post.TopLevelPost.User.LastName commented on @post.TopLevelPost.DateTime</b>
+                <p>@post.TopLevelPost.Content</p>
+                <hr />
+            </div>
 
-                  <form action="/Forum/CreatePost" method="post">
-                      @Html.AntiForgeryToken()
-                      <input type="text" placeholder="Enter your comment here" name="content" />
-                      <input type="hidden" name="threadId" value="@Model.PageData.Id" />
-                      <input type="hidden" name="ParentPostId" value="@post.Id" />
-                      <button class="btn btn-primary" type="submit">Submit</button>
-                  </form>
-              }
-          </div>
+            @foreach (var reply in post.Replies)
+            {
+                <div style="margin-left:15%">
+                    <b>@reply.User.FirstName @reply.User.LastName commented on @reply.DateTime</b>
+                    <p>@reply.Content</p>
+                    <hr />
+                    <form action="/Forum/CreatePost" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="text" placeholder="Enter your comment here" name="content" />
+                        <input type="hidden" name="threadId" value="@Model.PageData.Id" />
+                        <input type="hidden" name="ParentPostId" value="@reply.Id" />
+                        <button class="btn btn-primary" type="submit">Submit</button>
+                    </form>
+                </div>
+            }
+
+
+            <form action="/Forum/CreatePost" method="post">
+                @Html.AntiForgeryToken()
+                <input type="text" placeholder="Enter your comment here" name="content" />
+                <input type="hidden" name="threadId" value="@Model.PageData.Id" />
+                <input type="hidden" name="ParentPostId" value="@post.TopLevelPost.Id" />
+                <button class="btn btn-primary" type="submit">Submit</button>
+            </form>
+        }
+    </div>
     @await Html.PartialAsync("_PaginationWithId", Model.PaginationData)
 </div>

@@ -51,7 +51,7 @@ namespace Application.Web.Controllers
                 {
                     var repliesViewModel = new RepliesViewModel()
                     {
-                        Post = topLevelPost,
+                        TopLevelPost = topLevelPost,
                     };
 
                     topLevelPostsAsViewModels.Add(repliesViewModel);
@@ -65,7 +65,7 @@ namespace Application.Web.Controllers
 
                 foreach(var topLevelPostViewModel in pagination.ItemsToDisplay)
                 {
-                    topLevelPostViewModel.Replies = _postService.GetReplies(topLevelPostViewModel.Post.Id).Result.Take(2).ToList();
+                    topLevelPostViewModel.Replies = _postService.GetReplies(topLevelPostViewModel.TopLevelPost.Id).Result.Take(2).ToList();
                 }
 
                 var viewModel = new ViewModelWithPagination<Thread, RepliesViewModel>()

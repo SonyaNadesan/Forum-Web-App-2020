@@ -5,7 +5,7 @@ namespace Application.Web.ViewModels
 {
     public class RepliesViewModel
     {
-        public Post Post { set; get; }
+        public Post TopLevelPost { set; get; }
         public List<Post> Replies { get; set; }
     }
 }

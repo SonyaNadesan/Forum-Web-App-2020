@@ -23,48 +23,50 @@
         <span name="spnLikeCount" id="spnLikeCount_@Model.PageData.Id" value="@Model.PageData.Id"></span>
     </div>
     <div>
-        <form action="/Forum/CreatePost" method="post">
-            @Html.AntiForgeryToken()
-            <input type="text" placeholder="Enter your comment here" name="content" />
-            <input type="hidden" name="threadId" value="@Model.PageData.Id" />
-            <button class="btn btn-primary" type="submit">Submit</button>
-        </form>
     </div>
     <br /><br />
-    <div>
-        @foreach (var post in Model.PaginationData.ItemsToDisplay)
-        {
-            <div style="margin-left:5%">
-                <b>@post.TopLevelPost.User.FirstName @post.TopLevelPost.User.LastName commented on @post.TopLevelPost.DateTime</b>
-                <p>@post.TopLevelPost.Content</p>
-                <hr />
-            </div>
+          <div>
+              @foreach (var post in Model.PaginationData.ItemsToDisplay)
+              {
+                  <div style="margin-left:5%">
+                      <b>@post.TopLevelPost.User.FirstName @post.TopLevelPost.User.LastName commented on @post.TopLevelPost.DateTime</b>
+                      <p>@post.TopLevelPost.Content</p>
+                      <hr />
+                  </div>
 
-            @foreach (var reply in post.Replies)
-            {
-                <div style="margin-left:15%">
-                    <b>@reply.User.FirstName @reply.User.LastName commented on @reply.DateTime</b>
-                    <p>@reply.Content</p>
-                    <hr />
-                    <form action="/Forum/CreatePost" method="post">
-                        @Html.AntiForgeryToken()
-                        <input type="text" placeholder="Enter your comment here" name="content" />
-                        <input type="hidden" name="threadId" value="@Model.PageData.Id" />
-                        <input type="hidden" name="ParentPostId" value="@reply.Id" />
-                        <button class="btn btn-primary" type="submit">Submit</button>
-                    </form>
-                </div>
-            }
+                  <form action="/Forum/CreatePost" method="post">
+                      @Html.AntiForgeryToken()
+                      <input type="text" placeholder="Enter your comment here" name="content" />
+                      <input type="hidden" name="threadId" value="@Model.PageData.Id" />
+                      <input type="hidden" name="ParentPostId" value="@post.TopLevelPost.Id" />
+                      <button class="btn btn-primary" type="submit">Submit</button>
+                  </form>
 
+                  @foreach (var reply in post.Replies)
+                  {
+                      <div style="margin-left:15%">
+                          <b>@reply.User.FirstName @reply.User.LastName commented on @reply.DateTime</b>
+                          <p>@reply.Content</p>
+                          <hr />
+                          <form action="/Forum/CreatePost" method="post">
+                              @Html.AntiForgeryToken()
+                              <input type="text" placeholder="Enter your comment here" name="content" />
+                              <input type="hidden" name="threadId" value="@Model.PageData.Id" />
+                              <input type="hidden" name="ParentPostId" value="@reply.Id" />
+                              <button class="btn btn-primary" type="submit">Submit</button>
+                          </form>
+                      </div>
+                  }
+              }
 
-            <form action="/Forum/CreatePost" method="post">
-                @Html.AntiForgeryToken()
-                <input type="text" placeholder="Enter your comment here" name="content" />
-                <input type="hidden" name="threadId" value="@Model.PageData.Id" />
-                <input type="hidden" name="ParentPostId" value="@post.TopLevelPost.Id" />
-                <button class="btn btn-primary" type="submit">Submit</button>
-            </form>
-        }
-    </div>
+              <br /><br />
+              <h3>Post to this Thread</h3>
+              <form action="/Forum/CreatePost" method="post">
+                  @Html.AntiForgeryToken()
+                  <input type="text" placeholder="Enter your comment here" name="content" />
+                  <input type="hidden" name="threadId" value="@Model.PageData.Id" />
+                  <button class="btn btn-primary" type="submit">Submit</button>
+              </form>
+          </div>
     @await Html.PartialAsync("_PaginationWithId", Model.PaginationData)
 </div>

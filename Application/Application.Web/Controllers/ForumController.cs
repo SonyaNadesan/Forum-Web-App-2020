@@ -57,9 +57,11 @@ namespace Application.Web.Controllers
 
                 var topLevelPosts = _postService.GetTopLevelPosts(treadIdAsGuid).Result.ToList();
 
+                var topLevelPostsForDisplay = PaginationHelper.GetItemsToDisplay<Post>(topLevelPosts, page, 10);
+
                 var topLevelPostsAsViewModels = new List<PostWithRepliesViewModel>();
 
-                foreach(var topLevelPost in topLevelPosts)
+                foreach(var topLevelPost in topLevelPostsForDisplay)
                 {
                     var repliesViewModel = new PostWithRepliesViewModel()
                     {

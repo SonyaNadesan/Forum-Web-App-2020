@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Application.Web.ViewModels
 {
-    public class RepliesViewModel
+    public class PostWithRepliesViewModel
     {
         public Post TopLevelPost { set; get; }
         public List<Post> Replies { get; set; }

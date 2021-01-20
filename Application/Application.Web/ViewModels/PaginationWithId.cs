@@ -6,9 +6,5 @@ namespace Application.Web.ViewModels
     {
         public string Id { get; set; }
         public string NameOfIdFieldInView { get; set; }
-
-        public PaginationWithId(IEnumerable<T> allResults, int page, int pageSeize, int startPage, string formAction, string query = "") : base(allResults, page, pageSeize, startPage, formAction, query = "")
-        {
-        }
     }
 }

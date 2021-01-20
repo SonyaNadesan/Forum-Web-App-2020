@@ -1,5 +1,6 @@
 ﻿using Application.Domain.ApplicationEntities;
 using Application.Services.Forum;
+using Application.Services.Shared;
 using Application.Web.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -25,7 +26,18 @@ namespace Application.Web.Controllers
 
             var results = allThreads.Result.OrderByDescending(t => t.DateTime);
 
-            var viewModel = new Pagination<Thread>(results, page, 5, startPage, "../Forum/Index", query);
+            var resultsToDisplay = PaginationHelper.GetItemsToDisplay<Thread>(results, page, 5).ToList();
+
+            var viewModel = new Pagination<Thread>()
+            {
+                CurrentPage = page,
+                FormAction = "../Forum/Index",
+                ItemsToDisplay = resultsToDisplay,
+                PageSize = 5,
+                StartPage = startPage,
+                Query = query,
+                TotalNumberOfResults = results.Count()
+            };
 
             return View(viewModel);
         }
@@ -45,30 +57,33 @@ namespace Application.Web.Controllers
 
                 var topLevelPosts = _postService.GetTopLevelPosts(treadIdAsGuid).Result.ToList();
 
-                var topLevelPostsAsViewModels = new List<RepliesViewModel>();
+                var topLevelPostsAsViewModels = new List<PostWithRepliesViewModel>();
 
                 foreach(var topLevelPost in topLevelPosts)
                 {
-                    var repliesViewModel = new RepliesViewModel()
+                    var repliesViewModel = new PostWithRepliesViewModel()
                     {
                         TopLevelPost = topLevelPost,
+                        Replies = _postService.GetReplies(topLevelPost.Id).Result.ToList()
                     };
 
                     topLevelPostsAsViewModels.Add(repliesViewModel);
                 }
 
-                var pagination = new PaginationWithId<RepliesViewModel>(topLevelPostsAsViewModels, page, 10, startPage, "../Forum/Thread", query)
+                var pagination = new PaginationWithId<PostWithRepliesViewModel>()
                 {
                     Id = threadId,
-                    NameOfIdFieldInView = "threadId"
+                    NameOfIdFieldInView = "threadId",
+                    CurrentPage = page,
+                    FormAction = "../Forum/Thread",
+                    ItemsToDisplay = topLevelPostsAsViewModels,
+                    PageSize = 10,
+                    Query = query,
+                    StartPage = startPage,
+                    TotalNumberOfResults = topLevelPosts.Count
                 };
 
-                foreach(var topLevelPostViewModel in pagination.ItemsToDisplay)
-                {
-                    topLevelPostViewModel.Replies = _postService.GetReplies(topLevelPostViewModel.TopLevelPost.Id).Result.Take(2).ToList();
-                }
-
-                var viewModel = new ViewModelWithPagination<Thread, RepliesViewModel>()
+                var viewModel = new ViewModelWithPagination<Thread, PostWithRepliesViewModel>()
                 {
                     PageData = thread.Result,
                     PaginationData = pagination

@@ -139,6 +139,13 @@ namespace Application.Services.Forum
             return response;
         }
 
+        public ServiceResponse<IEnumerable<Post>> GetTopLevelPosts(Guid threadId)
+        {
+            var posts = _unitOfWork.PostRepository.GetAll().Where(p => p.ThreadId == threadId && !p.HasParentPost).ToList();
+
+            return new ServiceResponse<IEnumerable<Post>>(posts);
+        }
+
         public ServiceResponse<IEnumerable<Post>> GetReplies(Guid postId)
         {
             var post = _unitOfWork.PostRepository.Get(postId);
@@ -154,7 +161,9 @@ namespace Application.Services.Forum
 
             var repliesToDisplay = new List<Post>();
 
-            DrillDown(post, repliesToDisplay, ref drillDown);
+            var allPosts = _unitOfWork.PostRepository.GetAll().ToList();
+
+            DrillDown(allPosts, post, repliesToDisplay, ref drillDown);
 
             response.Result = repliesToDisplay;
 
@@ -183,9 +192,9 @@ namespace Application.Services.Forum
             return response;
         }
 
-        private void DrillDown(Post post, List<Post> results, ref bool drillDown)
+        private void DrillDown(List<Post> allPosts, Post post, List<Post> results, ref bool drillDown)
         {
-            var replies = _unitOfWork.PostRepository.GetAll().Where(p => p.ThreadId == post.ThreadId && p.ParentPostId != p.Id && p.ParentPostId == post.Id).ToList();
+            var replies = allPosts.Where(p => p.ThreadId == post.ThreadId && p.ParentPostId != p.Id && p.ParentPostId == post.Id).ToList();
 
             drillDown = replies.Any();
 
@@ -197,7 +206,7 @@ namespace Application.Services.Forum
                 {
                     results.Add(reply);
 
-                    DrillDown(reply, results, ref drillDown);
+                    DrillDown(allPosts, reply, results, ref drillDown);
                 }
             }
         }

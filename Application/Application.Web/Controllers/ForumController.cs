@@ -3,6 +3,7 @@ using Application.Services.Forum;
 using Application.Web.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Application.Web.Controllers
@@ -42,15 +43,32 @@ namespace Application.Web.Controllers
                     return View("Index");
                 }
 
-                var postHierarchy = _postService.GetPostHierarchy(treadIdAsGuid).Result.ToList();
+                var topLevelPosts = _postService.GetTopLevelPosts(treadIdAsGuid).Result.ToList();
 
-                var pagination = new PaginationWithId<Post>(postHierarchy, page, 10, startPage, "../Forum/Thread", query)
+                var topLevelPostsAsViewModels = new List<RepliesViewModel>();
+
+                foreach(var topLevelPost in topLevelPosts)
+                {
+                    var repliesViewModel = new RepliesViewModel()
+                    {
+                        Post = topLevelPost,
+                    };
+
+                    topLevelPostsAsViewModels.Add(repliesViewModel);
+                }
+
+                var pagination = new PaginationWithId<RepliesViewModel>(topLevelPostsAsViewModels, page, 10, startPage, "../Forum/Thread", query)
                 {
                     Id = threadId,
                     NameOfIdFieldInView = "threadId"
                 };
 
-                var viewModel = new ViewModelWithPagination<Thread, Post>()
+                foreach(var topLevelPostViewModel in pagination.ItemsToDisplay)
+                {
+                    topLevelPostViewModel.Replies = _postService.GetReplies(topLevelPostViewModel.Post.Id).Result.Take(2).ToList();
+                }
+
+                var viewModel = new ViewModelWithPagination<Thread, RepliesViewModel>()
                 {
                     PageData = thread.Result,
                     PaginationData = pagination
@@ -114,7 +132,17 @@ namespace Application.Web.Controllers
                 return RedirectToAction("Index");
             }
 
-            var replies = _postService.GetReplies(postIdAsGuid).Result.Skip(from).Take(take);
+            var replies = _postService.GetReplies(postIdAsGuid).Result.ToList();
+            
+            var repliesToDisplay = replies.Skip(from).Take(take);
+
+            if (!repliesToDisplay.Any())
+            {
+                from = 1;
+                repliesToDisplay = replies.Skip(from).Take(take); ;
+            }
+
+            var remainingRepliesToDisplay = replies.Count - (from + repliesToDisplay.Count());
 
             return View();
         }

@@ -11,6 +11,7 @@ namespace Application.Services.Forum
         ServiceResponse<Post> Edit(Post Post);
         ServiceResponse<Post> Delete(Post Post);
         ServiceResponse<Post> Create(string email, string content, Guid threadId, Guid? parentPostId = null);
+        ServiceResponse<IEnumerable<Post>> GetTopLevelPosts(Guid threadId);
         ServiceResponse<IEnumerable<Post>> GetReplies(Guid postId);
         ServiceResponse<IEnumerable<Post>> GetPostHierarchy(Guid threadId);
     }

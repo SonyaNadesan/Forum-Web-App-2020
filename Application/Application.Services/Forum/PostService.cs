@@ -152,9 +152,7 @@ namespace Application.Services.Forum
 
             var drillDown = true;
 
-            var replies = _unitOfWork.PostRepository.GetAll().Where(p => p.ThreadId == post.ThreadId && p.ParentPostId != p.Id && p.ParentPostId == post.Id).ToList();
-
-            var repliesToDisplay = replies.ToList();
+            var repliesToDisplay = new List<Post>();
 
             DrillDown(post, repliesToDisplay, ref drillDown);
 
@@ -175,7 +173,9 @@ namespace Application.Services.Forum
             {
                 allPostsInOrder.Add(post);
 
-                allPostsInOrder.AddRange(GetReplies(post.Id).Result.ToList());
+                var replies = GetReplies(post.Id).Result.ToList();
+
+                allPostsInOrder.AddRange(replies);
             }
 
             response.Result = allPostsInOrder;

@@ -45,7 +45,7 @@ namespace Application.Web.Controllers
 
                 var postHierarchy = _postService.GetPostHierarchy(treadIdAsGuid).Result.ToList();
 
-                var pagination = new PaginationWithId<Post>(postHierarchy, page, 2, startPage, "../Forum/Thread", query)
+                var pagination = new PaginationWithId<Post>(postHierarchy, page, 10, startPage, "../Forum/Thread", query)
                 {
                     Id = threadId,
                     NameOfIdFieldInView = "threadId"

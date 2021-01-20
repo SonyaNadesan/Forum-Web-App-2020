@@ -105,7 +105,7 @@ namespace Application.Web.Controllers
             return RedirectToAction("Index");
         }
 
-        public IActionResult GetRepliesOnPost(string postId, int from, int take)
+        public IActionResult GetRepliesOnPost(string postId, int from, int take) //possibly make this into api
         {
             var isPostIdGuid = Guid.TryParse(postId, out Guid postIdAsGuid);
 

@@ -3,7 +3,6 @@ using Application.Services.Forum;
 using Application.Web.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Application.Web.Controllers

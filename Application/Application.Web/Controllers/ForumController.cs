@@ -65,12 +65,22 @@ namespace Application.Web.Controllers
 
                 foreach (var topLevelPost in topLevelPostsForDisplay)
                 {
-                    var repliesToDisplay = _postService.GetReplies(topLevelPost.Id).Result.ToList().Take(2).ToList();
+                    var allReplies = _postService.GetReplies(topLevelPost.Id).Result.ToList();
+                    var repliesToDisplay = allReplies.Take(2).ToList();
+
+                    var loadMoreViewModel = new LoadMoreViewModel<Post>()
+                    {
+                        Id = topLevelPost.Id.ToString(),
+                        From = 0,
+                        Take = repliesToDisplay.Count,
+                        ItemsToDisplay = ViewModelHelper.Get(repliesToDisplay),
+                        HasMore = allReplies.Count() > 2
+                    };
 
                     var repliesViewModel = new PostWithRepliesViewModel()
                     {
                         TopLevelPost = ViewModelHelper.Get(topLevelPost),
-                        Replies = ViewModelHelper.Get(repliesToDisplay)
+                        Replies = loadMoreViewModel
                     };
 
                     topLevelPostsAsViewModels.Add(repliesViewModel);
@@ -165,16 +175,15 @@ namespace Application.Web.Controllers
                 repliesAsViewModel = replies.Skip(from).Take(take).ToList();
             }
 
-            from = from + take;
-
-            var remainingRepliesToDisplay = replies.Count - (from + repliesAsViewModel.Count());
+            var numberOfItemsDiplayed = from + take;
 
             var loadMoreViewModel = new LoadMoreViewModel<Post>()
             {
                 ItemsToDisplay = repliesAsViewModel,
                 From = from,
                 Take = take,
-                Id = postId
+                Id = postId,
+                HasMore = numberOfItemsDiplayed < replies.Count
             };
 
             var json = JsonConvert.SerializeObject(loadMoreViewModel, Formatting.Indented, new JsonSerializerSettings

@@ -6,6 +6,6 @@ namespace Application.Web.ViewModels
     public class PostWithRepliesViewModel
     {
         public Post TopLevelPost { set; get; }
-        public List<Post> Replies { get; set; }
+        public LoadMoreViewModel<Post> Replies { get; set; }
     }
 }

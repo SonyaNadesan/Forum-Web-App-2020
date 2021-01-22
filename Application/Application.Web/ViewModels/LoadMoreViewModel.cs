@@ -11,5 +11,7 @@ namespace Application.Web.ViewModels
         public int From { get; set; }
 
         public int Take { get; set; }
+
+        public bool HasMore { get; set; }
     }
 }

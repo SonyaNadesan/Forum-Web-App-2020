@@ -42,7 +42,7 @@
                       <button class="btn btn-primary" type="submit">Submit</button>
                   </form>
 
-                  @foreach (var reply in post.Replies)
+                  @foreach (var reply in post.Replies.ItemsToDisplay)
                   {
                       <div style="margin-left:15%">
                           <b>@reply.User.FirstName @reply.User.LastName commented on @reply.DateTime</b>

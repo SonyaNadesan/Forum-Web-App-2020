@@ -157,13 +157,11 @@ namespace Application.Services.Forum
                 response.ErrorMessage = "Post Not Found.";
             }
 
-            var drillDown = true;
-
             var repliesToDisplay = new List<Post>();
 
             var allPosts = _unitOfWork.PostRepository.GetAll().ToList();
 
-            DrillDown(allPosts, post, repliesToDisplay, ref drillDown);
+            DrillDown(allPosts, post, repliesToDisplay);
 
             response.Result = repliesToDisplay;
 
@@ -192,13 +190,11 @@ namespace Application.Services.Forum
             return response;
         }
 
-        private void DrillDown(List<Post> allPosts, Post post, List<Post> results, ref bool drillDown)
+        private void DrillDown(List<Post> allPosts, Post post, List<Post> results)
         {
-            var replies = allPosts.Where(p => p.ThreadId == post.ThreadId && p.ParentPostId != p.Id && p.ParentPostId == post.Id).ToList();
+            var replies = allPosts.Where(p => p.ThreadId == post.ThreadId && p.HasParentPost && p.ParentPostId == post.Id).ToList();
 
-            drillDown = replies.Any();
-
-            var children = new List<Post>();
+            var drillDown = replies.Any();
 
             while (drillDown)
             {
@@ -206,8 +202,10 @@ namespace Application.Services.Forum
                 {
                     results.Add(reply);
 
-                    DrillDown(allPosts, reply, results, ref drillDown);
+                    DrillDown(allPosts, reply, results);
                 }
+
+                drillDown = false;
             }
         }
     }

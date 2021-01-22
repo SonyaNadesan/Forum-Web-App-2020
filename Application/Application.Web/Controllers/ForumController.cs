@@ -164,9 +164,7 @@ namespace Application.Web.Controllers
             }
 
             var replies = _postService.GetReplies(postIdAsGuid).Result.ToList();
-
             var repliesToDisplay = replies.Skip(from).Take(take).ToList();
-
             var repliesAsViewModel = ViewModelHelper.Get(repliesToDisplay);
 
             if (!repliesAsViewModel.Any())
@@ -180,7 +178,7 @@ namespace Application.Web.Controllers
             var loadMoreViewModel = new LoadMoreViewModel<Post>()
             {
                 ItemsToDisplay = repliesAsViewModel,
-                From = from,
+                From = numberOfItemsDiplayed + 1,
                 Take = take,
                 Id = postId,
                 HasMore = numberOfItemsDiplayed < replies.Count

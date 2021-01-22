@@ -3,6 +3,7 @@ using Application.Services.Forum;
 using Application.Services.Shared;
 using Application.Web.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -61,7 +62,7 @@ namespace Application.Web.Controllers
 
                 var topLevelPostsAsViewModels = new List<PostWithRepliesViewModel>();
 
-                foreach(var topLevelPost in topLevelPostsForDisplay)
+                foreach (var topLevelPost in topLevelPostsForDisplay)
                 {
                     var repliesViewModel = new PostWithRepliesViewModel()
                     {
@@ -140,28 +141,43 @@ namespace Application.Web.Controllers
             return RedirectToAction("Index");
         }
 
-        public IActionResult GetRepliesOnPost(string postId, int from, int take) //possibly make this into api
+        public string GetRepliesOnPost(string postId, int from, int take)
         {
             var isPostIdGuid = Guid.TryParse(postId, out Guid postIdAsGuid);
 
             if (!isPostIdGuid)
             {
-                return RedirectToAction("Index");
+                throw new NullReferenceException();
             }
 
             var replies = _postService.GetReplies(postIdAsGuid).Result.ToList();
-            
-            var repliesToDisplay = replies.Skip(from).Take(take);
+
+            var repliesToDisplay = replies.Skip(from).Take(take).ToList();
 
             if (!repliesToDisplay.Any())
             {
                 from = 1;
-                repliesToDisplay = replies.Skip(from).Take(take); ;
+                repliesToDisplay = replies.Skip(from).Take(take).ToList();
             }
+
+            from = from + take;
 
             var remainingRepliesToDisplay = replies.Count - (from + repliesToDisplay.Count());
 
-            return View();
+            var loadMoreViewModel = new LoadMoreViewModel<Post>()
+            {
+                ItemsToDisplay = repliesToDisplay.ToList(),
+                From = from,
+                Take = take,
+                Id = postId
+            };
+
+            var json = JsonConvert.SerializeObject(loadMoreViewModel, Formatting.Indented, new JsonSerializerSettings
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            });
+
+            return json;
         }
     }
 }

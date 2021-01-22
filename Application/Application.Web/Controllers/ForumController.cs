@@ -2,6 +2,7 @@
 using Application.Services.Forum;
 using Application.Services.Shared;
 using Application.Web.ViewModels;
+using Application.Web.ViewModels.ViewModelHelpers;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System;
@@ -64,10 +65,12 @@ namespace Application.Web.Controllers
 
                 foreach (var topLevelPost in topLevelPostsForDisplay)
                 {
+                    var repliesToDisplay = _postService.GetReplies(topLevelPost.Id).Result.ToList().Take(2).ToList();
+
                     var repliesViewModel = new PostWithRepliesViewModel()
                     {
-                        TopLevelPost = topLevelPost,
-                        Replies = _postService.GetReplies(topLevelPost.Id).Result.ToList()
+                        TopLevelPost = ViewModelHelper.Get(topLevelPost),
+                        Replies = ViewModelHelper.Get(repliesToDisplay)
                     };
 
                     topLevelPostsAsViewModels.Add(repliesViewModel);
@@ -154,19 +157,21 @@ namespace Application.Web.Controllers
 
             var repliesToDisplay = replies.Skip(from).Take(take).ToList();
 
-            if (!repliesToDisplay.Any())
+            var repliesAsViewModel = ViewModelHelper.Get(repliesToDisplay);
+
+            if (!repliesAsViewModel.Any())
             {
                 from = 1;
-                repliesToDisplay = replies.Skip(from).Take(take).ToList();
+                repliesAsViewModel = replies.Skip(from).Take(take).ToList();
             }
 
             from = from + take;
 
-            var remainingRepliesToDisplay = replies.Count - (from + repliesToDisplay.Count());
+            var remainingRepliesToDisplay = replies.Count - (from + repliesAsViewModel.Count());
 
             var loadMoreViewModel = new LoadMoreViewModel<Post>()
             {
-                ItemsToDisplay = repliesToDisplay.ToList(),
+                ItemsToDisplay = repliesAsViewModel,
                 From = from,
                 Take = take,
                 Id = postId
@@ -174,7 +179,8 @@ namespace Application.Web.Controllers
 
             var json = JsonConvert.SerializeObject(loadMoreViewModel, Formatting.Indented, new JsonSerializerSettings
             {
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                NullValueHandling = NullValueHandling.Ignore
             });
 
             return json;

@@ -48,6 +48,10 @@
                           <b>@reply.User.FirstName @reply.User.LastName commented on @reply.DateTime</b>
                           <p>@reply.Content</p>
                           <hr />
+                          @if (post.Replies.HasMore)
+                          {
+                              <button type="button" value="/GetRepliesOnPost?postId=@post.TopLevelPost.Id&from=@post.Replies.From&take=@post.Replies.Take">Load More</button>
+                          }
                           <form action="/Forum/CreatePost" method="post">
                               @Html.AntiForgeryToken()
                               <input type="text" placeholder="Enter your comment here" name="content" />

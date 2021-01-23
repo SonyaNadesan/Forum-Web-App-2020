@@ -167,18 +167,12 @@ namespace Application.Web.Controllers
             var repliesToDisplay = replies.Skip(from).Take(take).ToList();
             var repliesAsViewModel = ViewModelHelper.Get(repliesToDisplay);
 
-            if (!repliesAsViewModel.Any())
-            {
-                from = 1;
-                repliesAsViewModel = replies.Skip(from).Take(take).ToList();
-            }
-
             var numberOfItemsDiplayed = from + take;
 
             var loadMoreViewModel = new LoadMoreViewModel<Post>()
             {
                 ItemsToDisplay = repliesAsViewModel,
-                From = numberOfItemsDiplayed + 1,
+                From = numberOfItemsDiplayed,
                 Take = take,
                 Id = postId,
                 HasMore = numberOfItemsDiplayed < replies.Count

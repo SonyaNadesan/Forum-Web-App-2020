@@ -44,7 +44,7 @@
                   <div id="replies_@post.TopLevelPost.Id">
                       @foreach (var reply in post.Replies.ItemsToDisplay)
                       {
-                          <div style="margin-left:15%">
+                          <div style="margin-left:@(reply.LevelInHierarchy * 5)%">
                               <b>@reply.User.FirstName @reply.User.LastName commented on @reply.DateTime</b>
                               <p>@reply.Content</p>
                               <hr />

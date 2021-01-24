@@ -121,7 +121,8 @@ namespace Application.Services.Forum
                 DateTime = DateTime.Now,
                 UserId = user.Id,
                 User = user,
-                HasParentPost = parentPost != null
+                HasParentPost = parentPost != null,
+                LevelInHierarchy = parentPost == null ? 1 : parentPost.LevelInHierarchy + 1
             };
 
             response.Result = newPost;

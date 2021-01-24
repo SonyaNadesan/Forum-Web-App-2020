@@ -18,7 +18,7 @@
                 let item = response.ItemsToDisplay[i];
 
                 let replyToAddToContainer = document.createElement('div');
-                replyToAddToContainer.style = 'margin-left:15%';
+                replyToAddToContainer.style = 'margin-left:' + (item.LevelInHierarchy * 5) + "%";
 
                 let userDisplay = document.createElement('b');
                 userDisplay.innerText = item.User.FirstName + ' ' + item.User.LastName + 'commented on ' + item.DateTime;

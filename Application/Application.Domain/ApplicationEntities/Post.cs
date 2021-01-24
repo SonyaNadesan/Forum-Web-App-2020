@@ -28,6 +28,8 @@ namespace Application.Domain.ApplicationEntities
         [ForeignKey("ParentPostId")]
         public virtual Post ParentPost { get; set; }
 
+        public int LevelInHierarchy { get; set; }
+
         public bool HasBeenViewedByThreadOwner { get; set; }
 
         public bool? HasBeenViewedByParentPostOwner { get; set; }

@@ -34,9 +34,15 @@
                 let formDisplay = document.createElement('form');
                 formDisplay.setAttribute('action', '/Forum/CreatePost');
                 formDisplay.setAttribute('method', 'post');
-                //var antiForgeryField = document.createElement('input');
+                var antiForgeryField = document.createElement('input');
+                antiForgeryField.setAttribute('type', 'hidden');
+                antiForgeryField.setAttribute('name', '__RequestVerificationToken');
+                var antiForgeryToken = document.getElementsByName('__RequestVerificationToken')[0].value;
+                antiForgeryField.setAttribute('value', antiForgeryToken);
+                formDisplay.appendChild(antiForgeryField);
                 let commentField = document.createElement('input');
                 commentField.setAttribute('type', 'text');
+                commentField.setAttribute('name', 'content');
                 commentField.setAttribute('placeholder', 'Enter your comment here');
                 formDisplay.appendChild(commentField);
                 let hiddenFieldThreadId = document.createElement('input');

@@ -1,5 +1,5 @@
 ﻿function setReaction() {
-    let btnReactions = document.getElementsByName("btnReaction");
+    let btnReactions = document.getElementsByName('btnReaction');
     const noOfThreads = btnReactions.length;
 
     for (let i = 0; i < noOfThreads; i++) {
@@ -7,7 +7,7 @@
         let button = btnReactions[i];
 
         document.getElementById(button.id).onclick = updateReactions;
-        fetch("/Forum/GetReactions?threadId=" + button.value)
+        fetch('/Forum/GetReactions?threadId=' + button.value)
         .then(data => data.json())
         .then(response => updateView(response));
     }
@@ -16,13 +16,13 @@
 
         var threadId = this.value;
 
-        fetch("/Forum/UpdateReactions/", {
+        fetch('/Forum/UpdateReactions/', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ threadId: this.value })
+            body: JSON.stringify({ 'threadId': this.value })
         })
         .then(data => data.json())
         .then(response => new function () {
@@ -32,7 +32,7 @@
 
     function updateView(jsonObj) {
         let allUsersWhoHaveReacted = getAllUsersWhoHaveReacted(jsonObj);
-        displayLabel(allUsersWhoHaveReacted, "spnReactionsCount_" + jsonObj.threadId);
+        displayLabel(allUsersWhoHaveReacted, 'spnReactionsCount_' + jsonObj.threadId);
         displayAvatars(jsonObj.threadId, allUsersWhoHaveReacted);
     }
 

@@ -1,6 +1,7 @@
 ﻿using Application.Domain.ApplicationEntities;
 using Application.Services.Forum;
 using Application.Services.Shared;
+using Application.Services.UserProfile;
 using Application.Web.ViewModels;
 using Application.Web.ViewModels.ViewModelHelpers;
 using Microsoft.AspNetCore.Mvc;
@@ -15,11 +16,15 @@ namespace Application.Web.Controllers
     {
         private readonly IThreadService _threadService;
         private readonly IPostService _postService;
+        private readonly IReactionService _reactionService;
+        private readonly IUserProfileService _userProfileService;
 
-        public ForumController(IThreadService threadService, IPostService postService)
+        public ForumController(IThreadService threadService, IPostService postService, IReactionService reactionService, IUserProfileService userProfileService)
         {
             _threadService = threadService;
             _postService = postService;
+            _reactionService = reactionService;
+            _userProfileService = userProfileService;
         }
 
         public IActionResult Index(int page = 1, int startPage = 1, string query = "")
@@ -185,6 +190,41 @@ namespace Application.Web.Controllers
             });
 
             return json;
+        }
+
+        public JsonResult GetReactions(string threadId)
+        {
+            var threadIdAsGuid = Guid.Parse(threadId);
+
+            var user = _userProfileService.Get(User.Identity.Name);
+
+            if (!user.IsValid)
+            {
+                throw new NullReferenceException();
+            }
+
+            var reactions = _reactionService.GetReactionsByThreadId(threadIdAsGuid);
+
+            var hasUserReacted = reactions.Any(r => r.User.Id == user.Result.Id);
+
+            var usersWhoHaveReactedViewModel = reactions.Where(r => r.UserId != user.Result.Id).Select(r => new SimpleUserViewModel(r.User)).ToList();
+
+            var viewModel = new ReactionsByThreadViewModel(threadIdAsGuid, hasUserReacted, usersWhoHaveReactedViewModel, user.Result);
+
+            return new JsonResult(viewModel);
+        }
+
+        [HttpPost]
+        public JsonResult UpdateReactions(string threadId)
+        {
+            if (!string.IsNullOrEmpty(threadId))
+            {
+                _reactionService.Respond(User.Identity.Name, Guid.Parse(threadId));
+            }
+
+            var viewModel = GetReactions(threadId);
+
+            return new JsonResult(viewModel);
         }
     }
 }

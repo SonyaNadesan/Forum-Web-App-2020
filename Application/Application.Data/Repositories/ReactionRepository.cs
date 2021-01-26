@@ -56,13 +56,13 @@ namespace Application.Data.Repositories
             return (Context.Reactions.Include(r => r.User)).Include(r => r.Thread).Include(r => r.Thread.User).SingleOrDefault(r => r.ReactionId == reactionId);
         }
 
-        public Reaction Get(string userId, Guid threadId)
+        public Reaction Get(string email, Guid threadId)
         {
-            var reaction = Context.Reactions.Include(r => r.User).Include(r => r.Thread).Include(r => r.Thread.User).SingleOrDefault(r => r.UserId == userId && r.Thread.Id == threadId);
+            var reaction = Context.Reactions.Include(r => r.User).Include(r => r.Thread).Include(r => r.Thread.User).SingleOrDefault(r => r.UserId == email && r.Thread.Id == threadId);
            
             if (reaction == null)
             {
-                var user = Context.Users.SingleOrDefault(u => u.Id == userId);
+                var user = Context.Users.SingleOrDefault(u => u.Id == email);
                 var thread = Context.Threads.SingleOrDefault(t => t.Id == threadId);
                 reaction = new Reaction(user, thread, ReactionTypes.NONE);
             }

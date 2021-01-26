@@ -14,7 +14,7 @@ namespace Application.Data.Repositories
 
         Reaction Get(Guid reactionId);
 
-        Reaction Get(string userId, Guid thread);
+        Reaction Get(string email, Guid thread);
 
         IEnumerable<Reaction> GetAll();
     }

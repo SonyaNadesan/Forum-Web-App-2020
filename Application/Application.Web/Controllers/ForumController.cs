@@ -215,7 +215,7 @@ namespace Application.Web.Controllers
         }
 
         [HttpPost]
-        public JsonResult UpdateReactions(string threadId)
+        public JsonResult UpdateReactions([FromBody] string threadId)
         {
             if (!string.IsNullOrEmpty(threadId))
             {

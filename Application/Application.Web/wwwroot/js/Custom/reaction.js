@@ -24,7 +24,7 @@
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ threadId : this.value })
+            body: JSON.stringify(this.value )
         })
         .then(data => data.json())
            .then(response => new function () {

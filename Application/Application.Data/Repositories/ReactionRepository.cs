@@ -18,7 +18,7 @@ namespace Application.Data.Repositories
 
         public void Add(Reaction reaction)
         {
-            if (reaction.ReactionType.ToString() == "NONE")
+            if (reaction.ReactionType.ToString() != "NONE")
             {
                 Context.Entry(reaction.Thread.User).State = EntityState.Unchanged;
                 Context.Entry(reaction.Thread).State = EntityState.Unchanged;

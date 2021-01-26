@@ -1,4 +1,4 @@
-﻿function reaction() {
+﻿function setReaction() {
     let btnReactions = document.getElementsByName("btnReaction");
     const noOfThreads = btnReactions.length;
 

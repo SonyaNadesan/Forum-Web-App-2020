@@ -80,13 +80,7 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-
-        let loadMoreButtons = document.getElementsByName("btnLoadMore");
-
-        for(let i = 0; i < loadMoreButtons.length; i++){
-            document.getElementById(loadMoreButtons[i].id).onclick = loadMorePosts;
-        }
-
-        reaction();
+        setLoadMore();
+        setReaction();
     });
 </script>

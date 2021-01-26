@@ -18,9 +18,7 @@ namespace Application.Data.Repositories
 
         public void Add(Reaction reaction)
         {
-            var reactionFromDb = Get(reaction.UserId, reaction.ThreadId);
-
-            if (reactionFromDb.ReactionType.ToString() == "NONE")
+            if (reaction.ReactionType.ToString() == "NONE")
             {
                 Context.Entry(reaction.Thread.User).State = EntityState.Unchanged;
                 Context.Entry(reaction.Thread).State = EntityState.Unchanged;
@@ -58,11 +56,11 @@ namespace Application.Data.Repositories
 
         public Reaction Get(string email, Guid threadId)
         {
-            var reaction = Context.Reactions.Include(r => r.User).Include(r => r.Thread).Include(r => r.Thread.User).SingleOrDefault(r => r.UserId == email && r.Thread.Id == threadId);
+            var reaction = Context.Reactions.Include(r => r.User).Include(r => r.Thread).Include(r => r.Thread.User).SingleOrDefault(r => r.User.Email == email && r.Thread.Id == threadId);
            
             if (reaction == null)
             {
-                var user = Context.Users.SingleOrDefault(u => u.Id == email);
+                var user = Context.Users.SingleOrDefault(u => u.Email == email);
                 var thread = Context.Threads.SingleOrDefault(t => t.Id == threadId);
                 reaction = new Reaction(user, thread, ReactionTypes.NONE);
             }

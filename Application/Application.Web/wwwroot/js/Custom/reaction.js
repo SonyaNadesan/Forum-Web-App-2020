@@ -16,6 +16,8 @@
 
         var threadId = this.value;
 
+        alert(this.value);
+
         fetch('http://localhost:55931/Forum/UpdateReactions/', {
             method: 'POST',
             headers: {
@@ -25,29 +27,29 @@
             body: JSON.stringify({ threadId : this.value })
         })
         .then(data => data.json())
-            .then(response => new function () {
-                alert(response);
-            updateView(response);
+           .then(response => new function () {
+            updateView(response.value);
         });
     }
 
     function updateView(jsonObj) {
         let allUsersWhoHaveReacted = getAllUsersWhoHaveReacted(jsonObj);
+        alert(jsonObj.threadId);
         displayLabel(allUsersWhoHaveReacted, 'spnReactionsCount_' + jsonObj.threadId);
         displayAvatars(jsonObj.threadId, allUsersWhoHaveReacted);
     }
 
-    function getAllUsersWhoHaveReacted(reactionsByPostViewModelJson) {
+    function getAllUsersWhoHaveReacted(reactionsByThreadViewModel) {
         let allUsersWhoHaveReacted = [];
 
-        if (reactionsByPostViewModelJson.hasLoggedOnUserReactedToPost) {
-            reactionsByPostViewModelJson.loggedOnUser.name = 'You';
-            allUsersWhoHaveReacted[0] = reactionsByPostViewModelJson.loggedOnUser;
+        if (reactionsByThreadViewModel.hasLoggedOnUserReactedToPost) {
+            reactionsByThreadViewModel.loggedOnUser.name = 'You';
+            allUsersWhoHaveReacted[0] = reactionsByThreadViewModel.loggedOnUser;
         }
 
-        const noOfReactions = reactionsByPostViewModelJson.usersWhoHaveReacted.length;
+        const noOfReactions = reactionsByThreadViewModel.usersWhoHaveReacted.length;
         for (let i = 0; i < noOfReactions; i++) {
-            allUsersWhoHaveReacted[allUsersWhoHaveReacted.length] = reactionsByPostViewModelJson.usersWhoHaveReacted[i];
+            allUsersWhoHaveReacted[allUsersWhoHaveReacted.length] = reactionsByThreadViewModel.usersWhoHaveReacted[i];
         }
 
         return allUsersWhoHaveReacted;

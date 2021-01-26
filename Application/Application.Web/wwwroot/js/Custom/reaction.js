@@ -16,16 +16,17 @@
 
         var threadId = this.value;
 
-        fetch('/Forum/UpdateReactions/', {
+        fetch('http://localhost:55931/Forum/UpdateReactions/', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ 'threadId': this.value })
+            body: JSON.stringify({ threadId : this.value })
         })
         .then(data => data.json())
-        .then(response => new function () {
+            .then(response => new function () {
+                alert(response);
             updateView(response);
         });
     }

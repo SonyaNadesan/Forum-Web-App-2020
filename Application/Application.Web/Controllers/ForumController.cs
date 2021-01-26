@@ -220,11 +220,13 @@ namespace Application.Web.Controllers
             if (!string.IsNullOrEmpty(threadId))
             {
                 _reactionService.Respond(User.Identity.Name, Guid.Parse(threadId));
+
+                var viewModel = GetReactions(threadId);
+
+                return new JsonResult(viewModel);
             }
 
-            var viewModel = GetReactions(threadId);
-
-            return new JsonResult(viewModel);
+            throw new NullReferenceException();
         }
     }
 }

@@ -52,8 +52,20 @@
         let label = '';
 
         for (let i = 0; i < usersWhoHaveReacted.length; i++) {
-            var num = i + 1;
-            label = usersWhoHaveReacted.name
+
+            let num = i + 1;
+
+            let textToAppend = '';
+            var indexOfPenultimateUser = usersWhoHaveReacted.length - 2;
+
+            if (i == indexOfPenultimateUser) {
+                textToAppend = ' and ';
+            }
+            else if (i < indexOfPenultimateUser) {
+                textToAppend = ', ';
+            }
+
+            label = labe + usersWhoHaveReacted.name + textToAppend
             document.getElementById('reactionAvatarDisplay' + num + '_' + reactions.threadId).src = '../../../Images' + usersWhoHaveReacted[i].avatarSrc;
         }
 

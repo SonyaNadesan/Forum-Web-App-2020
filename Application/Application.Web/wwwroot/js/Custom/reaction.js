@@ -49,7 +49,7 @@
 
         if (usersWhoHaveReacted.length < 3) {
             let blankAvatarPlaceholders = 3 - usersWhoHaveReacted.length;
-            let startIndexOfBlanking = 3 - blankAvatarPlaceholders;
+            let startIndexOfBlanking = (3 - blankAvatarPlaceholders) + 1;
 
             for (let i = startIndexOfBlanking; i <= 3; i++) {
                 document.getElementById('reactionAvatarDisplaySpan' + i + '_' + reactions.threadId).style.display = 'none';

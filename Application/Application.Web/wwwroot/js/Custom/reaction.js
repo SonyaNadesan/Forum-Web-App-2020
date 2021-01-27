@@ -13,11 +13,6 @@
     }
 
     function updateReactions() {
-
-        var threadId = this.value;
-
-        alert(this.value);
-
         fetch('http://localhost:55931/Forum/UpdateReactions/', {
             method: 'POST',
             headers: {
@@ -34,55 +29,69 @@
 
     function updateView(reactions) {
 
-        let usersWhoHaveReacted = [];
+        let usersWhoHaveReacted = getUsersWhoHaveReacted();
 
         let label = '';
 
-        if (reactions.hasLoggedOnUserReactedToThread) {
-            reactions.loggedOnUser.name = 'You';
-            usersWhoHaveReacted[usersWhoHaveReacted.length] = reactions.loggedOnUser;
-        }
+        blankOutUnnecessaryImagePlaceholders();
 
-        for (let i = 0; i < reactions.usersWhoHaveReacted; i++) {
-            usersWhoHaveReacted[usersWhoHaveReacted.length] = reactions.usersWhoHaveReacted[i];
-        }
+        setAvatarsAndLabel();
 
-        if (usersWhoHaveReacted.length < 3) {
-            let blankAvatarPlaceholders = 3 - usersWhoHaveReacted.length;
-            let startIndexOfBlanking = (3 - blankAvatarPlaceholders) + 1;
+        function getUsersWhoHaveReacted() {
+            let usersWhoHaveReacted = [];
 
-            for (let i = startIndexOfBlanking; i <= 3; i++) {
-                document.getElementById('reactionAvatarDisplaySpan' + i + '_' + reactions.threadId).style.display = 'none';
+            if (reactions.hasLoggedOnUserReactedToThread) {
+                reactions.loggedOnUser.name = 'You';
+                usersWhoHaveReacted[usersWhoHaveReacted.length] = reactions.loggedOnUser;
             }
 
+            for (let i = 0; i < reactions.usersWhoHaveReacted; i++) {
+                usersWhoHaveReacted[usersWhoHaveReacted.length] = reactions.usersWhoHaveReacted[i];
+            }
+
+            return usersWhoHaveReacted;
+        }
+
+        function blankOutUnnecessaryImagePlaceholders(){
+            if (usersWhoHaveReacted.length < 3) {
+                let blankAvatarPlaceholders = 3 - usersWhoHaveReacted.length;
+                let startIndexOfBlanking = (3 - blankAvatarPlaceholders) + 1;
+
+                for (let i = startIndexOfBlanking; i <= 3; i++) {
+                    document.getElementById('reactionAvatarDisplaySpan' + i + '_' + reactions.threadId).style.display = 'none';
+                }
+            }
+        }
+
+        function setAvatarsAndLabel() {
             if (usersWhoHaveReacted.length == 0) {
                 label = 'Be the first to react to this!';
             }
-        }
 
-        if (label == '') {
-            for (let i = 0; i < usersWhoHaveReacted.length; i++) {
+            if (label == '') {
+                for (let i = 0; i < usersWhoHaveReacted.length; i++) {
 
-                let num = i + 1;
+                    let num = i + 1;
 
-                let textToAppend = '';
-                var indexOfPenultimateUser = usersWhoHaveReacted.length - 2;
+                    let textToAppend = '';
+                    var indexOfPenultimateUser = usersWhoHaveReacted.length - 2;
 
-                if (i == indexOfPenultimateUser) {
-                    textToAppend = ' and ';
+                    if (i == indexOfPenultimateUser) {
+                        textToAppend = ' and ';
+                    }
+                    else if (i < indexOfPenultimateUser) {
+                        textToAppend = ', ';
+                    }
+                    else {
+                        textToAppend = ' reacted to this!';
+                    }
+
+                    label = label + usersWhoHaveReacted[i].name + textToAppend
+                    document.getElementById('reactionAvatarDisplay' + num + '_' + reactions.threadId).src = '../../../Images/' + usersWhoHaveReacted[i].avatarSrc;
                 }
-                else if (i < indexOfPenultimateUser) {
-                    textToAppend = ', ';
-                }
-                else {
-                    textToAppend = ' reacted to this!';
-                }
-
-                label = label + usersWhoHaveReacted[i].name + textToAppend
-                document.getElementById('reactionAvatarDisplay' + num + '_' + reactions.threadId).src = '../../../Images/' + usersWhoHaveReacted[i].avatarSrc;
             }
-        }
 
-        document.getElementById('spnReactionsCount_' + reactions.threadId).innerHTML = label;
+            document.getElementById('spnReactionsCount_' + reactions.threadId).innerHTML = label;
+        }
     }
 }

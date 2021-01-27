@@ -34,11 +34,24 @@
 
     function updateView(reactions) {
 
-        var usersWhoHaveReacted = [];
+        let usersWhoHaveReacted = [];
 
-        if (reactions[0].hasLoggedOnUserReactedToThread) {
-            reactions[0].loggedOnUser.firstName = 'You';
-            usersWhoHaveReacted[usersWhoHaveReacted.length] = reactions[0].loggedOnUser;
+        if (reactions.hasLoggedOnUserReactedToThread) {
+            reactions.loggedOnUser.firstName = 'You';
+            usersWhoHaveReacted[usersWhoHaveReacted.length] = reactions.loggedOnUser;
+        }
+
+        for (let i = 0; i < reactions.usersWhoHaveReacted; i++) {
+            usersWhoHaveReacted[usersWhoHaveReacted.length] = reactions.usersWhoHaveReacted[i];
+        }
+
+        if (usersWhoHaveReacted.length < 3) {
+            l
+        }
+
+        for (let i = 0; i < usersWhoHaveReacted.length; i++) {
+            var num = i + 1;
+            document.getElementById('reactionAvatarDisplay' + num + '_' + reactions.threadId).src = '../../../Images' + usersWhoHaveReacted[i].avatarSrc;
         }
 
     }

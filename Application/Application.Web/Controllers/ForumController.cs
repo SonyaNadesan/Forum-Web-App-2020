@@ -192,7 +192,7 @@ namespace Application.Web.Controllers
             return json;
         }
 
-        public JsonResult GetReactions(string threadId, int returnCount)
+        public JsonResult GetReactions(string threadId, int returnCount = 3)
         {
             var threadIdAsGuid = Guid.Parse(threadId);
 

@@ -65,8 +65,8 @@
                 textToAppend = ', ';
             }
 
-            label = labe + usersWhoHaveReacted.name + textToAppend
-            document.getElementById('reactionAvatarDisplay' + num + '_' + reactions.threadId).src = '../../../Images' + usersWhoHaveReacted[i].avatarSrc;
+            label = label + usersWhoHaveReacted.name + textToAppend
+            document.getElementById('reactionAvatarDisplay' + num + '_' + reactions.threadId).src = '../../../Images/' + usersWhoHaveReacted[i].avatarSrc;
         }
 
     }

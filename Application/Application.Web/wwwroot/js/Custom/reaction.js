@@ -8,8 +8,8 @@
 
         document.getElementById(button.id).onclick = updateReactions;
         fetch('/Forum/GetReactions?threadId=' + button.value)
-        .then(data => data.json())
-        .then(response => updateView(response));
+            .then(data => data.json())
+            .then(response => updateView(response));
     }
 
     function updateReactions() {
@@ -26,15 +26,17 @@
             },
             body: JSON.stringify(this.value)
         })
-        .then(data => data.json())
-           .then(response => new function () {
-            updateView(response.value);
-        });
+            .then(data => data.json())
+            .then(response => new function () {
+                updateView(response.value);
+            });
     }
 
     function updateView(reactions) {
 
         let usersWhoHaveReacted = [];
+
+        let label = '';
 
         if (reactions.hasLoggedOnUserReactedToThread) {
             reactions.loggedOnUser.name = 'You';
@@ -47,27 +49,35 @@
 
         if (usersWhoHaveReacted.length < 3) {
             let blankAvatarPlaceholders = 3 - usersWhoHaveReacted.length;
+            let startIndexOfBlanking = 3 - blankAvatarPlaceholders;
+
+            for (let i = startIndexOfBlanking; i <= 3; i++) {
+                document.getElementById('reactionAvatarDisplaySpan' + i + '_' + reactions.threadId).style.display = 'none';
+                label = 'Be the first to react to this!';
+            }
         }
 
-        let label = '';
+        if (label.length > 0) {
+            for (let i = 0; i < usersWhoHaveReacted.length; i++) {
 
-        for (let i = 0; i < usersWhoHaveReacted.length; i++) {
+                let num = i + 1;
 
-            let num = i + 1;
+                let textToAppend = '';
+                var indexOfPenultimateUser = usersWhoHaveReacted.length - 2;
 
-            let textToAppend = '';
-            var indexOfPenultimateUser = usersWhoHaveReacted.length - 2;
+                if (i == indexOfPenultimateUser) {
+                    textToAppend = ' and ';
+                }
+                else if (i < indexOfPenultimateUser) {
+                    textToAppend = ', ';
+                }
+                else {
+                    textToAppend = ' reacted to this!';
+                }
 
-            if (i == indexOfPenultimateUser) {
-                textToAppend = ' and ';
+                label = label + usersWhoHaveReacted.name + textToAppend
+                document.getElementById('reactionAvatarDisplay' + num + '_' + reactions.threadId).src = '../../../Images/' + usersWhoHaveReacted[i].avatarSrc;
             }
-            else if (i < indexOfPenultimateUser) {
-                textToAppend = ', ';
-            }
-
-            label = label + usersWhoHaveReacted.name + textToAppend
-            document.getElementById('reactionAvatarDisplay' + num + '_' + reactions.threadId).src = '../../../Images/' + usersWhoHaveReacted[i].avatarSrc;
         }
-
     }
 }

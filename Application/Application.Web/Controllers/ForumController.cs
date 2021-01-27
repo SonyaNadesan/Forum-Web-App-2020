@@ -218,7 +218,7 @@ namespace Application.Web.Controllers
                 ThreadId = threadIdAsGuid,
                 HasLoggedOnUserReactedToThread = hasUserReacted,
                 UsersWhoHaveReacted = usersWhoHaveReactedViewModel,
-                LoggedOnUser = user.Result,
+                LoggedOnUser = new SimpleUserViewModel(user.Result),
                 TotalReactions = reactions.Count()
             };
 

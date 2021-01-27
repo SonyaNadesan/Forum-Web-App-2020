@@ -12,7 +12,7 @@ namespace Application.Web.ViewModels
 
         public List<SimpleUserViewModel> UsersWhoHaveReacted { get; set; }
 
-        public User LoggedOnUser { get; set; }
+        public SimpleUserViewModel LoggedOnUser { get; set; }
 
         public int TotalReactions { get; set; }
     }

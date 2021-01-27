@@ -37,7 +37,7 @@
         let usersWhoHaveReacted = [];
 
         if (reactions.hasLoggedOnUserReactedToThread) {
-            reactions.loggedOnUser.firstName = 'You';
+            reactions.loggedOnUser.name = 'You';
             usersWhoHaveReacted[usersWhoHaveReacted.length] = reactions.loggedOnUser;
         }
 
@@ -49,8 +49,11 @@
             let blankAvatarPlaceholders = 3 - usersWhoHaveReacted.length;
         }
 
+        let label = '';
+
         for (let i = 0; i < usersWhoHaveReacted.length; i++) {
             var num = i + 1;
+            label = usersWhoHaveReacted.name
             document.getElementById('reactionAvatarDisplay' + num + '_' + reactions.threadId).src = '../../../Images' + usersWhoHaveReacted[i].avatarSrc;
         }
 

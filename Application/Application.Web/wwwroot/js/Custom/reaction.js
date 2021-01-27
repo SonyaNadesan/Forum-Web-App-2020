@@ -2,8 +2,8 @@
 
 connection.on("NotifyReaction", function (message) {
     console.log(JSON.stringify(message.value));
-    var obj = JSON.parse(message.value);
-
+    var obj = message.value;
+    console.log(obj.length);
     document.getElementById("notificationCount").innerHTML = obj.length;
     var notificationList = document.getElementById("notificationList");
     notificationList.innerHTML = "";
@@ -12,7 +12,7 @@ connection.on("NotifyReaction", function (message) {
         var newNotification = document.createElement("li");
         var newLink = document.createElement("a");
         newLink.href = "/Forum/Thread?threadId=" + obj[i].threadId;
-        newLink.innerText = obj[i].firstName + " reacted to your thread: " + obj[i].body;
+        newLink.innerText = obj[i].firstName + " reacted (" + obj[i].reactionType + ") to your thread: " + obj[i].heading;
         newNotification.appendChild(newLink);
         notificationList.appendChild(newNotification);
     }

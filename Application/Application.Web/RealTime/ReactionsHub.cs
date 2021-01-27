@@ -25,7 +25,7 @@ namespace Application.Web.RealTime
 
             var unseenReactions = thread.Reactions != null ? thread.Reactions.Where(r => !r.HasBeenViewedByThreadOwner).ToList() : new List<Reaction>();
 
-            var reactionsForNotification = unseenReactions.Select(x => new { x.ThreadId, x.Thread.Body, x.ReactionType, x.User.FirstName });
+            var reactionsForNotification = unseenReactions.Select(x => new { x.ThreadId, x.Thread.Heading, x.ReactionType, x.User.FirstName });
 
             var result = new JsonResult(reactionsForNotification);
 

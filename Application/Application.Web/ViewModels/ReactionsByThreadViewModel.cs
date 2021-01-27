@@ -14,12 +14,6 @@ namespace Application.Web.ViewModels
 
         public User LoggedOnUser { get; set; }
 
-        public ReactionsByThreadViewModel(Guid threadId, bool hasLoggedOnUserReactedToThread, List<SimpleUserViewModel> usersWhoHaveReacted, User loggedOnUser)
-        {
-            ThreadId = threadId;
-            HasLoggedOnUserReactedToThread = hasLoggedOnUserReactedToThread;
-            UsersWhoHaveReacted = usersWhoHaveReacted;
-            LoggedOnUser = loggedOnUser;
-        }
+        public int TotalReactions { get; set; }
     }
 }

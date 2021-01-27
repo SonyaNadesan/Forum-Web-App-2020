@@ -192,7 +192,7 @@ namespace Application.Web.Controllers
             return json;
         }
 
-        public JsonResult GetReactions(string threadId)
+        public JsonResult GetReactions(string threadId, int returnCount)
         {
             var threadIdAsGuid = Guid.Parse(threadId);
 
@@ -207,9 +207,20 @@ namespace Application.Web.Controllers
 
             var hasUserReacted = reactions.Any(r => r.User.Id == user.Result.Id);
 
-            var usersWhoHaveReactedViewModel = reactions.Where(r => r.UserId != user.Result.Id).Select(r => new SimpleUserViewModel(r.User)).ToList();
+            returnCount = hasUserReacted ? returnCount - 1 : returnCount;
 
-            var viewModel = new ReactionsByThreadViewModel(threadIdAsGuid, hasUserReacted, usersWhoHaveReactedViewModel, user.Result);
+            returnCount = returnCount >= 0 ? returnCount : 0;
+
+            var usersWhoHaveReactedViewModel = reactions.Where(r => r.UserId != user.Result.Id).Take(returnCount).Select(r => new SimpleUserViewModel(r.User)).ToList();
+
+            var viewModel = new ReactionsByThreadViewModel()
+            {
+                ThreadId = threadIdAsGuid,
+                HasLoggedOnUserReactedToThread = hasUserReacted,
+                UsersWhoHaveReacted = usersWhoHaveReactedViewModel,
+                LoggedOnUser = user.Result,
+                TotalReactions = reactions.Count()
+            };
 
             return new JsonResult(viewModel);
         }

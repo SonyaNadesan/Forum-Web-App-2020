@@ -25,12 +25,9 @@ namespace Application.Web.RealTime
 
             var unseenReactions = thread.Reactions != null ? thread.Reactions.Where(r => !r.HasBeenViewedByThreadOwner).ToList() : new List<Reaction>();
 
-            var jsonSerializerSettings = new JsonSerializerSettings()
-            {
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-            };
+            var reactionsForNotification = unseenReactions.Select(x => new { x.ThreadId, x.Thread.Body, x.ReactionType, x.User.FirstName });
 
-            var result = JsonConvert.SerializeObject(unseenReactions, Formatting.None, jsonSerializerSettings);
+            var result = new JsonResult(reactionsForNotification);
 
             await Clients.All.SendAsync("NotifyReaction", result);
         }

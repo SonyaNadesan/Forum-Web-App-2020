@@ -1,8 +1,8 @@
 ﻿var connection = new signalR.HubConnectionBuilder().withUrl("/reactionshub").build();
 
 connection.on("NotifyReaction", function (message) {
-    console.log(JSON.stringify(message));
-    var obj = JSON.parse(message.data);
+    console.log(JSON.stringify(message.value));
+    var obj = JSON.parse(message.value);
 
     document.getElementById("notificationCount").innerHTML = obj.length;
     var notificationList = document.getElementById("notificationList");
@@ -11,8 +11,8 @@ connection.on("NotifyReaction", function (message) {
     for (var i = 0; i < obj.length; i++) {
         var newNotification = document.createElement("li");
         var newLink = document.createElement("a");
-        newLink.href = "/Forum/Thread?threadId=" + obj[i].Thread.Id;
-        newLink.innerText = obj[i].User.FirstName + " reacted to your thread: " + obj[i].Thread.Heading;
+        newLink.href = "/Forum/Thread?threadId=" + obj[i].threadId;
+        newLink.innerText = obj[i].firstName + " reacted to your thread: " + obj[i].body;
         newNotification.appendChild(newLink);
         notificationList.appendChild(newNotification);
     }

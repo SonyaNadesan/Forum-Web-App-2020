@@ -53,11 +53,14 @@
 
             for (let i = startIndexOfBlanking; i <= 3; i++) {
                 document.getElementById('reactionAvatarDisplaySpan' + i + '_' + reactions.threadId).style.display = 'none';
+            }
+
+            if (usersWhoHaveReacted.length == 0) {
                 label = 'Be the first to react to this!';
             }
         }
 
-        if (label.length > 0) {
+        if (label == '') {
             for (let i = 0; i < usersWhoHaveReacted.length; i++) {
 
                 let num = i + 1;
@@ -75,9 +78,11 @@
                     textToAppend = ' reacted to this!';
                 }
 
-                label = label + usersWhoHaveReacted.name + textToAppend
+                label = label + usersWhoHaveReacted[i].name + textToAppend
                 document.getElementById('reactionAvatarDisplay' + num + '_' + reactions.threadId).src = '../../../Images/' + usersWhoHaveReacted[i].avatarSrc;
             }
         }
+
+        document.getElementById('spnReactionsCount_' + reactions.threadId).innerHTML = label;
     }
 }

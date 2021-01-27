@@ -1,4 +1,30 @@
-﻿function setReaction() {
+﻿var connection = new signalR.HubConnectionBuilder().withUrl("/reactionshub").build();
+
+connection.on("NotifyReaction", function (message) {
+    console.log(JSON.stringify(message));
+    var obj = JSON.parse(message.data);
+
+    document.getElementById("notificationCount").innerHTML = obj.length;
+    var notificationList = document.getElementById("notificationList");
+    notificationList.innerHTML = "";
+
+    for (var i = 0; i < obj.length; i++) {
+        var newNotification = document.createElement("li");
+        var newLink = document.createElement("a");
+        newLink.href = "/Forum/Thread?threadId=" + obj[i].Thread.Id;
+        newLink.innerText = obj[i].User.FirstName + " reacted to your thread: " + obj[i].Thread.Heading;
+        newNotification.appendChild(newLink);
+        notificationList.appendChild(newNotification);
+    }
+});
+
+connection.start().then(function () {
+    document.getElementById("notificationCount").innerHTML = "0";
+}).catch(function (err) {
+    alert('No Connection');
+});
+
+function setReaction() {
     let btnReactions = document.getElementsByName('btnReaction');
     const noOfThreads = btnReactions.length;
 
@@ -24,6 +50,9 @@
             .then(data => data.json())
             .then(response => new function () {
                 updateView(response.value);
+                connection.invoke("SendMessage", response.value.threadId).catch(function (err) {
+                    return console.error(err.toString());
+                });
             });
     }
 

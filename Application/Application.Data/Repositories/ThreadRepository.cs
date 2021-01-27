@@ -17,7 +17,7 @@ namespace Application.Data.Repositories
 
         public Thread Get(Guid threadId)
         {
-            return Context.Threads.Include(t => t.User).SingleOrDefault(t => t.Id == threadId);
+            return Context.Threads.Include(t => t.User).Include(t => t.Posts).Include(t => t.Reactions).SingleOrDefault(t => t.Id == threadId);
         }
 
         public IEnumerable<Thread> GetAll()

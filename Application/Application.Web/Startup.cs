@@ -10,6 +10,7 @@ using Application.Services.Forum;
 using Application.Services.Shared;
 using Application.Services.UserProfile;
 using Application.Web.Models;
+using Application.Web.RealTime;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -43,6 +44,8 @@ namespace Application.Web
 
             services.AddDbContext<ApplicationDbContext>();
 
+            services.AddSignalR();
+
             //services.AddAuthentication("cookies").AddCookie("cookies", options => options.LoginPath = "/Home/Login");
         }
 
@@ -74,6 +77,7 @@ namespace Application.Web
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapHub<ReactionsHub>("/reactionshub");
             });
         }
 

@@ -46,7 +46,7 @@
         }
 
         if (usersWhoHaveReacted.length < 3) {
-            l
+            let blankAvatarPlaceholders = 3 - usersWhoHaveReacted.length;
         }
 
         for (let i = 0; i < usersWhoHaveReacted.length; i++) {

@@ -19,17 +19,17 @@ namespace Application.Web.RealTime
             _threadService = threadService;
         }
 
-        public async Task SendMessage(string message)
+        public async Task SendMessage(string message, string recipientUserId)
         {
             var thread = _threadService.Get(Guid.Parse(message)).Result;
 
             var unseenReactions = thread.Reactions != null ? thread.Reactions.Where(r => !r.HasBeenViewedByThreadOwner).ToList() : new List<Reaction>();
 
-            var reactionsForNotification = unseenReactions.Select(x => new { x.ThreadId, x.Thread.Heading, x.ReactionType, x.User.FirstName });
+            var reactionsForNotification = unseenReactions.Select(x => new { x.ThreadId, x.Thread.Heading, x.ReactionType, x.User.FirstName, x.Thread.User.Email });
 
             var result = new JsonResult(reactionsForNotification);
 
-            await Clients.All.SendAsync("NotifyReaction", result);
+            await Clients.User(recipientUserId).SendAsync("NotifyReaction", result);
         }
     }
 }

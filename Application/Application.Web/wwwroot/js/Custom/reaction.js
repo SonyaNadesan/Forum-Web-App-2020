@@ -50,7 +50,7 @@ function setReaction() {
             .then(data => data.json())
             .then(response => new function () {
                 updateView(response.value);
-                connection.invoke("SendMessage", response.value.threadId).catch(function (err) {
+                connection.invoke("SendMessage", response.value.threadId, response.value.loggedOnUser.id).catch(function (err) {
                     return console.error(err.toString());
                 });
             });

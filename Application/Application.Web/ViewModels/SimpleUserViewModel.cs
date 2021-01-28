@@ -5,6 +5,7 @@ namespace Application.Web.ViewModels
     public class SimpleUserViewModel
     {
         public string Id { get; set; }
+        public string Email { get; set; }
         public string Name { get; set; }
         public string AvatarSrc { get; set; }
 
@@ -13,6 +14,7 @@ namespace Application.Web.ViewModels
             Id = user.Id;
             Name = user.FirstName + " " + user.LastName;
             AvatarSrc = user.ProfilePictureImageSrc;
+            Email = user.Email;
         }
     }
 }

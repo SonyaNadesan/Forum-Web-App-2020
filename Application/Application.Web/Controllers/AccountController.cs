@@ -45,9 +45,16 @@ namespace Application.Web.Controllers
 
             if (response.IsValid)
             {
-                _userProfileService.AddUserProfile(response.Result.Id, email, firstName, lastName);
+                var userProfileUpdate = _userProfileService.AddUserProfile(response.Result.Id, email, firstName, lastName);
 
-                TempData["Registration Status"] = "Registration Successful!";
+                if (userProfileUpdate.IsValid)
+                {
+                    TempData["Registration Status"] = "Registration Successful!";
+                }
+                else
+                {
+                    TempData["Registration Status"] = userProfileUpdate.ErrorMessage;
+                }
             }
             else
             {

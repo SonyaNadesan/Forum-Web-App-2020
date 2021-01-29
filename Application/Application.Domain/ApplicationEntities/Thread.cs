@@ -16,7 +16,7 @@ namespace Application.Domain.ApplicationEntities
         public string UserId { get; set; }
 
         [ForeignKey("UserId")]
-        public User User { get; set; }
+        public virtual User User { get; set; }
 
         public virtual List<Post> Posts { get; set; }
         public virtual List<Reaction> Reactions { get; set; }

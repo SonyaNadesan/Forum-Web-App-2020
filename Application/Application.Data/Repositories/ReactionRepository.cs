@@ -51,7 +51,7 @@ namespace Application.Data.Repositories
 
         public Reaction Get(Guid reactionId)
         {
-            return (Context.Reactions.Include(r => r.User)).Include(r => r.Thread).Include(r => r.Thread.User).SingleOrDefault(r => r.ReactionId == reactionId);
+            return Context.Reactions.Include(r => r.User).Include(r => r.Thread).Include(r => r.Thread.User).SingleOrDefault(r => r.ReactionId == reactionId);
         }
 
         public Reaction Get(string email, Guid threadId)

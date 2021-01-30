@@ -8,6 +8,8 @@ namespace Application.Services.Forum
     {
         IEnumerable<Reaction> GetReactionsByThreadId(Guid threadId);
 
+        Reaction GetByUserId(Guid threadId, string userId);
+
         void Respond(string email, Guid threadId);
     }
 }

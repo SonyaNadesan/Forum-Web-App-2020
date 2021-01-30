@@ -1,25 +1,26 @@
-﻿var connection = new signalR.HubConnectionBuilder().withUrl("/reactionshub").build();
+﻿var connection = new signalR.HubConnectionBuilder().withUrl('http://localhost:55931/reactionshub').build();
 
-connection.on("NotifyReaction", function (message) {
-    console.log(JSON.stringify(message.value));
-    var obj = message.value;
-    console.log(obj.length);
-    document.getElementById("notificationCount").innerHTML = obj.length;
-    var notificationList = document.getElementById("notificationList");
-    notificationList.innerHTML = "";
+connection.on('NotifyReaction', function (reaction, totalNotifications) {
+    document.getElementById('notificationCount').innerHTML = totalNotifications;
+    var notificationList = document.getElementById('notificationList');
+    notificationList.innerHTML = '';
 
-    for (var i = 0; i < obj.length; i++) {
-        var newNotification = document.createElement("li");
-        var newLink = document.createElement("a");
-        newLink.href = "/Forum/Thread?threadId=" + obj[i].threadId;
-        newLink.innerText = obj[i].firstName + " reacted (" + obj[i].reactionType + ") to your thread: " + obj[i].heading;
+    if (reaction != null && reaction.ReactionType != null && reaction.ReactionType != 'NONE') {
+        var newNotification = document.createElement('li');
+        var newLink = document.createElement('a');
+        newLink.href = '/Forum/Thread?threadId=' + reaction.ThreadId;
+        newLink.id = 'notification_reactionToThread_' + reaction.threadId + reaction.UserId;
+        newLink.innerText = reaction.User.FirstName + ' reacted (' + reaction.ReactionType + ') to your thread: ' + reaction.Thread.Heading;
         newNotification.appendChild(newLink);
         notificationList.appendChild(newNotification);
+    }
+    else {
+        document.getElementById('notification_reactionToThread_' + reaction.ThreadId + reaction.UserId).remove();
     }
 });
 
 connection.start().then(function () {
-    document.getElementById("notificationCount").innerHTML = "0";
+    document.getElementById('notificationCount').innerHTML = '0';
 }).catch(function (err) {
     alert('No Connection');
 });
@@ -50,7 +51,8 @@ function setReaction() {
             .then(data => data.json())
             .then(response => new function () {
                 updateView(response.value);
-                connection.invoke("SendMessage", response.value.threadId, response.value.loggedOnUser.id).catch(function (err) {
+
+                connection.invoke('SendMessage', response.value.threadId, response.value.loggedOnUser.id, response.value.usersWhoHaveReacted.length).catch(function (err) {
                     return console.error(err.toString());
                 });
             });
@@ -74,7 +76,7 @@ function setReaction() {
                 usersWhoHaveReacted[usersWhoHaveReacted.length] = reactions.loggedOnUser;
             }
 
-            for (let i = 0; i < reactions.usersWhoHaveReacted; i++) {
+            for (let i = 0; i < reactions.usersWhoHaveReacted.length; i++) {
                 usersWhoHaveReacted[usersWhoHaveReacted.length] = reactions.usersWhoHaveReacted[i];
             }
 
@@ -116,6 +118,7 @@ function setReaction() {
                     }
 
                     label = label + usersWhoHaveReacted[i].name + textToAppend
+                    usersWhoHaveReacted[i].avatarSrc = usersWhoHaveReacted[i].avatarSrc == null ? 'defaultProfilePic.jpg' : usersWhoHaveReacted[i].avatarSrc
                     document.getElementById('reactionAvatarDisplay' + num + '_' + reactions.threadId).src = '../../../Images/' + usersWhoHaveReacted[i].avatarSrc;
                 }
             }

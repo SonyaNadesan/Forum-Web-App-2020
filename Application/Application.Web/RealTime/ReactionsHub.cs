@@ -7,29 +7,30 @@ using Newtonsoft.Json;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using Application.Domain.ApplicationEntities;
+using Application.Services.UserProfile;
 
 namespace Application.Web.RealTime
 {
     public class ReactionsHub : Hub
     {
         private readonly IThreadService _threadService;
+        private readonly IReactionService _reactionService;
 
-        public ReactionsHub(IThreadService threadService)
+        public ReactionsHub(IThreadService threadService, IReactionService reactionService)
         {
             _threadService = threadService;
+            _reactionService = reactionService;
         }
 
-        public async Task SendMessage(string message, string recipientUserId)
+        public async Task SendMessage(string threadId, string senderUserId, int totalNotifications)
         {
-            var thread = _threadService.Get(Guid.Parse(message)).Result;
+            var threadIdAsGuid = Guid.Parse(threadId);
 
-            var unseenReactions = thread.Reactions != null ? thread.Reactions.Where(r => !r.HasBeenViewedByThreadOwner).ToList() : new List<Reaction>();
+            var userIdOfThreadOwner = _threadService.Get(threadIdAsGuid).Result.UserId;
 
-            var reactionsForNotification = unseenReactions.Select(x => new { x.ThreadId, x.Thread.Heading, x.ReactionType, x.User.FirstName, x.Thread.User.Email });
+            var reaction = _reactionService.GetByUserId(threadIdAsGuid, senderUserId);
 
-            var result = new JsonResult(reactionsForNotification);
-
-            await Clients.User(recipientUserId).SendAsync("NotifyReaction", result);
+            await Clients.User(userIdOfThreadOwner).SendAsync("NotifyReaction", reaction, totalNotifications);
         }
     }
 }

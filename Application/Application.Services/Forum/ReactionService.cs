@@ -21,6 +21,20 @@ namespace Application.Services.Forum
             return _unitOfWork.ReactionRepository.GetAll().Where(r => r.ThreadId == threadId);
         }
 
+        public Reaction GetByUserId(Guid threadId, string userId)
+        {
+            var reaction = GetReactionsByThreadId(threadId).SingleOrDefault(t => t.UserId == userId);
+
+            if(reaction == null)
+            {
+                var user = _unitOfWork.UserRepository.GetAll().SingleOrDefault(u => u.Id == userId);
+                var thread = _unitOfWork.ThreadRepository.Get(threadId);
+                reaction = new Reaction(user, thread, ReactionTypes.NONE);
+            }
+
+            return reaction;
+        }
+
         public void Respond(string email, Guid threadId)
         {
             var reaction = _unitOfWork.ReactionRepository.Get(email, threadId);

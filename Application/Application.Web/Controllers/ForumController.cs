@@ -205,7 +205,7 @@ namespace Application.Web.Controllers
 
             var reactions = _reactionService.GetReactionsByThreadId(threadIdAsGuid);
 
-            var hasUserReacted = reactions.Any(r => r.User.Id == user.Result.Id);
+            var hasUserReacted = reactions.Any(r => r.User.Id == user.Result.Id && r.ThreadId == threadIdAsGuid);
 
             returnCount = hasUserReacted ? returnCount - 1 : returnCount;
 

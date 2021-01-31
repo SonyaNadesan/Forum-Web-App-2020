@@ -30,7 +30,7 @@ namespace Application.Web.RealTime
 
             var reaction = _reactionService.GetByUserId(threadIdAsGuid, senderUserId);
 
-            await Clients.Caller.SendAsync("NotifyReaction", reaction.ReactionType, reaction.ThreadId, reaction.UserId, reaction.User.FirstName, totalNotifications);
+            await Clients.User(userIdOfThreadOwner).SendAsync("NotifyReaction", reaction.ReactionType, reaction.ThreadId, reaction.UserId, reaction.User.FirstName, reaction.Thread.Heading, totalNotifications);
         }
     }
 }

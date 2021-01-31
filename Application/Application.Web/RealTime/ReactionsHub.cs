@@ -24,19 +24,13 @@ namespace Application.Web.RealTime
 
         public async Task SendMessage(string threadId, string senderUserId, int totalNotifications)
         {
-            //var threadIdAsGuid = Guid.Parse(threadId);
+            var threadIdAsGuid = Guid.Parse(threadId);
 
-            //var userIdOfThreadOwner = _threadService.Get(threadIdAsGuid).Result.UserId;
+            var userIdOfThreadOwner = _threadService.Get(threadIdAsGuid).Result.UserId;
 
-            //var reaction = _reactionService.GetByUserId(threadIdAsGuid, senderUserId);
+            var reaction = _reactionService.GetByUserId(threadIdAsGuid, senderUserId);
 
-            //var result = new JsonResult(new { reaction, threadId, totalNotifications });
-
-            //result.StatusCode = 200;
-
-            //result.ContentType = "application/json";
-
-            await Clients.Caller.SendAsync("NotifyReaction", totalNotifications);
+            await Clients.Caller.SendAsync("NotifyReaction", reaction.ReactionType, reaction.ThreadId, reaction.UserId, reaction.User.FirstName, totalNotifications);
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿var connection = new signalR.HubConnectionBuilder().withUrl('/reactionshub').build();
 
-connection.on('NotifyReaction', function (totalNotifications) {
-    console.log(totalNotifications);
+connection.on('NotifyReaction', function (reactionType, reaction_threadId, reaction_userId, reaction_userFFirstName, totalNotifications) {
     //var response = responseFromHub.value;
     //alert(JSON.stringify(response));
     //document.getElementById('notificationCount').innerHTML = response.totalNotifications;

@@ -1,29 +1,38 @@
-﻿var connection = new signalR.HubConnectionBuilder().withUrl('http://localhost:55931/reactionshub').build();
+﻿var connection = new signalR.HubConnectionBuilder().withUrl('/reactionshub').build();
 
-connection.on('NotifyReaction', function (reaction, totalNotifications) {
-    document.getElementById('notificationCount').innerHTML = totalNotifications;
-    var notificationList = document.getElementById('notificationList');
-    notificationList.innerHTML = '';
+connection.on('NotifyReaction', function (totalNotifications) {
+    console.log(totalNotifications);
+    //var response = responseFromHub.value;
+    //alert(JSON.stringify(response));
+    //document.getElementById('notificationCount').innerHTML = response.totalNotifications;
+    //var notificationList = document.getElementById('notificationList');
+    //notificationList.innerHTML = '';
 
-    if (reaction != null && reaction.ReactionType != null && reaction.ReactionType != 'NONE') {
-        var newNotification = document.createElement('li');
-        var newLink = document.createElement('a');
-        newLink.href = '/Forum/Thread?threadId=' + reaction.ThreadId;
-        newLink.id = 'notification_reactionToThread_' + reaction.threadId + reaction.UserId;
-        newLink.innerText = reaction.User.FirstName + ' reacted (' + reaction.ReactionType + ') to your thread: ' + reaction.Thread.Heading;
-        newNotification.appendChild(newLink);
-        notificationList.appendChild(newNotification);
-    }
-    else {
-        document.getElementById('notification_reactionToThread_' + reaction.ThreadId + reaction.UserId).remove();
-    }
+    //if (response.reaction != null && response.reaction.ReactionType != null && response.reaction.ReactionType != 'NONE') {
+    //    var newNotification = document.createElement('li');
+    //    var newLink = document.createElement('a');
+    //    newLink.href = '/Forum/Thread?threadId=' + response.reaction.ThreadId;
+    //    newLink.id = 'notification_reactionToThread_' + response.reaction.ThreadId + response.reaction.UserId;
+    //    newLink.innerText = response.reaction.User.FirstName + ' reacted (' + response.reaction.ReactionType + ') to your thread: ' + response.reaction.Thread.Heading;
+    //    newNotification.appendChild(newLink);
+    //    notificationList.appendChild(newNotification);
+    //}
+    //else {
+    //    document.getElementById('notification_reactionToThread_' + response.reaction.ThreadId + response.reaction.UserId).remove();
+    //}
 });
 
-connection.start().then(function () {
-    document.getElementById('notificationCount').innerHTML = '0';
-}).catch(function (err) {
-    alert('No Connection');
-});
+async function start() {
+    try {
+        await connection.start();
+        console.log("SignalR Connected.");
+    } catch (err) {
+        console.log(err);
+        setTimeout(start, 5000);
+    }
+};
+
+connection.start();
 
 function setReaction() {
     let btnReactions = document.getElementsByName('btnReaction');
@@ -51,8 +60,10 @@ function setReaction() {
             .then(data => data.json())
             .then(response => new function () {
                 updateView(response.value);
-
-                connection.invoke('SendMessage', response.value.threadId, response.value.loggedOnUser.id, response.value.usersWhoHaveReacted.length).catch(function (err) {
+                console.log(response.value.threadId + ", " + response.value.loggedOnUser.id + "," + response.value.totalReactions);
+                connection
+                    .invoke('SendMessage', response.value.threadId, response.value.loggedOnUser.id, response.value.totalReactions)
+                    .catch(function (err) {
                     return console.error(err.toString());
                 });
             });

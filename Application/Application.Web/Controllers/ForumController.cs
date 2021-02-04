@@ -255,10 +255,12 @@ namespace Application.Web.Controllers
                 Ancestors = ancestors.ToList()
             };
 
-            return new JsonResult(result, new JsonSerializerSettings()
+            var json = JsonConvert.SerializeObject(result, new JsonSerializerSettings()
             {
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+               ReferenceLoopHandling = ReferenceLoopHandling.Ignore
             });
+
+            return new JsonResult(JsonConvert.DeserializeObject<PostAndAncestorsViewModel>(json));
         }
     }
 }

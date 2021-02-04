@@ -191,6 +191,26 @@ namespace Application.Services.Forum
             return response;
         }
 
+        public ServiceResponse<IEnumerable<Post>> GetAncestors(Guid postId)
+        {
+            var response = new ServiceResponse<IEnumerable<Post>>();
+
+            var post = _unitOfWork.PostRepository.Get(postId);
+
+            var allPostsInOrder = new List<Post>();
+
+            while (post.HasParentPost)
+            {
+                allPostsInOrder.Add(post);
+
+                post = post.ParentPost;
+            }
+
+            response.Result = allPostsInOrder.Reverse<Post>();
+
+            return response;
+        }
+
         private void DrillDown(List<Post> allPosts, Post post, List<Post> results)
         {
             var replies = allPosts.Where(p => p.ThreadId == post.ThreadId && p.HasParentPost && p.ParentPostId == post.Id).ToList();

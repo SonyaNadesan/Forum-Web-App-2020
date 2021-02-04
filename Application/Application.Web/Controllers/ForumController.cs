@@ -239,5 +239,19 @@ namespace Application.Web.Controllers
 
             throw new NullReferenceException();
         }
+
+        [HttpPost]
+        public JsonResult IndividualPost(string postId)
+        {
+            var postIdAsGuid = Guid.Parse(postId);
+
+            var thread = _threadService.Get(postIdAsGuid).Result;
+
+            var ancestors = _postService.GetAncestors(postIdAsGuid).Result;
+
+            var result = new { thread, ancestors };
+
+            return new JsonResult(result);
+        }
     }
 }

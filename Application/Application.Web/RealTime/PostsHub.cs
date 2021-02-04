@@ -24,7 +24,7 @@ namespace Application.Web.RealTime
 
             var postParentType = post.HasParentPost ? "POST" : "THREAD";
 
-            await Clients.Users(recipient).SendAsync("NotifyUserOfPost", postParentType, post.Id, post.User.FirstName, post.Content);
+            await Clients.Users(recipient).SendAsync("NotifyUserOfPost", postParentType, post.Id, post.User.FirstName, post.Content, post.Thread.Id);
         }
     }
 }

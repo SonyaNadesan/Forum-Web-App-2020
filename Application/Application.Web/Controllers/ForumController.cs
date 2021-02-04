@@ -240,18 +240,25 @@ namespace Application.Web.Controllers
             throw new NullReferenceException();
         }
 
-        [HttpPost]
+        [HttpGet]
         public JsonResult IndividualPost(string postId)
         {
             var postIdAsGuid = Guid.Parse(postId);
 
-            var thread = _threadService.Get(postIdAsGuid).Result;
+            var post = _postService.Get(postIdAsGuid).Result;
 
             var ancestors = _postService.GetAncestors(postIdAsGuid).Result;
 
-            var result = new { thread, ancestors };
+            var result = new PostAndAncestorsViewModel()
+            {
+                Post = post,
+                Ancestors = ancestors.ToList()
+            };
 
-            return new JsonResult(result);
+            return new JsonResult(result, new JsonSerializerSettings()
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            });
         }
     }
 }

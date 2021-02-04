@@ -199,11 +199,11 @@ namespace Application.Services.Forum
 
             var allPostsInOrder = new List<Post>();
 
-            while (post.HasParentPost)
+            while (post != null && post.HasParentPost)
             {
                 allPostsInOrder.Add(post);
 
-                post = post.ParentPost;
+                post = post?.ParentPost;
             }
 
             response.Result = allPostsInOrder.Reverse<Post>();

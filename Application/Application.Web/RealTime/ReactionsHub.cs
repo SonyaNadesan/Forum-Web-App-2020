@@ -2,12 +2,6 @@
 using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Threading.Tasks;
-using System.Linq;
-using Newtonsoft.Json;
-using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using Application.Domain.ApplicationEntities;
-using Application.Services.UserProfile;
 
 namespace Application.Web.RealTime
 {

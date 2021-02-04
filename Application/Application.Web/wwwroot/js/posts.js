@@ -1,7 +1,7 @@
 ﻿var connection = new signalR.HubConnectionBuilder().withUrl('/postshub').build();
 
 connection.on('NotifyUserOfPost', function (postParentType, post_Id, post_UserFirstName, post_Content) {
-    var totalNotifications = document.getElementById('notificationCount').innerHTML;
+    var totalNotifications = Number(document.getElementById('notificationCount').innerHTML);
     var notificationList = document.getElementById('notificationList');
     notificationList.innerHTML = '';
 
@@ -12,6 +12,7 @@ connection.on('NotifyUserOfPost', function (postParentType, post_Id, post_UserFi
     newLink.innerText = post_UserFirstName + ' commented on your ' + postParentType;
     newNotification.appendChild(newLink);
     notificationList.appendChild(newNotification);
+    document.getElementById('notificationCount').innerHTML = totalNotifications + 1;
 });
 
 async function start() {

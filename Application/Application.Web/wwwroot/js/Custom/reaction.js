@@ -1,7 +1,7 @@
 ﻿var connection = new signalR.HubConnectionBuilder().withUrl('/reactionshub').build();
 
-connection.on('NotifyReaction', function (reactionType, reaction_threadId, reaction_userId, reaction_userFFirstName, reaction_threadHeading, totalNotifications) {
-    document.getElementById('notificationCount').innerHTML = totalNotifications;
+connection.on('NotifyUserOfReaction', function (reactionType, reaction_threadId, reaction_userId, reaction_userFFirstName, reaction_threadHeading) {
+    var totalNoOfReactions = Number(document.getElementById('notificationCount').innerHTML);
     var notificationList = document.getElementById('notificationList');
     notificationList.innerHTML = '';
 
@@ -13,9 +13,11 @@ connection.on('NotifyReaction', function (reactionType, reaction_threadId, react
         newLink.innerText = reaction_userFFirstName + ' reacted (' + reactionType + ') to your thread: ' + reaction_threadHeading;
         newNotification.appendChild(newLink);
         notificationList.appendChild(newNotification);
+        document.getElementById('notificationCount').innerHTML = totalNoOfReactions + 1;
     }
     else {
         document.getElementById('notification_reactionToThread_' + reaction_threadId + reaction_userId).remove();
+        document.getElementById('notificationCount').innerHTML = totalNoOfReactions - 1;
     }
 });
 
@@ -59,7 +61,7 @@ function setReaction() {
                 updateView(response.value);
                 console.log(response.value.threadId + ", " + response.value.loggedOnUser.id + "," + response.value.totalReactions);
                 connection
-                    .invoke('SendMessage', response.value.threadId, response.value.loggedOnUser.id, response.value.totalReactions)
+                    .invoke('SendMessage', response.value.threadId, response.value.loggedOnUser.id)
                     .catch(function (err) {
                     return console.error(err.toString());
                 });

@@ -16,7 +16,7 @@ namespace Application.Web.RealTime
             _reactionService = reactionService;
         }
 
-        public async Task SendMessage(string threadId, string senderUserId, int totalNotifications)
+        public async Task SendMessage(string threadId, string senderUserId)
         {
             var threadIdAsGuid = Guid.Parse(threadId);
 
@@ -24,7 +24,7 @@ namespace Application.Web.RealTime
 
             var reaction = _reactionService.GetByUserId(threadIdAsGuid, senderUserId);
 
-            await Clients.User(userIdOfThreadOwner).SendAsync("NotifyReaction", reaction.ReactionType, reaction.ThreadId, reaction.UserId, reaction.User.FirstName, reaction.Thread.Heading, totalNotifications);
+            await Clients.User(userIdOfThreadOwner).SendAsync("NotifyUserOfReaction", reaction.ReactionType, reaction.ThreadId, reaction.UserId, reaction.User.FirstName, reaction.Thread.Heading);
         }
     }
 }

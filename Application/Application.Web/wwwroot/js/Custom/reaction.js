@@ -3,7 +3,6 @@
 connection.on('NotifyUserOfReaction', function (reactionType, reaction_threadId, reaction_userId, reaction_userFFirstName, reaction_threadHeading) {
     var totalNoOfReactions = Number(document.getElementById('notificationCount').innerHTML);
     var notificationList = document.getElementById('notificationList');
-    notificationList.innerHTML = '';
 
     if (reactionType != null && reactionType != 'NONE') {
         var newNotification = document.createElement('li');

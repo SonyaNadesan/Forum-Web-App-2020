@@ -14,7 +14,7 @@ namespace Application.Web.RealTime
             _postService = postService;
         }
 
-        public async Task SendMessage(string postId, string threadId, string senderUserId)
+        public async Task SendMessage(string postId)
         {
             var post = _postService.Get(Guid.Parse(postId)).Result;
 

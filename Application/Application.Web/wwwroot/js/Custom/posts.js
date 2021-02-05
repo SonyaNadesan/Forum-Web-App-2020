@@ -30,7 +30,11 @@ function submitPost(parentPostId) {
         })
     })
     .then(data => data.json())
-    .then(response => new function () {
-        alert("done");
+        .then(response => new function () {
+            console.log(response);
+        postsListener.invoke('SendMessage', response.id)
+            .catch(function (err) {
+                return console.error(err.toString());
+            });
     });
 }

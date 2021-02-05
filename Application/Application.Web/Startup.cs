@@ -78,6 +78,7 @@ namespace Application.Web
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapHub<ReactionsHub>("/reactionshub");
+                endpoints.MapHub<PostsHub>("/postshub");
             });
         }
 

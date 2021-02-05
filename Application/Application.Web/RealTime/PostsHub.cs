@@ -8,12 +8,10 @@ namespace Application.Web.RealTime
     public class PostsHub : Hub
     {
         private readonly IPostService _postService;
-        private readonly IThreadService _threadService;
 
-        public PostsHub(IPostService postService, IThreadService threadService)
+        public PostsHub(IPostService postService)
         {
             _postService = postService;
-            _threadService = threadService;
         }
 
         public async Task SendMessage(string postId, string threadId, string senderUserId)

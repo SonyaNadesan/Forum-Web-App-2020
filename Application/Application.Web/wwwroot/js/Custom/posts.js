@@ -16,23 +16,23 @@ postsListener.on('NotifyUserOfPost', function (postParentType, post_Id, post_Use
 });
 
 function submitPost(parentPostId) {
-    var params = {
-        content = document.getElementById('txtContent_' + parentPostId),
-        threadId = document.getElementById('hdnThreadId_' + parentPostId),
-        parentPostId = parentPostId,
-        __RequestVerificationToken = document.getElementsByName('__RequestVerificationToken')[0]
+    let params = {
+        content: document.getElementById('txtContent_' + parentPostId).value,
+        threadId: document.getElementById('hdnThreadId_' + parentPostId).value,
+        parentPostId: parentPostId
     };
-
+    alert(JSON.stringify(params));
     fetch('http://localhost:55931/Forum/CreatePost/', {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'RequestVerificationToken': document.getElementsByName('__RequestVerificationToken')[0].value
         },
         body: JSON.stringify(params)
     })
         .then(data => data.json())
         .then(response => new function () {
-            
+            alert("done");
         });
 }

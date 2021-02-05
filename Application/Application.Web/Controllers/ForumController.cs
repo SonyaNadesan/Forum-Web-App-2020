@@ -138,7 +138,7 @@ namespace Application.Web.Controllers
 
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public JsonResult CreatePost(string content, string threadId, string parentPostId = "")
+        public JsonResult CreatePost([FromBody] string content, [FromBody] string threadId, [FromBody] string parentPostId = "")
         {
             var threadIsGuid = Guid.TryParse(threadId, out Guid threadIdAsGuid);
 

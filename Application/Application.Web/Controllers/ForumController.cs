@@ -138,18 +138,18 @@ namespace Application.Web.Controllers
 
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public JsonResult CreatePost([FromBody] string content, [FromBody] string threadId, [FromBody] string parentPostId = "")
+        public JsonResult CreatePost([FromBody] CreatePostViewModel createPostViewModel)
         {
-            var threadIsGuid = Guid.TryParse(threadId, out Guid threadIdAsGuid);
+            var threadIsGuid = Guid.TryParse(createPostViewModel.threadId, out Guid threadIdAsGuid);
 
             if (!threadIsGuid)
             {
                 throw new NullReferenceException();
             }
 
-            Guid.TryParse(parentPostId, out Guid parentPostIdAsGuid);
+            Guid.TryParse(createPostViewModel.parentPostId, out Guid parentPostIdAsGuid);
 
-            var postCreationResponse = _postService.Create(User.Identity.Name, content, threadIdAsGuid, parentPostIdAsGuid);
+            var postCreationResponse = _postService.Create(User.Identity.Name, createPostViewModel.content, threadIdAsGuid, parentPostIdAsGuid);
 
             if (postCreationResponse.IsValid)
             {

@@ -36,11 +36,12 @@
 
                   <form action="/Forum/CreatePost" method="post">
                       @Html.AntiForgeryToken()
-                      <input type="text" placeholder="Enter your comment here" name="content" />
-                      <input type="hidden" name="threadId" value="@Model.PageData.Id" />
-                      <input type="hidden" name="ParentPostId" value="@post.TopLevelPost.Id" />
-                      <button class="btn btn-primary" type="submit">Submit</button>
+                      <input type="text" id="txtContent_@post.TopLevelPost.Id" placeholder="Enter your comment here" name="content" />
+                      <input type="hidden" id="hdnThreadId_@post.TopLevelPost.Id" name="threadId" value="@Model.PageData.Id" />
+                      <input type="hidden" id="hdnParentPostId_@post.TopLevelPost.Id" name="ParentPostId" value="@post.TopLevelPost.Id" />
+                      <button class="btn btn-primary" onclick="submitPost(@post.TopLevelPost.Id)">Submit</button>
                   </form>
+
                   <div id="replies_@post.TopLevelPost.Id">
                       @foreach (var reply in post.Replies.ItemsToDisplay)
                       {

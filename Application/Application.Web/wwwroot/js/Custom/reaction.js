@@ -1,6 +1,7 @@
-﻿var connection = new signalR.HubConnectionBuilder().withUrl('/reactionshub').build();
+﻿var reactionsListener = new signalR.HubConnectionBuilder().withUrl('/reactionshub').build();
+reactionsListener.start();
 
-connection.on('NotifyUserOfReaction', function (reactionType, reaction_threadId, reaction_userId, reaction_userFFirstName, reaction_threadHeading) {
+reactionsListener.on('NotifyUserOfReaction', function (reactionType, reaction_threadId, reaction_userId, reaction_userFFirstName, reaction_threadHeading) {
     var totalNoOfReactions = Number(document.getElementById('notificationCount').innerHTML);
     var notificationList = document.getElementById('notificationList');
 
@@ -19,18 +20,6 @@ connection.on('NotifyUserOfReaction', function (reactionType, reaction_threadId,
         document.getElementById('notificationCount').innerHTML = totalNoOfReactions - 1;
     }
 });
-
-async function start() {
-    try {
-        await connection.start();
-        console.log("SignalR Connected.");
-    } catch (err) {
-        console.log(err);
-        setTimeout(start, 5000);
-    }
-};
-
-connection.start();
 
 function setReaction() {
     let btnReactions = document.getElementsByName('btnReaction');
@@ -59,7 +48,7 @@ function setReaction() {
             .then(response => new function () {
                 updateView(response.value);
                 console.log(response.value.threadId + ", " + response.value.loggedOnUser.id + "," + response.value.totalReactions);
-                connection
+                reactionsListener
                     .invoke('SendMessage', response.value.threadId, response.value.loggedOnUser.id)
                     .catch(function (err) {
                     return console.error(err.toString());

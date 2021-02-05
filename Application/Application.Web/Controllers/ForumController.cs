@@ -138,13 +138,13 @@ namespace Application.Web.Controllers
 
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public IActionResult CreatePost(string content, string threadId, string parentPostId = "")
+        public JsonResult CreatePost(string content, string threadId, string parentPostId = "")
         {
             var threadIsGuid = Guid.TryParse(threadId, out Guid threadIdAsGuid);
 
             if (!threadIsGuid)
             {
-                return RedirectToAction("Index");
+                throw new NullReferenceException();
             }
 
             Guid.TryParse(parentPostId, out Guid parentPostIdAsGuid);
@@ -153,10 +153,15 @@ namespace Application.Web.Controllers
 
             if (postCreationResponse.IsValid)
             {
-                return RedirectToAction("Thread", new { threadId = threadId });
+                var json = JsonConvert.SerializeObject(postCreationResponse.Result, new JsonSerializerSettings()
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                });
+
+                return new JsonResult(JsonConvert.DeserializeObject<Post>(json));
             }
 
-            return RedirectToAction("Index");
+            throw new Exception();
         }
 
         public string GetRepliesOnPost(string postId, int from, int take)

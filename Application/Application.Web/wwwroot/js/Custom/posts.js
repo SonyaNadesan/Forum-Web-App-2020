@@ -29,8 +29,8 @@ function submitPost(parentPostId) {
             'parentPostId': parentPostId
         })
     })
-        .then(data => data.json())
-        .then(response => new function () {
-            alert("done");
-        });
+    .then(data => data.json())
+    then(response => new function () {
+        alert("done");
+    });
 }

@@ -47,7 +47,6 @@ function setReaction() {
             .then(data => data.json())
             .then(response => new function () {
                 updateView(response.value);
-                console.log(response.value.threadId + ", " + response.value.loggedOnUser.id + "," + response.value.totalReactions);
                 reactionsListener
                     .invoke('SendMessage', response.value.threadId, response.value.loggedOnUser.id)
                     .catch(function (err) {

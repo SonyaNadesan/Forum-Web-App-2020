@@ -252,6 +252,18 @@ namespace Application.Web.Controllers
 
             var post = _postService.Get(postIdAsGuid).Result;
 
+            if (post.HasParentPost && !post.HasBeenViewedByParentPostOwner.Value && post.ParentPost.User.Email == User.Identity.Name)
+            {
+                post.HasBeenViewedByParentPostOwner = true;
+            }
+
+            if(!post.HasBeenViewedByThreadOwner && User.Identity.Name == post.Thread.User.Email)
+            {
+                post.HasBeenViewedByThreadOwner = true;
+            }
+
+            _postService.Edit(post);
+
             var ancestors = _postService.GetAncestors(postIdAsGuid).Result;
 
             var result = new PostAndAncestorsViewModel()

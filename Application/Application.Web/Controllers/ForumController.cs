@@ -164,7 +164,7 @@ namespace Application.Web.Controllers
             throw new Exception();
         }
 
-        public string GetRepliesOnPost(string postId, int from, int take)
+        public JsonResult GetRepliesOnPost(string postId, int from, int take)
         {
             var isPostIdGuid = Guid.TryParse(postId, out Guid postIdAsGuid);
 
@@ -194,7 +194,7 @@ namespace Application.Web.Controllers
                 NullValueHandling = NullValueHandling.Ignore
             });
 
-            return json;
+            return new JsonResult(JsonConvert.DeserializeObject<LoadMoreViewModel<Post>>(json));
         }
 
         public JsonResult GetReactions(string threadId, int returnCount = 3)

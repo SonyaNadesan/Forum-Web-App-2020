@@ -16,12 +16,6 @@ postsListener.on('NotifyUserOfPost', function (postParentType, post_Id, post_Use
 });
 
 function submitPost(parentPostId) {
-    let params = {
-        content: document.getElementById('txtContent_' + parentPostId).value,
-        threadId: document.getElementById('hdnThreadId_' + parentPostId).value,
-        parentPostId: parentPostId
-    };
-    alert(JSON.stringify(params));
     fetch('http://localhost:55931/Forum/CreatePost/', {
         method: 'POST',
         headers: {
@@ -29,7 +23,11 @@ function submitPost(parentPostId) {
             'Content-Type': 'application/json',
             'RequestVerificationToken': document.getElementsByName('__RequestVerificationToken')[0].value
         },
-        body: JSON.stringify(params)
+        body: JSON.stringify({
+            'content': document.getElementById('txtContent_' + parentPostId).value,
+            'threadId': document.getElementById('hdnThreadId_' + parentPostId).value,
+            'parentPostId': parentPostId
+        })
     })
         .then(data => data.json())
         .then(response => new function () {

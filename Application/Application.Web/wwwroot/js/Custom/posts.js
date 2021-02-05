@@ -7,7 +7,7 @@ postsListener.on('NotifyUserOfPost', function (postParentType, post_Id, post_Use
     var newNotification = document.createElement('li');
     var newLink = document.createElement('a');
     newLink.href = '/Forum/IndividualPost?postId=' + post_Id;
-    newLink.id = 'notification_postToThread_' + post_id;
+    newLink.id = 'notification_post' + post_Id;
     newLink.innerText = post_UserFirstName + ' commented on your ' + postParentType;
     newNotification.appendChild(newLink);
     notificationList.appendChild(newNotification);

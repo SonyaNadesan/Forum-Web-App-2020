@@ -76,7 +76,7 @@ function loadMorePosts_updateView(response, postId, paramFrom, paramTake) {
         document.getElementById('replies_' + postId).appendChild(replyToAddToContainer);
     }
 
-    if (response.HasMore == true) {
+    if (response.hasMore == true) {
         document.getElementById('hasMoreFrom_' + postId).value = response.from;
         document.getElementById('hasMoreTake_' + postId).value = response.take;
     }

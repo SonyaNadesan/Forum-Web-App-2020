@@ -30,7 +30,7 @@ function submitPost(parentPostId) {
         })
     })
     .then(data => data.json())
-    then(response => new function () {
+    .then(response => new function () {
         alert("done");
     });
 }

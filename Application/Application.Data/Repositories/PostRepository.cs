@@ -17,7 +17,7 @@ namespace Application.Data.Repositories
 
         public Post Get(Guid postId)
         {
-            return Context.Posts.Include(p => p.User).Include(p => p.Thread).SingleOrDefault(p => p.Id == postId);
+            return Context.Posts.Include(p => p.User).Include(p => p.Thread).Include(p => p.ParentPost).Include(p => p.ParentPost.User).Include(p => p.Thread.User).SingleOrDefault(p => p.Id == postId);
         }
 
         public IEnumerable<Post> GetAll()

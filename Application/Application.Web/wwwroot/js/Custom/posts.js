@@ -4,7 +4,6 @@ postsListener.start();
 postsListener.on('NotifyUserOfPost', function (postParentType, post_Id, post_UserFirstName, post_Content, post_threadId) {
     var totalNotifications = Number(document.getElementById('notificationCount').innerHTML);
     var notificationList = document.getElementById('notificationList');
-
     var newNotification = document.createElement('li');
     var newLink = document.createElement('a');
     newLink.href = '/Forum/IndividualPost?postId=' + post_Id;

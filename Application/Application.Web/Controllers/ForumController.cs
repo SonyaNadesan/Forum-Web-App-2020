@@ -256,8 +256,7 @@ namespace Application.Web.Controllers
             {
                 post.HasBeenViewedByParentPostOwner = true;
             }
-
-            if(!post.HasBeenViewedByThreadOwner && User.Identity.Name == post.Thread.User.Email)
+            else if(!post.HasBeenViewedByThreadOwner && User.Identity.Name == post.Thread.User.Email)
             {
                 post.HasBeenViewedByThreadOwner = true;
             }

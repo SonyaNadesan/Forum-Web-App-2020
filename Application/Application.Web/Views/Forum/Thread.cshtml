@@ -30,14 +30,14 @@
     <div id="topLevelPosts">
         @foreach (var post in Model.PaginationData.ItemsToDisplay)
         {
-        <div style="margin-left:5%">
-            <b>@post.TopLevelPost.User.FirstName @post.TopLevelPost.User.LastName commented on @post.TopLevelPost.DateTime</b>
-            <p>@post.TopLevelPost.Content</p>
+            <div style="margin-left:5%">
+                <b>@post.TopLevelPost.User.FirstName @post.TopLevelPost.User.LastName commented on @post.TopLevelPost.DateTime</b>
+                <p>@post.TopLevelPost.Content</p>
 
-            <input type="text" id="txtContent_@post.TopLevelPost.Id" placeholder="Enter your comment here" name="content" />
-            <input type="hidden" id="hdnParentPostId_@post.TopLevelPost.Id" name="ParentPostId" value="@post.TopLevelPost.Id" />
-            <button class="btn btn-primary" onclick="submitPost('@post.TopLevelPost.Id')">Submit</button>
-        </div>
+                <input type="text" id="txtContent_@post.TopLevelPost.Id" placeholder="Enter your comment here" name="content" />
+                <input type="hidden" id="hdnParentPostId_@post.TopLevelPost.Id" name="ParentPostId" value="@post.TopLevelPost.Id" />
+                <button class="btn btn-primary" onclick="submitPost('@post.TopLevelPost.Id')">Submit</button>
+            </div>
 
             <div id="replies_@post.TopLevelPost.Id">
                 @foreach (var reply in post.Replies.ItemsToDisplay)

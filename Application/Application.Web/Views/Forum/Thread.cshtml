@@ -25,7 +25,7 @@
     <div>
     </div>
     <br /><br />
-    <div>
+    <div id="topLevelPosts">
         @foreach (var post in Model.PaginationData.ItemsToDisplay)
         {
             <div style="margin-left:5%">
@@ -43,17 +43,17 @@
             <div id="replies_@post.TopLevelPost.Id">
                 @foreach (var reply in post.Replies.ItemsToDisplay)
                 {
-                <div style="margin-left:@(reply.LevelInHierarchy * 5)%">
-                    <b>@reply.User.FirstName @reply.User.LastName commented on @reply.DateTime</b>
-                    <p>@reply.Content</p>
-                    <hr />
+                    <div style="margin-left:@(reply.LevelInHierarchy * 5)%">
+                        <b>@reply.User.FirstName @reply.User.LastName commented on @reply.DateTime</b>
+                        <p>@reply.Content</p>
+                        <hr />
 
-                    @Html.AntiForgeryToken()
-                    <input type="text" id="txtContent_@reply.Id" placeholder="Enter your comment here" name="content" />
-                    <input type="hidden" id="hdnThreadId_@reply.Id" name="threadId" value="@Model.PageData.Id" />
-                    <input type="hidden" id="hdnParentPostId_@reply.Id" name="ParentPostId" value="@post.TopLevelPost.Id" />
-                    <button class="btn btn-primary" onclick="submitPost('@reply.Id')">Submit</button>
-                </div>
+                        @Html.AntiForgeryToken()
+                        <input type="text" id="txtContent_@reply.Id" placeholder="Enter your comment here" name="content" />
+                        <input type="hidden" id="hdnThreadId_@reply.Id" name="threadId" value="@Model.PageData.Id" />
+                        <input type="hidden" id="hdnParentPostId_@reply.Id" name="ParentPostId" value="@post.TopLevelPost.Id" />
+                        <button class="btn btn-primary" onclick="submitPost('@reply.Id')">Submit</button>
+                    </div>
                 }
             </div>
             @if (post.Replies.HasMore)
@@ -63,7 +63,8 @@
                 <button type="button" name="btnLoadMore" id="btnLoadMore_@post.TopLevelPost.Id" value="@post.TopLevelPost.Id">Load More</button>
             }
         }
-
+    </div>
+    <div>
         <br /><br />
         <h3>Post to this Thread</h3>
         <form action="/Forum/CreatePost" method="post">

@@ -30,7 +30,7 @@
     <div id="topLevelPosts">
         @foreach (var post in Model.PaginationData.ItemsToDisplay)
         {
-            <div style="margin-left:5%">
+            <div style="margin-left:5%" id="post_@post.TopLevelPost.Id">
                 <b>@post.TopLevelPost.User.FirstName @post.TopLevelPost.User.LastName commented on @post.TopLevelPost.DateTime</b>
                 <p>@post.TopLevelPost.Content</p>
 
@@ -42,7 +42,7 @@
             <div id="replies_@post.TopLevelPost.Id">
                 @foreach (var reply in post.Replies.ItemsToDisplay)
                 {
-                    <div style="margin-left:@(reply.LevelInHierarchy * 5)%">
+                    <div style="margin-left:@(reply.LevelInHierarchy * 5)%" id="post_@reply.Id">
                         <b>@reply.User.FirstName @reply.User.LastName commented on @reply.DateTime</b>
                         <p>@reply.Content</p>
 

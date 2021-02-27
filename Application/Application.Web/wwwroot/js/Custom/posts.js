@@ -24,14 +24,14 @@ function submitPost(parentPostId) {
         },
         body: JSON.stringify({
             'content': document.getElementById('txtContent_' + parentPostId).value,
-            'threadId': document.getElementById('hdnThreadId_' + parentPostId).value,
+            'threadId': document.getElementById('hdnThreadId').value,
             'parentPostId': parentPostId
         })
     })
     .then(data => data.json())
         .then(response => new function () {
             console.log(response);
-        postsListener.invoke('SendMessage', response.id)
+            postsListener.invoke('SendMessage', response.id)
             .catch(function (err) {
                 return console.error(err.toString());
             });

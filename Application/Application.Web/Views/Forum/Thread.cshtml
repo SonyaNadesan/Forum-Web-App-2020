@@ -25,6 +25,8 @@
     <div>
     </div>
     <br /><br />
+    @Html.AntiForgeryToken()
+    <input type="hidden" id="hdnThreadId" name="threadId" value="@Model.PageData.Id" />
     <div id="topLevelPosts">
         @foreach (var post in Model.PaginationData.ItemsToDisplay)
         {
@@ -34,9 +36,7 @@
                 <hr />
             </div>
 
-            @Html.AntiForgeryToken()
             <input type="text" id="txtContent_@post.TopLevelPost.Id" placeholder="Enter your comment here" name="content" />
-            <input type="hidden" id="hdnThreadId_@post.TopLevelPost.Id" name="threadId" value="@Model.PageData.Id" />
             <input type="hidden" id="hdnParentPostId_@post.TopLevelPost.Id" name="ParentPostId" value="@post.TopLevelPost.Id" />
             <button class="btn btn-primary" onclick="submitPost('@post.TopLevelPost.Id')">Submit</button>
 
@@ -48,10 +48,8 @@
                         <p>@reply.Content</p>
                         <hr />
 
-                        @Html.AntiForgeryToken()
                         <input type="text" id="txtContent_@reply.Id" placeholder="Enter your comment here" name="content" />
-                        <input type="hidden" id="hdnThreadId_@reply.Id" name="threadId" value="@Model.PageData.Id" />
-                        <input type="hidden" id="hdnParentPostId_@reply.Id" name="ParentPostId" value="@post.TopLevelPost.Id" />
+                        <input type="hidden" id="hdnParentPostId_@reply.Id" name="ParentPostId" value="@reply.Id" />
                         <button class="btn btn-primary" onclick="submitPost('@reply.Id')">Submit</button>
                     </div>
                 }
@@ -67,12 +65,10 @@
     <div>
         <br /><br />
         <h3>Post to this Thread</h3>
-        <form action="/Forum/CreatePost" method="post">
-            @Html.AntiForgeryToken()
-            <input type="text" placeholder="Enter your comment here" name="content" />
-            <input type="hidden" name="threadId" value="@Model.PageData.Id" />
-            <button class="btn btn-primary" type="submit">Submit</button>
-        </form>
+
+        <input type="text" id="txtContent_@Model.PageData.Id" placeholder="Enter your comment here" name="content" />
+        <input type="hidden" id="hdnParentPostId_@Model.PageData.Id" name="ParentPostId" value="" />
+        <button class="btn btn-primary" onclick="submitPost('@Model.PageData.Id')">Submit</button>
     </div>
     @await Html.PartialAsync("_PaginationWithId", Model.PaginationData)
 </div>

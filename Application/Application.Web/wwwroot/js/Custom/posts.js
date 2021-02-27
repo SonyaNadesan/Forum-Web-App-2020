@@ -33,31 +33,34 @@ function submitPost(parentPostId) {
     })
     .then(data => data.json())
         .then(response => new function () {
-            console.log(response);
-
             var parentPost = document.getElementById('post_' + response.parentPostId);
 
             var newPost = document.createElement('div');
             newPost.setAttribute('style', 'margin-left:' + response.levelInHierarchy * 5 + "%");
             newPost.setAttribute('id', 'post_' + response.id);
+
             var postOwner = document.createElement('b');
             postOwner.append(response.user.firstName + ' ' + response.user.lastName + ' commented on ' + response.dateTime);
             newPost.append(postOwner);
+
             var postContent = document.createElement('p');
             postContent.append(response.content);
             newPost.append(postContent);
+
             var frmTextbox = document.createElement('input');
             frmTextbox.setAttribute('type', 'text');
             frmTextbox.setAttribute('id', 'txtContent_' + response.id);
             frmTextbox.setAttribute('placeholder', 'Enter your comment here');
             frmTextbox.setAttribute('name', 'content');
             newPost.append(frmTextbox);
+
             var frmHdnParentPost = document.createElement('input');
             frmHdnParentPost.setAttribute('type', 'hidden');
             frmHdnParentPost.setAttribute('id', 'hdnParentPostId_' + response.id);
             frmHdnParentPost.setAttribute('value', 'hdnParentPostId_' + response.id);
             frmHdnParentPost.setAttribute('name', 'ParentPostId');
             newPost.append(frmHdnParentPost);
+
             var btnSubmit = document.createElement('button');
             btnSubmit.setAttribute('class', 'btn btn-primary');
             btnSubmit.innerText = 'Submit';

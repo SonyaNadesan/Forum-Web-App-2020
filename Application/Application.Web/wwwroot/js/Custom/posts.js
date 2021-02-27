@@ -66,7 +66,12 @@ function submitPost(parentPostId) {
             });
             newPost.append(btnSubmit);
 
-            parentPost.after(newPost);
+            if (!response.hasParentPost) {
+                document.getElementById('topLevelPosts').append(newPost);
+            }
+            else {
+                parentPost.after(newPost);
+            }
 
             postsListener.invoke('SendMessage', response.id)
             .catch(function (err) {

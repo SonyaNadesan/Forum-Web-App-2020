@@ -15,11 +15,16 @@ namespace Application.Domain.ApplicationEntities
         [Required]
         public string UserId { get; set; }
 
+        public Guid? TopicId { get; set; }
+
         [ForeignKey("UserId")]
         public virtual User User { get; set; }
 
+        [ForeignKey("TopicId")]
+        public virtual Topic Topic { get; set; }
         public virtual List<Post> Posts { get; set; }
         public virtual List<Reaction> Reactions { get; set; }
+        public virtual List<Category> Categories { get; set; }
 
         public Thread()
         {

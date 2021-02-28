@@ -26,7 +26,7 @@ function submitPost(parentPostId) {
             'RequestVerificationToken': document.getElementsByName('__RequestVerificationToken')[0].value
         },
         body: JSON.stringify({
-            'content': document.getElementById('txtContent_' + parentPostId).value,
+            'content': tinymce.get('txtContent_' + parentPostId).getContent(),
             'threadId': document.getElementById('hdnThreadId').value,
             'parentPostId': parentPostId
         })
@@ -44,11 +44,10 @@ function submitPost(parentPostId) {
             newPost.append(postOwner);
 
             var postContent = document.createElement('p');
-            postContent.append(response.content);
+            postContent.innerHTML = response.content;
             newPost.append(postContent);
 
-            var frmTextbox = document.createElement('input');
-            frmTextbox.setAttribute('type', 'text');
+            var frmTextbox = document.createElement('textarea');
             frmTextbox.setAttribute('id', 'txtContent_' + response.id);
             frmTextbox.setAttribute('placeholder', 'Enter your comment here');
             frmTextbox.setAttribute('name', 'content');
@@ -76,9 +75,29 @@ function submitPost(parentPostId) {
                 parentPost.after(newPost);
             }
 
+            applyRichTextEditor();
+
             postsListener.invoke('SendMessage', response.id)
             .catch(function (err) {
                 return console.error(err.toString());
             });
+    });
+}
+
+function applyRichTextEditor() {
+    tinymce.init({
+        selector: 'textarea',
+        block_formats: 'Paragraph=p; Header 1=h1; Header 2=h2; Header 3=h3',
+        plugins: 'link image table',
+        contextmenu: 'link image table',
+        menu: {
+            edit: { title: 'Edit', items: 'undo redo | cut copy paste | selectall | searchreplace' },
+            view: { title: 'View', items: 'spellchecker' },
+            insert: { title: 'Insert', items: 'image link media template codesample inserttable | charmap emoticons hr | pagebreak nonbreaking anchor toc | insertdatetime' },
+            format: { title: 'Format', items: 'bold italic underline strikethrough superscript subscript | fontsizes | removeformat' },
+            tools: { title: 'Tools', items: 'spellchecker spellcheckerlanguage | wordcount' },
+            table: { title: 'Table', items: 'inserttable | cell row column | tableprops deletetable' },
+            help: { title: 'Help', items: 'help' }
+        }
     });
 }

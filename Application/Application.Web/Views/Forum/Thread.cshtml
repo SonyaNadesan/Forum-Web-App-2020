@@ -32,9 +32,9 @@
         {
             <div style="margin-left:5%" id="post_@post.TopLevelPost.Id">
                 <b>@post.TopLevelPost.User.FirstName @post.TopLevelPost.User.LastName commented on @post.TopLevelPost.DateTime</b>
-                <p>@post.TopLevelPost.Content</p>
+                <p>@Html.Raw(post.TopLevelPost.Content)</p>
 
-                <input type="text" id="txtContent_@post.TopLevelPost.Id" placeholder="Enter your comment here" name="content" />
+                <textarea id="txtContent_@post.TopLevelPost.Id" placeholder="Enter your comment here" name="content"></textarea>
                 <input type="hidden" id="hdnParentPostId_@post.TopLevelPost.Id" name="ParentPostId" value="@post.TopLevelPost.Id" />
                 <button class="btn btn-primary" onclick="submitPost('@post.TopLevelPost.Id')">Submit</button>
             </div>
@@ -44,9 +44,9 @@
                 {
                     <div style="margin-left:@(reply.LevelInHierarchy * 5)%" id="post_@reply.Id">
                         <b>@reply.User.FirstName @reply.User.LastName commented on @reply.DateTime</b>
-                        <p>@reply.Content</p>
+                        <p>@Html.Raw(reply.Content)</p>
 
-                        <input type="text" id="txtContent_@reply.Id" placeholder="Enter your comment here" name="content" />
+                        <textarea id="txtContent_@reply.Id" placeholder="Enter your comment here" name="content"></textarea>
                         <input type="hidden" id="hdnParentPostId_@reply.Id" name="ParentPostId" value="@reply.Id" />
                         <button class="btn btn-primary" onclick="submitPost('@reply.Id')">Submit</button>
                     </div>
@@ -66,7 +66,7 @@
         <br /><br />
         <h3>Post to this Thread</h3>
 
-        <input type="text" id="txtContent_@Model.PageData.Id" placeholder="Enter your comment here" name="content" />
+        <textarea id="txtContent_@Model.PageData.Id" placeholder="Enter your comment here" name="content"></textarea>
         <input type="hidden" id="hdnParentPostId_@Model.PageData.Id" name="ParentPostId" value="" />
         <button class="btn btn-primary" onclick="submitPost('@Model.PageData.Id')">Submit</button>
     </div>
@@ -77,5 +77,6 @@
     document.addEventListener("DOMContentLoaded", function () {
         setLoadMore();
         setReaction();
+        applyRichTextEditor();
     });
 </script>

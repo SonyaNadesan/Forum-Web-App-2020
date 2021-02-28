@@ -113,7 +113,6 @@ namespace Application.Web.Controllers
                 return View(viewModel);
             }
 
-
             return View("Index");
         }
 

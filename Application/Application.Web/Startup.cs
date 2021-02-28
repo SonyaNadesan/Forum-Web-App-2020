@@ -129,6 +129,8 @@ namespace Application.Web
             services.AddScoped<IThreadRepository, ThreadRepository>();
             services.AddScoped<IPostRepository, PostRepository>();
             services.AddScoped<IReactionRepository, ReactionRepository>();
+            services.AddScoped<ITopicRepository, TopicRepository>();
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
         }
 
         private void ConfigureIdentity(IServiceCollection services)

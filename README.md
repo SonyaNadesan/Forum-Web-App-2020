@@ -21,4 +21,4 @@ Developing my knowledge and skills based on what I have learnt during my time at
 
 ...and what I have learnt during my spare time!
 
-Currently looking into improving security :)
+Taking a break from this project but looking forward to building a filter feature and Currently looking improving security :)

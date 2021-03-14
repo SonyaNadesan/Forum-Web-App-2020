@@ -19,7 +19,4 @@ Developing my knowledge and skills based on what I have learnt during my time at
 6) JavaScript: Fetch API, Closures, Minification
 7) CMS Development using EpiServer (this project will not be using EpiServer nor other CMS)
 
-...and what I have learnt during my spare time including:
-1) Web Sockets
-2) Streaming
-3) Delegates
+...and what I have learnt during my spare time!

@@ -14,7 +14,7 @@ Developing my knowledge and skills based on what I have learnt during my time at
 1) A deeper understanding of the .NET Framework, coding standards and ASP.NET MVC (C#); in this project, I will be exploring .NET Core
 2) ORMs - Entity Framework 6 (code first and DB first) as well as LINQ; in this project, I will be exploring EF Core using a code-first approach
 3) Security : ASP.NET Identity, authenitcation cookies,XSRF, salts; in this project, I will be exploring ASP.NET Identity Core
-4) Generics, Design Patterns and SOLID Principles
+4) Generics, Various Design Patterns and SOLID
 5) Async, Await and Tasks, Multithreaded programming, lcoks, smeaphores, race conditions
 6) JavaScript: Fetch API, Closures, Minification
 7) CMS Development using EpiServer (this project will not be using EpiServer nor other CMS)

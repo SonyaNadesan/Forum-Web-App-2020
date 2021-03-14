@@ -20,3 +20,5 @@ Developing my knowledge and skills based on what I have learnt during my time at
 7) CMS Development using EpiServer (this project will not be using EpiServer nor other CMS)
 
 ...and what I have learnt during my spare time!
+
+Currently looking into improving security :)

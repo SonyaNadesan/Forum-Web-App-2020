@@ -142,9 +142,9 @@ namespace Application.Web.Controllers
 
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public IActionResult CreateThread(string heading, string body, string[] categories, string topic = "")
+        public IActionResult CreateThread(CreateThreadViewModel viewModel)
         {
-            var createThreadResponse = _threadService.Create(User.Identity.Name, heading, body);
+            var createThreadResponse = _threadService.Create(User.Identity.Name, viewModel.Heading, viewModel.Body);
 
             if (!createThreadResponse.IsValid)
             {

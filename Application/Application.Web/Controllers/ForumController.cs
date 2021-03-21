@@ -5,6 +5,7 @@ using Application.Services.UserProfile;
 using Application.Web.ViewModels;
 using Application.Web.ViewModels.ViewModelHelpers;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -18,13 +19,16 @@ namespace Application.Web.Controllers
         private readonly IPostService _postService;
         private readonly IReactionService _reactionService;
         private readonly IUserProfileService _userProfileService;
+        private readonly ICategoryService _categoryService;
 
-        public ForumController(IThreadService threadService, IPostService postService, IReactionService reactionService, IUserProfileService userProfileService)
+        public ForumController(IThreadService threadService, IPostService postService, IReactionService reactionService, 
+                               IUserProfileService userProfileService, ICategoryService categoryService)
         {
             _threadService = threadService;
             _postService = postService;
             _reactionService = reactionService;
             _userProfileService = userProfileService;
+            _categoryService = categoryService;
         }
 
         public IActionResult Index(int page = 1, int startPage = 1, string query = "")
@@ -118,13 +122,30 @@ namespace Application.Web.Controllers
 
         public IActionResult CreateThread()
         {
+            var categories = _categoryService.GetAll().Result;
+
+            var categoryOptionsList = new List<SelectionViewModel>();
+
+            foreach(var category in categories)
+            {
+                var categoryOption = new SelectionViewModel()
+                {
+                    ID = "category_" + category.Id,
+                    Checked = false,
+                    Text = category.DisplayName,
+                    Value = category.NameInUrl
+                };
+
+                categoryOptionsList.Add(categoryOption);
+            }
+
             var viewModel = new CreateThreadViewModel()
             {
                 Heading = string.Empty,
                 Categories = new List<SelectionViewModel>(),
                 Body = string.Empty,
                 Topic = new SelectionViewModel(),
-                CategoryOptions = new List<SelectionViewModel>(),
+                CategoryOptions = categoryOptionsList,
                 TopicOptions = new List<SelectionViewModel>()
             };
 
@@ -133,7 +154,7 @@ namespace Application.Web.Controllers
 
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public IActionResult CreateThread(string heading, string body)
+        public IActionResult CreateThread(string heading, string body, string topic = "", string[] categories)
         {
             var createThreadResponse = _threadService.Create(User.Identity.Name, heading, body);
 

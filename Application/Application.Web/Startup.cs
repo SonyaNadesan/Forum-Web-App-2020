@@ -122,6 +122,7 @@ namespace Application.Web
             services.AddScoped<IThreadService, ThreadService>();
             services.AddScoped<IPostService, PostService>();
             services.AddScoped<IReactionService, ReactionService>();
+            services.AddScoped<ICategoryService, CategoryService>();
 
             //Repositories & Uit of Work
             services.AddScoped<IUnitOfWork, UnitOfWork>();

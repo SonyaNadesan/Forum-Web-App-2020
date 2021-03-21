@@ -123,6 +123,7 @@ namespace Application.Web
             services.AddScoped<IPostService, PostService>();
             services.AddScoped<IReactionService, ReactionService>();
             services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<ITopicService, TopicService>();
 
             //Repositories & Uit of Work
             services.AddScoped<IUnitOfWork, UnitOfWork>();

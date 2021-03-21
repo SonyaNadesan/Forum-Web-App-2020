@@ -20,15 +20,17 @@ namespace Application.Web.Controllers
         private readonly IReactionService _reactionService;
         private readonly IUserProfileService _userProfileService;
         private readonly ICategoryService _categoryService;
+        private readonly ITopicService _topicService;
 
         public ForumController(IThreadService threadService, IPostService postService, IReactionService reactionService, 
-                               IUserProfileService userProfileService, ICategoryService categoryService)
+                               IUserProfileService userProfileService, ICategoryService categoryService, ITopicService topicService)
         {
             _threadService = threadService;
             _postService = postService;
             _reactionService = reactionService;
             _userProfileService = userProfileService;
             _categoryService = categoryService;
+            _topicService = topicService;
         }
 
         public IActionResult Index(int page = 1, int startPage = 1, string query = "")
@@ -122,31 +124,17 @@ namespace Application.Web.Controllers
 
         public IActionResult CreateThread()
         {
-            var categories = _categoryService.GetAll().Result;
-
-            var categoryOptionsList = new List<SelectionViewModel>();
-
-            foreach(var category in categories)
-            {
-                var categoryOption = new SelectionViewModel()
-                {
-                    ID = "category_" + category.Id,
-                    Checked = false,
-                    Text = category.DisplayName,
-                    Value = category.NameInUrl
-                };
-
-                categoryOptionsList.Add(categoryOption);
-            }
+            var allCategories = _categoryService.GetAll().Result.ToList();
+            var allTopics = _topicService.GetAll().Result.ToList();
 
             var viewModel = new CreateThreadViewModel()
             {
                 Heading = string.Empty,
-                Categories = new List<SelectionViewModel>(),
+                Categories = new string[allCategories.Count],
                 Body = string.Empty,
-                Topic = new SelectionViewModel(),
-                CategoryOptions = categoryOptionsList,
-                TopicOptions = new List<SelectionViewModel>()
+                Topic = string.Empty,
+                CategoryOptions = allCategories,
+                TopicOptions = allTopics
             };
 
             return View(viewModel);
@@ -154,7 +142,7 @@ namespace Application.Web.Controllers
 
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public IActionResult CreateThread(string heading, string body, string topic = "", string[] categories)
+        public IActionResult CreateThread(string heading, string body, string[] categories, string topic = "")
         {
             var createThreadResponse = _threadService.Create(User.Identity.Name, heading, body);
 

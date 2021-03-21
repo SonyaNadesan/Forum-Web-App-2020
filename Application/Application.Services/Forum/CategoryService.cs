@@ -31,7 +31,7 @@ namespace Application.Services.Forum
                 return response;
             }
 
-            var newCateory = new Category()
+            var newCategory = new Category()
             {
                 Id = Guid.NewGuid(),
                 NameInUrl = nameInUrl,
@@ -39,11 +39,11 @@ namespace Application.Services.Forum
                 ThreadCategories = new List<ThreadCategory>()
             };
 
-            response.Result = newCateory;
+            response.Result = newCategory;
 
             try
             {
-                _unitOfWork.CategoryRepository.Add(newCateory);
+                _unitOfWork.CategoryRepository.Add(newCategory);
                 _unitOfWork.Save();
             }
             catch (Exception ex)

@@ -12,6 +12,7 @@ namespace Application.Data
         private IReactionRepository _reactionRepository;
         private ICategoryRepository _categoryRepository;
         private ITopicRepository _topicRepository;
+        private IThreadCategoryRepository _threadCategoryRepository;
 
         public UnitOfWork(ApplicationDbContext context)
         {
@@ -76,6 +77,16 @@ namespace Application.Data
                 _topicRepository ??= new TopicRepository(_context);
 
                 return _topicRepository;
+            }
+        }
+
+        public IThreadCategoryRepository ThreadCategoryRepository
+        {
+            get
+            {
+                _threadCategoryRepository ??= new ThreadCategoryRepository(_context);
+
+                return _threadCategoryRepository;
             }
         }
 

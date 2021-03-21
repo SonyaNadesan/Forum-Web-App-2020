@@ -14,6 +14,7 @@ namespace Application.Data
         public DbSet<Reaction> Reactions { get; set; }
         public DbSet<Topic> Topics { get; set; }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<ThreadCategory> ThreadCategories { get; set; }
 
         public ApplicationDbContext(IConfiguration configuration)
         {

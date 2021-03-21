@@ -144,7 +144,7 @@ namespace Application.Web.Controllers
         [HttpPost]
         public IActionResult CreateThread(CreateThreadViewModel viewModel)
         {
-            var createThreadResponse = _threadService.Create(User.Identity.Name, viewModel.Heading, viewModel.Body);
+            var createThreadResponse = _threadService.Create(User.Identity.Name, viewModel.Heading, viewModel.Body, viewModel.Topic, viewModel.Categories);
 
             if (!createThreadResponse.IsValid)
             {

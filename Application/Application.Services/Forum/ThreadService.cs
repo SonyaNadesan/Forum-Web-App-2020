@@ -99,7 +99,7 @@ namespace Application.Services.Forum
             return response;
         }
 
-        public ServiceResponse<Thread> Create(string email, string heading, string body)
+        public ServiceResponse<Thread> Create(string email, string heading, string body, string topic, string[] categories)
         {
             var response = new ServiceResponse<Thread>();
 

@@ -17,12 +17,16 @@ namespace Application.Data.Repositories
 
         public Thread Get(Guid threadId)
         {
-            return Context.Threads.Include(t => t.User).Include(t => t.Posts).Include(t => t.Reactions).SingleOrDefault(t => t.Id == threadId);
+            return Context.Threads.Include(t => t.User)
+                                  .Include(t => t.Posts)
+                                  .Include(t => t.Reactions)
+                                  .Include(t => t.ThreadCategories)
+                                  .SingleOrDefault(t => t.Id == threadId);
         }
 
         public IEnumerable<Thread> GetAll()
         {
-            return Context.Threads.Include(t => t.User);
+            return Context.Threads.Include(t => t.User).Include(t => t.ThreadCategories);
         }
 
         public void Delete(Guid threadId)

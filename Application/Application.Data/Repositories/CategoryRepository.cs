@@ -1,4 +1,5 @@
 ﻿using Application.Domain.ApplicationEntities;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,12 +17,12 @@ namespace Application.Data.Repositories
 
         public Category Get(Guid categoryId)
         {
-            return Context.Categories.SingleOrDefault(c => c.Id == categoryId);
+            return Context.Categories.Include(c => c.ThreadCategories).SingleOrDefault(c => c.Id == categoryId);
         }
 
         public IEnumerable<Category> GetAll()
         {
-            return Context.Categories;
+            return Context.Categories.Include(c => c.ThreadCategories);
         }
 
         public void Delete(Guid categoryId)

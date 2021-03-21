@@ -24,7 +24,7 @@ namespace Application.Domain.ApplicationEntities
         public virtual Topic Topic { get; set; }
         public virtual List<Post> Posts { get; set; }
         public virtual List<Reaction> Reactions { get; set; }
-        public virtual List<Category> Categories { get; set; }
+        public virtual List<ThreadCategory> ThreadCategories { get; set; }
 
         public Thread()
         {

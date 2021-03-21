@@ -31,14 +31,9 @@ namespace Application.Data.Migrations
                     b.Property<string>("NameInUrl")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("ThreadId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("ThreadId");
-
-                    b.ToTable("Category");
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("Application.Domain.ApplicationEntities.Post", b =>
@@ -145,6 +140,27 @@ namespace Application.Data.Migrations
                     b.ToTable("Threads");
                 });
 
+            modelBuilder.Entity("Application.Domain.ApplicationEntities.ThreadCategory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ThreadId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("ThreadId");
+
+                    b.ToTable("ThreadCategory");
+                });
+
             modelBuilder.Entity("Application.Domain.ApplicationEntities.Topic", b =>
                 {
                     b.Property<Guid>("Id")
@@ -159,7 +175,7 @@ namespace Application.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Topic");
+                    b.ToTable("Topics");
                 });
 
             modelBuilder.Entity("Application.Domain.ApplicationEntities.User", b =>
@@ -182,13 +198,6 @@ namespace Application.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("Application.Domain.ApplicationEntities.Category", b =>
-                {
-                    b.HasOne("Application.Domain.ApplicationEntities.Thread", null)
-                        .WithMany("Categories")
-                        .HasForeignKey("ThreadId");
                 });
 
             modelBuilder.Entity("Application.Domain.ApplicationEntities.Post", b =>
@@ -252,13 +261,37 @@ namespace Application.Data.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Application.Domain.ApplicationEntities.ThreadCategory", b =>
+                {
+                    b.HasOne("Application.Domain.ApplicationEntities.Category", "Category")
+                        .WithMany("ThreadCategories")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Application.Domain.ApplicationEntities.Thread", "Thread")
+                        .WithMany("ThreadCategories")
+                        .HasForeignKey("ThreadId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Thread");
+                });
+
+            modelBuilder.Entity("Application.Domain.ApplicationEntities.Category", b =>
+                {
+                    b.Navigation("ThreadCategories");
+                });
+
             modelBuilder.Entity("Application.Domain.ApplicationEntities.Thread", b =>
                 {
-                    b.Navigation("Categories");
-
                     b.Navigation("Posts");
 
                     b.Navigation("Reactions");
+
+                    b.Navigation("ThreadCategories");
                 });
 #pragma warning restore 612, 618
         }

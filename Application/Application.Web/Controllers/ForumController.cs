@@ -118,7 +118,17 @@ namespace Application.Web.Controllers
 
         public IActionResult CreateThread()
         {
-            return View();
+            var viewModel = new CreateThreadViewModel()
+            {
+                Heading = string.Empty,
+                Categories = new List<SelectionViewModel>(),
+                Body = string.Empty,
+                Topic = new SelectionViewModel(),
+                CategoryOptions = new List<SelectionViewModel>(),
+                TopicOptions = new List<SelectionViewModel>()
+            };
+
+            return View(viewModel);
         }
 
         [ValidateAntiForgeryToken]

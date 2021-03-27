@@ -13,6 +13,12 @@
     <div>
         <h1>@Model.PageData.Heading</h1>
         <h3>By @Model.PageData.User.FirstName @Model.PageData.User.LastName @Model.PageData.DateTime</h3>
+        <div style="font-family:Arial;font-weight: 600;text-align:center;width:100%; height:25px;background-color:#000066; color: white">Looking for @Model.PageData.Topic.DisplayName</div>
+        <br />
+        @foreach(var category in Model.PageData.Categories)
+        {
+            <div style="font-family:Arial;font-weight: 600;text-align:center; height:25px;display:inline-block; background-color:#F2F2F5"><div style="padding-left:20px;padding-right:20px;">@category.DisplayName</div></div>
+        }
         <h4>@Model.PageData.Body</h4>
     </div>
     <div class="display: flex;">

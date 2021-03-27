@@ -21,17 +21,22 @@ namespace Application.Data.Repositories
                                   .Include(t => t.Posts)
                                   .Include(t => t.Reactions)
                                   .Include(t => t.Categories)
+                                  .Include(t => t.Topic)
                                   .SingleOrDefault(t => t.Id == threadId);
         }
 
         public IEnumerable<Thread> GetAll()
         {
-            return Context.Threads.Include(t => t.User).Include(t => t.Topic);
+            return Context.Threads.Include(t => t.User)
+                                  .Include(t => t.Posts)
+                                  .Include(t => t.Reactions)
+                                  .Include(t => t.Categories)
+                                  .Include(t => t.Topic);
         }
 
         public void Delete(Guid threadId)
         {
-            var thread = Context.Threads.SingleOrDefault(t => t.Id == threadId);
+            var thread = Get(threadId);
 
             if (thread != null)
             {
@@ -53,7 +58,11 @@ namespace Application.Data.Repositories
 
         public void Edit(Thread thread)
         {
-            var result = Context.Threads.Include(t => t.User).SingleOrDefault(t => t.Id == thread.Id);
+            var result = Context.Threads.Include(t => t.User)
+                                        .Include(t => t.Posts)
+                                        .Include(t => t.Reactions)
+                                        .Include(t => t.Categories)
+                                        .Include(t => t.Topic).SingleOrDefault(t => t.Id == thread.Id);
 
             if (result != null)
             {

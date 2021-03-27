@@ -130,7 +130,7 @@ namespace Application.Web.Controllers
             var viewModel = new CreateThreadViewModel()
             {
                 Heading = string.Empty,
-                Categories = new string[allCategories.Count],
+                Categories = { },
                 Body = string.Empty,
                 Topic = string.Empty,
                 CategoryOptions = allCategories,
@@ -149,15 +149,18 @@ namespace Application.Web.Controllers
 
             var createThreadResponse = _threadService.Create(User.Identity.Name, viewModel.Heading, viewModel.Body, selectedTopic, selectedCategories);
 
-            if (!createThreadResponse.IsValid)
+            if (createThreadResponse.IsValid)
             {
-                viewModel.CategoryOptions = _categoryService.GetAll().Result.ToList();
-                viewModel.TopicOptions = _topicService.GetAll().Result.ToList();
+                var allCategories = _categoryService.GetAll().Result.ToList();
+                var allTopics = _topicService.GetAll().Result.ToList();
+
+                viewModel.CategoryOptions = allCategories;
+                viewModel.TopicOptions = allTopics;
 
                 return View(viewModel);
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction("CreateThread");
         }
 
         [ValidateAntiForgeryToken]

@@ -144,11 +144,17 @@ namespace Application.Web.Controllers
         [HttpPost]
         public IActionResult CreateThread(CreateThreadViewModel viewModel)
         {
-            var createThreadResponse = _threadService.Create(User.Identity.Name, viewModel.Heading, viewModel.Body, viewModel.Topic, viewModel.Categories);
+            var selectedTopic = _topicService.GetAll().Result.SingleOrDefault(x => x.NameInUrl == viewModel.Topic.ToLower());
+            var selectedCategories= _categoryService.GetAll().Result.Where(x => viewModel.Categories.Contains(x.NameInUrl)).ToList();
+
+            var createThreadResponse = _threadService.Create(User.Identity.Name, viewModel.Heading, viewModel.Body, selectedTopic, selectedCategories);
 
             if (!createThreadResponse.IsValid)
             {
-                return RedirectToAction("Index"); //Needs changing
+                viewModel.CategoryOptions = _categoryService.GetAll().Result.ToList();
+                viewModel.TopicOptions = _topicService.GetAll().Result.ToList();
+
+                return View(viewModel);
             }
 
             return RedirectToAction("Index");

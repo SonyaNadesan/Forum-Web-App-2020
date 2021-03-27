@@ -17,7 +17,7 @@ namespace Application.Data.Repositories
 
         public Category Get(Guid categoryId)
         {
-            return Context.Categories.Include(c => c.ThreadCategories).SingleOrDefault(c => c.Id == categoryId);
+            return Context.Categories.Include(c => c.Threads).SingleOrDefault(c => c.Id == categoryId);
         }
 
         public IEnumerable<Category> GetAll()

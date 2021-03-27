@@ -9,6 +9,6 @@ namespace Application.Domain.ApplicationEntities
         public string NameInUrl { get; set; }
         public string DisplayName { get; set; }
 
-        public virtual List<ThreadCategory> ThreadCategories { get; set; }
+        public virtual List<Thread> Threads { get; set; }
     }
 }

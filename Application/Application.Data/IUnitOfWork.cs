@@ -16,8 +16,6 @@ namespace Application.Data
 
         ITopicRepository TopicRepository { get; }
 
-        IThreadCategoryRepository ThreadCategoryRepository { get; }
-
         void Save();
     }
 }

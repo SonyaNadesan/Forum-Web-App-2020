@@ -20,7 +20,7 @@ namespace Application.Data.Repositories
             return Context.Threads.Include(t => t.User)
                                   .Include(t => t.Posts)
                                   .Include(t => t.Reactions)
-                                  .Include(t => t.ThreadCategories)
+                                  .Include(t => t.Categories)
                                   .SingleOrDefault(t => t.Id == threadId);
         }
 
@@ -46,7 +46,7 @@ namespace Application.Data.Repositories
             if (threadFromDb == null)
             {
                 Context.Entry(thread.User).State = EntityState.Unchanged;
-                Context.Entry(thread).State = EntityState.Added;
+                Context.Entry(thread.Topic).State = EntityState.Unchanged;
                 Context.Threads.Add(thread);
             }
         }

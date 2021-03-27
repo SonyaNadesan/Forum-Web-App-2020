@@ -36,7 +36,7 @@ namespace Application.Services.Forum
                 Id = Guid.NewGuid(),
                 NameInUrl = nameInUrl,
                 DisplayName = displayName,
-                ThreadCategories = new List<ThreadCategory>()
+                Threads = new List<Thread>()
             };
 
             response.Result = newCategory;

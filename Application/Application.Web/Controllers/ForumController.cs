@@ -33,8 +33,15 @@ namespace Application.Web.Controllers
             _topicService = topicService;
         }
 
-        public IActionResult Index(int page = 1, int startPage = 1, string query = "")
+        public IActionResult Index(int page = 1, int startPage = 1, string query = "", string topic = "", string categories = "")
         {
+            topic = string.IsNullOrEmpty(topic) ? "all" : topic;
+
+            categories = string.IsNullOrEmpty(categories) ? "all" : categories;
+
+            var topicCollection = CollectionGenerationFromQueryParamService.GenerateCollection<HashSet<string>>(topic);
+            var categoryCollection = CollectionGenerationFromQueryParamService.GenerateCollection<HashSet<string>>(categories);
+
             var allThreads = _threadService.GetAll();
 
             var results = allThreads.Result.OrderByDescending(t => t.DateTime);

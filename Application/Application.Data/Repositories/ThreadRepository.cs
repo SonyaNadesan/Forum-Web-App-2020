@@ -26,7 +26,7 @@ namespace Application.Data.Repositories
 
         public IEnumerable<Thread> GetAll()
         {
-            return Context.Threads.Include(t => t.User).Include(t => t.ThreadCategories);
+            return Context.Threads.Include(t => t.User).Include(t => t.Topic);
         }
 
         public void Delete(Guid threadId)

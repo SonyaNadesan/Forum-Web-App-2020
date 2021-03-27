@@ -22,7 +22,7 @@ namespace Application.Data.Repositories
 
         public IEnumerable<Category> GetAll()
         {
-            return Context.Categories.Include(c => c.ThreadCategories);
+            return Context.Categories;
         }
 
         public void Delete(Guid categoryId)

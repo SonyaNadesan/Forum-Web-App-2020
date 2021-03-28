@@ -1,4 +1,5 @@
-﻿using Application.Domain.ApplicationEntities;
+﻿using Application.Domain;
+using Application.Domain.ApplicationEntities;
 using Application.Services.Filtering;
 using Application.Services.Forum;
 using Application.Services.Forum.Filters;
@@ -41,7 +42,7 @@ namespace Application.Web.Controllers
             _threadFilterService = threadFilterService;
         }
 
-        public IActionResult Index(int page = 1, int startPage = 1, string query = "", string topic = "", string categories = "")
+        public IActionResult Index(int page = 1, int startPage = 1, string query = "", string topic = "", string categories = "", Enums.MatchConditions matchCondition = Enums.MatchConditions.MatchAny)
         {
             topic = string.IsNullOrEmpty(topic) ? "all" : topic;
 
@@ -52,7 +53,7 @@ namespace Application.Web.Controllers
             var allThreads = _threadService.GetAll().Result.ToList();
 
             var filters = _threadFilterBuilder.AddTopicFilter(topic)
-                                              .AddCategoryFilter(categoryCollection)
+                                              .AddCategoryFilter(categoryCollection, matchCondition)
                                               .Build();
 
             var results = _threadFilterService.GetFilteredList(allThreads, filters).OrderByDescending(t => t.DateTime);

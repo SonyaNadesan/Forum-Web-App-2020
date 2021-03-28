@@ -1,4 +1,5 @@
-﻿using Application.Domain.ApplicationEntities;
+﻿using Application.Domain;
+using Application.Domain.ApplicationEntities;
 using Application.Services.Filtering;
 using System.Collections.Generic;
 
@@ -10,16 +11,28 @@ namespace Application.Services.Forum.Filters
 
         private bool isToBeCleared = false;
 
-        public IThreadFilterBuilder AddCategoryFilter<T>(T categories) where T : ICollection<string>
+        public IThreadFilterBuilder AddCategoryFilter<T>(T categories, Enums.MatchConditions matchCondition) where T : ICollection<string>
         {
             ClearListIfNecessary();
 
-            var categoryFilter = new CategoryFilter<T>()
+            if (matchCondition == Enums.MatchConditions.MatchAny)
             {
-                Categories = categories
-            };
+                var anyCategoryFilter = new AnyCategoryFilter<T>()
+                {
+                    Categories = categories
+                };
 
-            _filters.Add(categoryFilter);
+                _filters.Add(anyCategoryFilter);
+            }
+            else if(matchCondition == Enums.MatchConditions.MatchAll)
+            {
+                var allCategoryFilter = new AllCategoryFilter<T>()
+                {
+                    Categories = categories
+                };
+
+                _filters.Add(allCategoryFilter);
+            }
 
             return this;
         }

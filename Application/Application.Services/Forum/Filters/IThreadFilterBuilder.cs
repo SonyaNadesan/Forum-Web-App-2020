@@ -1,4 +1,5 @@
-﻿using Application.Domain.ApplicationEntities;
+﻿using Application.Domain;
+using Application.Domain.ApplicationEntities;
 using Application.Services.Filtering;
 using System.Collections.Generic;
 
@@ -8,7 +9,7 @@ namespace Application.Services.Forum.Filters
     {
         IThreadFilterBuilder AddTopicFilter(string topic);
 
-        IThreadFilterBuilder AddCategoryFilter<T>(T categories) where T : ICollection<string>;
+        IThreadFilterBuilder AddCategoryFilter<T>(T categories, Enums.MatchConditions matchCondition) where T : ICollection<string>;
 
         List<IFilter<Thread>> Build();
     }

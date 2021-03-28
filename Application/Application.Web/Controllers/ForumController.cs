@@ -1,5 +1,7 @@
 ﻿using Application.Domain.ApplicationEntities;
+using Application.Services.Filtering;
 using Application.Services.Forum;
+using Application.Services.Forum.Filters;
 using Application.Services.Shared;
 using Application.Services.UserProfile;
 using Application.Web.ViewModels;
@@ -20,9 +22,12 @@ namespace Application.Web.Controllers
         private readonly IUserProfileService _userProfileService;
         private readonly ICategoryService _categoryService;
         private readonly ITopicService _topicService;
+        private readonly IThreadFilterBuilder _threadFilterBuilder;
+        private readonly IFilterService<Thread> _threadFilterService;
 
-        public ForumController(IThreadService threadService, IPostService postService, IReactionService reactionService, 
-                               IUserProfileService userProfileService, ICategoryService categoryService, ITopicService topicService)
+        public ForumController(IThreadService threadService, IPostService postService, IReactionService reactionService,
+                               IUserProfileService userProfileService, ICategoryService categoryService, ITopicService topicService,
+                               IThreadFilterBuilder threadFilterBuilder, IFilterService<Thread> threadFilterService)
         {
             _threadService = threadService;
             _postService = postService;
@@ -30,6 +35,8 @@ namespace Application.Web.Controllers
             _userProfileService = userProfileService;
             _categoryService = categoryService;
             _topicService = topicService;
+            _threadFilterBuilder = threadFilterBuilder;
+            _threadFilterService = threadFilterService;
         }
 
         public IActionResult Index(int page = 1, int startPage = 1, string query = "", string topic = "", string categories = "")
@@ -38,16 +45,19 @@ namespace Application.Web.Controllers
 
             categories = string.IsNullOrEmpty(categories) ? "all" : categories;
 
-            var topicCollection = CollectionGenerationFromQueryParamService.GenerateCollection<HashSet<string>>(topic);
             var categoryCollection = CollectionGenerationFromQueryParamService.GenerateCollection<HashSet<string>>(categories);
 
-            var allThreads = _threadService.GetAll();
+            var allThreads = _threadService.GetAll().Result.ToList();
 
-            var results = allThreads.Result.OrderByDescending(t => t.DateTime);
+            var filters = _threadFilterBuilder.AddTopicFilter(topic)
+                                              .AddCategoryFilter(categoryCollection)
+                                              .Build();
 
-            var resultsToDisplay = PaginationHelper.GetItemsToDisplay<Thread>(results, page, 5).ToList();
+            var results = _threadFilterService.GetFilteredList(allThreads, filters).OrderByDescending(t => t.DateTime);
 
-            var viewModel = new Pagination<Thread>()
+            var resultsToDisplay = PaginationHelper.GetItemsToDisplay(results, page, 5).ToList();
+
+            var pagination = new Pagination<Thread>()
             {
                 CurrentPage = page,
                 FormAction = "../Forum/Index",
@@ -56,6 +66,15 @@ namespace Application.Web.Controllers
                 StartPage = startPage,
                 Query = query,
                 TotalNumberOfResults = results.Count()
+            };
+
+            var viewModel = new ForumIndexViewModel()
+            {
+                Pagination = pagination,
+                Categories = categoryCollection.ToArray(),
+                Topic = topic,
+                CategoryOptions = _categoryService.GetAll().Result.ToList(),
+                TopicOptions = _topicService.GetAll().Result.ToList()
             };
 
             return View(viewModel);
@@ -151,7 +170,7 @@ namespace Application.Web.Controllers
         public IActionResult CreateThread(CreateThreadViewModel viewModel)
         {
             var selectedTopic = _topicService.GetAll().Result.SingleOrDefault(x => x.NameInUrl == viewModel.Topic.ToLower());
-            var selectedCategories= _categoryService.GetAll().Result.Where(x => viewModel.Categories.Contains(x.NameInUrl)).ToList();
+            var selectedCategories = _categoryService.GetAll().Result.Where(x => viewModel.Categories.Contains(x.NameInUrl)).ToList();
 
             var createThreadResponse = _threadService.Create(User.Identity.Name, viewModel.Heading, viewModel.Body, selectedTopic, selectedCategories);
 
@@ -289,7 +308,7 @@ namespace Application.Web.Controllers
             {
                 post.HasBeenViewedByParentPostOwner = true;
             }
-            else if(!post.HasBeenViewedByThreadOwner && User.Identity.Name == post.Thread.User.Email)
+            else if (!post.HasBeenViewedByThreadOwner && User.Identity.Name == post.Thread.User.Email)
             {
                 post.HasBeenViewedByThreadOwner = true;
             }
@@ -306,7 +325,7 @@ namespace Application.Web.Controllers
 
             var json = JsonConvert.SerializeObject(result, new JsonSerializerSettings()
             {
-               ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
             });
 
             return new JsonResult(JsonConvert.DeserializeObject<PostAndAncestorsViewModel>(json));

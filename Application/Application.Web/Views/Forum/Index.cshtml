@@ -1,6 +1,6 @@
-﻿@using Application.Domain.ApplicationEntities
-@using Application.Web.ViewModels
-@model Pagination<Thread>
+﻿@using Application.Web.ViewModels
+@model ForumIndexViewModel
+
 @{
     Layout = "_Layout";
 }
@@ -13,7 +13,7 @@
 <div class="container">
     <div>
         <form action="~/Thread/Index" method="get" class="form-inline">
-            <input class="form-control" style="width:50%" type="text" value="@Model.Query" name="query" />
+            <input class="form-control" style="width:50%" type="text" value="@Model.Pagination.Query" name="query" />
             <button class="btn btn-primary" type="submit">Find</button>
         </form>
     </div>
@@ -27,7 +27,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var thread in Model.ItemsToDisplay)
+                @foreach (var thread in Model.Pagination.ItemsToDisplay)
                 {
                     <tr>
                         <td>@thread.Heading</td>
@@ -80,6 +80,6 @@
     </form>
 
     <br /><br />
-    @await Html.PartialAsync("_Pagination", Model)
+    @await Html.PartialAsync("_Pagination", Model.Pagination)
     <br /><br />
 </div>

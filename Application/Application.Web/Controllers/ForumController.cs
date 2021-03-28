@@ -5,7 +5,6 @@ using Application.Services.UserProfile;
 using Application.Web.ViewModels;
 using Application.Web.ViewModels.ViewModelHelpers;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;

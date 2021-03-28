@@ -27,5 +27,11 @@
             ANGRY,
             NONE
         };
+
+        public enum MatchConditions
+        {
+            MatchAll,
+            MatchAny
+        }
     }
 }

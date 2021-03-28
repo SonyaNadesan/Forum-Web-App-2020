@@ -1,12 +1,14 @@
 using Application.Data;
 using Application.Data.Repositories;
 using Application.Domain;
+using Application.Domain.ApplicationEntities;
 using Application.Services.Authentication;
 using Application.Services.Documents;
 using Application.Services.Email;
 using Application.Services.Files;
 using Application.Services.Filtering;
 using Application.Services.Forum;
+using Application.Services.Forum.Filters;
 using Application.Services.Shared;
 using Application.Services.UserProfile;
 using Application.Web.Models;
@@ -122,6 +124,10 @@ namespace Application.Web
             services.AddScoped<IThreadService, ThreadService>();
             services.AddScoped<IPostService, PostService>();
             services.AddScoped<IReactionService, ReactionService>();
+            services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<ITopicService, TopicService>();
+            services.AddScoped<IThreadFilterBuilder, ThreadFilterBuilder>();
+            services.AddScoped<IFilterService<Thread>, FilterService<Thread>>();
 
             //Repositories & Uit of Work
             services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -129,6 +135,8 @@ namespace Application.Web
             services.AddScoped<IThreadRepository, ThreadRepository>();
             services.AddScoped<IPostRepository, PostRepository>();
             services.AddScoped<IReactionRepository, ReactionRepository>();
+            services.AddScoped<ITopicRepository, TopicRepository>();
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
         }
 
         private void ConfigureIdentity(IServiceCollection services)

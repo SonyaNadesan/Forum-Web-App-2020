@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Application.Web.Migrations
 {
-    public partial class RestoreDatabase : Migration
+    public partial class AuthenticatinInital : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

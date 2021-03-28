@@ -10,6 +10,6 @@ namespace Application.Services.Forum
         ServiceResponse<Thread> Get(Guid threadId);
         ServiceResponse<Thread> Edit(Thread thread);
         ServiceResponse<Thread> Delete(Thread thread);
-        ServiceResponse<Thread> Create(string email, string heading, string body);
+        ServiceResponse<Thread> Create(string email, string heading, string body, Topic topic, List<Category> categories);
     }
 }

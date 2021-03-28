@@ -12,6 +12,10 @@ namespace Application.Data
 
         IReactionRepository ReactionRepository { get; }
 
+        ICategoryRepository CategoryRepository { get; }
+
+        ITopicRepository TopicRepository { get; }
+
         void Save();
     }
 }

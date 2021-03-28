@@ -1,6 +1,6 @@
-﻿@using Application.Domain.ApplicationEntities
-@using Application.Web.ViewModels
-@model Pagination<Thread>
+﻿@using Application.Web.ViewModels
+@model ForumIndexViewModel
+
 @{
     Layout = "_Layout";
 }
@@ -12,9 +12,46 @@
 
 <div class="container">
     <div>
-        <form action="~/Thread/Index" method="get" class="form-inline">
-            <input class="form-control" style="width:50%" type="text" value="@Model.Query" name="query" />
-            <button class="btn btn-primary" type="submit">Find</button>
+        <form action="~/Forum/Index" method="get" class="form-inline">
+            <div class="form-group">
+                <label for="topic">Topic:</label>
+
+                @if (Model.Topic == "all")
+                {
+                    <label class="checkbox-inline"><input type="radio" id="topic_all" name="topic" value="all" checked>All</label>
+                }
+                else
+                {
+                    <label class="checkbox-inline"><input type="radio" id="topic_all" name="topic" value="all">All</label>
+                }
+
+                @foreach (var topic in Model.TopicOptions)
+                {
+                    @if (topic.NameInUrl == Model.Topic)
+                    {
+                        <label class="checkbox-inline"><input type="radio" id="topic_@topic.NameInUrl" name="topic" value="@topic.NameInUrl" checked>@topic.DisplayName</label>
+                    }
+                    else
+                    {
+                        <label class="checkbox-inline"><input type="radio" id="topic_@topic.NameInUrl" name="topic" value="@topic.NameInUrl">@topic.DisplayName</label>
+                    }
+                }
+            </div>
+            <div class="form-group">
+                <label for="categories">Categories:</label>
+                @foreach (var category in Model.CategoryOptions)
+                {
+                    @if (Model.Categories != null && Model.Categories.Contains(category.NameInUrl))
+                    {
+                        <label class="checkbox-inline"><input type="checkbox" id="category_@category.NameInUrl" name="categories" value="@category.NameInUrl" checked>@category.DisplayName</label>
+                    }
+                    else
+                    {
+                        <label class="checkbox-inline"><input type="checkbox" id="category_@category.NameInUrl" name="categories" value="@category.NameInUrl">@category.DisplayName</label>
+                    }
+                }
+            </div>
+            <button type="submit" class="btn btn-default">Submit</button>
         </form>
     </div>
     <div>
@@ -27,7 +64,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var thread in Model.ItemsToDisplay)
+                @foreach (var thread in Model.Pagination.ItemsToDisplay)
                 {
                     <tr>
                         <td>@thread.Heading</td>
@@ -80,6 +117,6 @@
     </form>
 
     <br /><br />
-    @await Html.PartialAsync("_Pagination", Model)
+    @await Html.PartialAsync("_Pagination", Model.Pagination)
     <br /><br />
 </div>

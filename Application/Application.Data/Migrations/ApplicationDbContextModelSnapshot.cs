@@ -19,6 +19,23 @@ namespace Application.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("ProductVersion", "5.0.1");
 
+            modelBuilder.Entity("Application.Domain.ApplicationEntities.Category", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("DisplayName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NameInUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Categories");
+                });
+
             modelBuilder.Entity("Application.Domain.ApplicationEntities.Post", b =>
                 {
                     b.Property<Guid>("Id")
@@ -107,15 +124,37 @@ namespace Application.Data.Migrations
                     b.Property<string>("Heading")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("TopicId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("TopicId");
+
                     b.HasIndex("UserId");
 
                     b.ToTable("Threads");
+                });
+
+            modelBuilder.Entity("Application.Domain.ApplicationEntities.Topic", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("DisplayName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NameInUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Topics");
                 });
 
             modelBuilder.Entity("Application.Domain.ApplicationEntities.User", b =>
@@ -138,6 +177,21 @@ namespace Application.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("CategoryThread", b =>
+                {
+                    b.Property<Guid>("CategoriesId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ThreadsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("CategoriesId", "ThreadsId");
+
+                    b.HasIndex("ThreadsId");
+
+                    b.ToTable("CategoryThread");
                 });
 
             modelBuilder.Entity("Application.Domain.ApplicationEntities.Post", b =>
@@ -186,13 +240,34 @@ namespace Application.Data.Migrations
 
             modelBuilder.Entity("Application.Domain.ApplicationEntities.Thread", b =>
                 {
+                    b.HasOne("Application.Domain.ApplicationEntities.Topic", "Topic")
+                        .WithMany()
+                        .HasForeignKey("TopicId");
+
                     b.HasOne("Application.Domain.ApplicationEntities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Topic");
+
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("CategoryThread", b =>
+                {
+                    b.HasOne("Application.Domain.ApplicationEntities.Category", null)
+                        .WithMany()
+                        .HasForeignKey("CategoriesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Application.Domain.ApplicationEntities.Thread", null)
+                        .WithMany()
+                        .HasForeignKey("ThreadsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Application.Domain.ApplicationEntities.Thread", b =>

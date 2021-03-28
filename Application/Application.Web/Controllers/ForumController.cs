@@ -1,5 +1,7 @@
 ﻿using Application.Domain.ApplicationEntities;
+using Application.Services.Filtering;
 using Application.Services.Forum;
+using Application.Services.Forum.Filters;
 using Application.Services.Shared;
 using Application.Services.UserProfile;
 using Application.Web.ViewModels;
@@ -18,24 +20,44 @@ namespace Application.Web.Controllers
         private readonly IPostService _postService;
         private readonly IReactionService _reactionService;
         private readonly IUserProfileService _userProfileService;
+        private readonly ICategoryService _categoryService;
+        private readonly ITopicService _topicService;
+        private readonly IThreadFilterBuilder _threadFilterBuilder;
+        private readonly IFilterService<Thread> _threadFilterService;
 
-        public ForumController(IThreadService threadService, IPostService postService, IReactionService reactionService, IUserProfileService userProfileService)
+        public ForumController(IThreadService threadService, IPostService postService, IReactionService reactionService,
+                               IUserProfileService userProfileService, ICategoryService categoryService, ITopicService topicService,
+                               IThreadFilterBuilder threadFilterBuilder, IFilterService<Thread> threadFilterService)
         {
             _threadService = threadService;
             _postService = postService;
             _reactionService = reactionService;
             _userProfileService = userProfileService;
+            _categoryService = categoryService;
+            _topicService = topicService;
+            _threadFilterBuilder = threadFilterBuilder;
+            _threadFilterService = threadFilterService;
         }
 
-        public IActionResult Index(int page = 1, int startPage = 1, string query = "")
+        public IActionResult Index(int page = 1, int startPage = 1, string query = "", string topic = "", string categories = "")
         {
-            var allThreads = _threadService.GetAll();
+            topic = string.IsNullOrEmpty(topic) ? "all" : topic;
 
-            var results = allThreads.Result.OrderByDescending(t => t.DateTime);
+            categories = string.IsNullOrEmpty(categories) ? "all" : categories;
 
-            var resultsToDisplay = PaginationHelper.GetItemsToDisplay<Thread>(results, page, 5).ToList();
+            var categoryCollection = CollectionGenerationFromQueryParamService.GenerateCollection<HashSet<string>>(categories);
 
-            var viewModel = new Pagination<Thread>()
+            var allThreads = _threadService.GetAll().Result.ToList();
+
+            var filters = _threadFilterBuilder.AddTopicFilter(topic)
+                                              .AddCategoryFilter(categoryCollection)
+                                              .Build();
+
+            var results = _threadFilterService.GetFilteredList(allThreads, filters).OrderByDescending(t => t.DateTime);
+
+            var resultsToDisplay = PaginationHelper.GetItemsToDisplay(results, page, 5).ToList();
+
+            var pagination = new Pagination<Thread>()
             {
                 CurrentPage = page,
                 FormAction = "../Forum/Index",
@@ -44,6 +66,15 @@ namespace Application.Web.Controllers
                 StartPage = startPage,
                 Query = query,
                 TotalNumberOfResults = results.Count()
+            };
+
+            var viewModel = new ForumIndexViewModel()
+            {
+                Pagination = pagination,
+                Categories = categoryCollection.ToArray(),
+                Topic = topic,
+                CategoryOptions = _categoryService.GetAll().Result.ToList(),
+                TopicOptions = _topicService.GetAll().Result.ToList()
             };
 
             return View(viewModel);
@@ -118,21 +149,43 @@ namespace Application.Web.Controllers
 
         public IActionResult CreateThread()
         {
-            return View();
+            var allCategories = _categoryService.GetAll().Result.ToList();
+            var allTopics = _topicService.GetAll().Result.ToList();
+
+            var viewModel = new CreateThreadViewModel()
+            {
+                Heading = string.Empty,
+                Categories = { },
+                Body = string.Empty,
+                Topic = string.Empty,
+                CategoryOptions = allCategories,
+                TopicOptions = allTopics
+            };
+
+            return View(viewModel);
         }
 
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public IActionResult CreateThread(string heading, string body)
+        public IActionResult CreateThread(CreateThreadViewModel viewModel)
         {
-            var createThreadResponse = _threadService.Create(User.Identity.Name, heading, body);
+            var selectedTopic = _topicService.GetAll().Result.SingleOrDefault(x => x.NameInUrl == viewModel.Topic.ToLower());
+            var selectedCategories = _categoryService.GetAll().Result.Where(x => viewModel.Categories.Contains(x.NameInUrl)).ToList();
 
-            if (!createThreadResponse.IsValid)
+            var createThreadResponse = _threadService.Create(User.Identity.Name, viewModel.Heading, viewModel.Body, selectedTopic, selectedCategories);
+
+            if (createThreadResponse.IsValid)
             {
-                return RedirectToAction("Index"); //Needs changing
+                var allCategories = _categoryService.GetAll().Result.ToList();
+                var allTopics = _topicService.GetAll().Result.ToList();
+
+                viewModel.CategoryOptions = allCategories;
+                viewModel.TopicOptions = allTopics;
+
+                return View(viewModel);
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction("CreateThread");
         }
 
         [ValidateAntiForgeryToken]
@@ -255,7 +308,7 @@ namespace Application.Web.Controllers
             {
                 post.HasBeenViewedByParentPostOwner = true;
             }
-            else if(!post.HasBeenViewedByThreadOwner && User.Identity.Name == post.Thread.User.Email)
+            else if (!post.HasBeenViewedByThreadOwner && User.Identity.Name == post.Thread.User.Email)
             {
                 post.HasBeenViewedByThreadOwner = true;
             }
@@ -272,7 +325,7 @@ namespace Application.Web.Controllers
 
             var json = JsonConvert.SerializeObject(result, new JsonSerializerSettings()
             {
-               ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
             });
 
             return new JsonResult(JsonConvert.DeserializeObject<PostAndAncestorsViewModel>(json));

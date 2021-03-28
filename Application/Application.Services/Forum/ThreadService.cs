@@ -99,7 +99,7 @@ namespace Application.Services.Forum
             return response;
         }
 
-        public ServiceResponse<Thread> Create(string email, string heading, string body)
+        public ServiceResponse<Thread> Create(string email, string heading, string body, Topic topic, List<Category> categories)
         {
             var response = new ServiceResponse<Thread>();
 
@@ -118,7 +118,12 @@ namespace Application.Services.Forum
                 Body = body,
                 DateTime = DateTime.Now,
                 User = user,
-                UserId = user.Id
+                UserId = user.Id,
+                Topic = topic,
+                TopicId = topic.Id,
+                Categories = categories ?? new List<Category>(),
+                Posts = new List<Post>(),
+                Reactions = new List<Reaction>()
             };
 
             response.Result = newThread;

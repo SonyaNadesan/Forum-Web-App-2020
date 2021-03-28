@@ -17,17 +17,26 @@ namespace Application.Data.Repositories
 
         public Thread Get(Guid threadId)
         {
-            return Context.Threads.Include(t => t.User).Include(t => t.Posts).Include(t => t.Reactions).SingleOrDefault(t => t.Id == threadId);
+            return Context.Threads.Include(t => t.User)
+                                  .Include(t => t.Posts)
+                                  .Include(t => t.Reactions)
+                                  .Include(t => t.Categories)
+                                  .Include(t => t.Topic)
+                                  .SingleOrDefault(t => t.Id == threadId);
         }
 
         public IEnumerable<Thread> GetAll()
         {
-            return Context.Threads.Include(t => t.User);
+            return Context.Threads.Include(t => t.User)
+                                  .Include(t => t.Posts)
+                                  .Include(t => t.Reactions)
+                                  .Include(t => t.Categories)
+                                  .Include(t => t.Topic);
         }
 
         public void Delete(Guid threadId)
         {
-            var thread = Context.Threads.SingleOrDefault(t => t.Id == threadId);
+            var thread = Get(threadId);
 
             if (thread != null)
             {
@@ -42,14 +51,18 @@ namespace Application.Data.Repositories
             if (threadFromDb == null)
             {
                 Context.Entry(thread.User).State = EntityState.Unchanged;
-                Context.Entry(thread).State = EntityState.Added;
+                Context.Entry(thread.Topic).State = EntityState.Unchanged;
                 Context.Threads.Add(thread);
             }
         }
 
         public void Edit(Thread thread)
         {
-            var result = Context.Threads.Include(t => t.User).SingleOrDefault(t => t.Id == thread.Id);
+            var result = Context.Threads.Include(t => t.User)
+                                        .Include(t => t.Posts)
+                                        .Include(t => t.Reactions)
+                                        .Include(t => t.Categories)
+                                        .Include(t => t.Topic).SingleOrDefault(t => t.Id == thread.Id);
 
             if (result != null)
             {

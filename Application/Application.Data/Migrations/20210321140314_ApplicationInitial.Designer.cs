@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Application.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210109193918_Initial")]
-    partial class Initial
+    [Migration("20210321140314_ApplicationInitial")]
+    partial class ApplicationInitial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -20,6 +20,28 @@ namespace Application.Data.Migrations
                 .UseIdentityColumns()
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("ProductVersion", "5.0.1");
+
+            modelBuilder.Entity("Application.Domain.ApplicationEntities.Category", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("DisplayName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NameInUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("ThreadId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ThreadId");
+
+                    b.ToTable("Categories");
+                });
 
             modelBuilder.Entity("Application.Domain.ApplicationEntities.Post", b =>
                 {
@@ -39,7 +61,13 @@ namespace Application.Data.Migrations
                     b.Property<bool>("HasBeenViewedByThreadOwner")
                         .HasColumnType("bit");
 
-                    b.Property<Guid>("ParentPostId")
+                    b.Property<bool>("HasParentPost")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("LevelInHierarchy")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("ParentPostId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("ThreadId")
@@ -103,15 +131,63 @@ namespace Application.Data.Migrations
                     b.Property<string>("Heading")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("TopicId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("TopicId");
+
                     b.HasIndex("UserId");
 
                     b.ToTable("Threads");
+                });
+
+            modelBuilder.Entity("Application.Domain.ApplicationEntities.ThreadCategory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ThreadCategoryId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ThreadId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("ThreadCategoryId");
+
+                    b.HasIndex("ThreadId");
+
+                    b.ToTable("ThreadCategory");
+                });
+
+            modelBuilder.Entity("Application.Domain.ApplicationEntities.Topic", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("DisplayName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NameInUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Topics");
                 });
 
             modelBuilder.Entity("Application.Domain.ApplicationEntities.User", b =>
@@ -136,13 +212,18 @@ namespace Application.Data.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("Application.Domain.ApplicationEntities.Category", b =>
+                {
+                    b.HasOne("Application.Domain.ApplicationEntities.Thread", null)
+                        .WithMany("Categories")
+                        .HasForeignKey("ThreadId");
+                });
+
             modelBuilder.Entity("Application.Domain.ApplicationEntities.Post", b =>
                 {
                     b.HasOne("Application.Domain.ApplicationEntities.Post", "ParentPost")
                         .WithMany()
-                        .HasForeignKey("ParentPostId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ParentPostId");
 
                     b.HasOne("Application.Domain.ApplicationEntities.Thread", "Thread")
                         .WithMany("Posts")
@@ -184,20 +265,59 @@ namespace Application.Data.Migrations
 
             modelBuilder.Entity("Application.Domain.ApplicationEntities.Thread", b =>
                 {
+                    b.HasOne("Application.Domain.ApplicationEntities.Topic", "Topic")
+                        .WithMany()
+                        .HasForeignKey("TopicId");
+
                     b.HasOne("Application.Domain.ApplicationEntities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Topic");
+
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Application.Domain.ApplicationEntities.ThreadCategory", b =>
+                {
+                    b.HasOne("Application.Domain.ApplicationEntities.Category", null)
+                        .WithMany("ThreadCategories")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Application.Domain.ApplicationEntities.ThreadCategory", null)
+                        .WithMany("ThreadCategories")
+                        .HasForeignKey("ThreadCategoryId");
+
+                    b.HasOne("Application.Domain.ApplicationEntities.Thread", "Thread")
+                        .WithMany()
+                        .HasForeignKey("ThreadId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Thread");
+                });
+
+            modelBuilder.Entity("Application.Domain.ApplicationEntities.Category", b =>
+                {
+                    b.Navigation("ThreadCategories");
                 });
 
             modelBuilder.Entity("Application.Domain.ApplicationEntities.Thread", b =>
                 {
+                    b.Navigation("Categories");
+
                     b.Navigation("Posts");
 
                     b.Navigation("Reactions");
+                });
+
+            modelBuilder.Entity("Application.Domain.ApplicationEntities.ThreadCategory", b =>
+                {
+                    b.Navigation("ThreadCategories");
                 });
 #pragma warning restore 612, 618
         }

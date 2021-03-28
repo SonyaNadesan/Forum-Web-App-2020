@@ -18,7 +18,7 @@
                     <input type="text" class="form-control" id="body" name="body" value="@Model.Body">
                 </div>
                 <div class="form-group">
-                    <label for="topic" name="topic">Topic:</label>
+                    <label for="topic">Topic:</label>
                     @foreach (var topic in Model.TopicOptions)
                     {
                         @if (topic.NameInUrl == Model.Topic)
@@ -32,7 +32,7 @@
                     }
                 </div>
                 <div class="form-group">
-                    <label for="topic" name="topic">Topic:</label>
+                    <label for="categories">Categories:</label>
                     @foreach (var category in Model.CategoryOptions)
                     {
                         @if (Model.Categories != null && Model.Categories.Contains(category.NameInUrl))

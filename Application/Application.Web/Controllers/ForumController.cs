@@ -6,6 +6,7 @@ using Application.Services.Shared;
 using Application.Services.UserProfile;
 using Application.Web.ViewModels;
 using Application.Web.ViewModels.ViewModelHelpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System;
@@ -14,6 +15,7 @@ using System.Linq;
 
 namespace Application.Web.Controllers
 {
+    [Authorize]
     public class ForumController : Controller
     {
         private readonly IThreadService _threadService;

@@ -11,7 +11,9 @@ namespace Application.Services.Forum.Filters
 
         public bool IsValid(Thread item)
         {
-            var headingAndBody = item.Heading + item.Body;
+            var headingAndBody = (item.Heading + item.Body).ToLower();
+
+            Query = Query.ToLower();
 
             return Query.Contains(headingAndBody) || headingAndBody.Contains(Query);
         }

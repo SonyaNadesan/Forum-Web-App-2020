@@ -5,13 +5,13 @@ using System.Linq;
 
 namespace Application.Services.Forum.Filters
 {
-    public class CategoryFilter<T> : IFilter<Thread> where T : ICollection<string>
+    public class AllCategoryFilter<T> : IFilter<Thread> where T : ICollection<string>
     {
         public string Description
         {
-            get 
+            get
             {
-                return "Category";
+                return "Category (Match All)";
             }
         }
 
@@ -24,12 +24,8 @@ namespace Application.Services.Forum.Filters
                 return true;
             }
 
-            if (Categories.Any())
-            {
-                return item.Categories.Where(x => Categories.Contains(x.NameInUrl)).Any();
-            }
-
-            return false;
+            return Categories.Intersect(item.Categories.Select(x => x.NameInUrl)).Count() == Categories.Count();
         }
     }
 }
+

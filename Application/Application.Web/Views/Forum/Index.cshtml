@@ -14,6 +14,9 @@
     <div>
         <form action="~/Forum/Index" method="get" class="form-inline">
             <div class="form-group">
+                <input type="text" class="form-control" name="query" value="@Model.Pagination.Query" />
+            </div>
+            <div class="form-group">
                 <label for="topic">Topic:</label>
 
                 @if (Model.Topic == "all")
@@ -43,13 +46,14 @@
                 {
                     @if (Model.Categories != null && Model.Categories.Contains(category.NameInUrl))
                     {
-                        <label class="checkbox-inline"><input type="checkbox" id="category_@category.NameInUrl" name="categories" value="@category.NameInUrl" checked>@category.DisplayName</label>
+                        <label class="checkbox-inline"><input type="checkbox" id="category_@category.NameInUrl" name="checkboxCategories" value="@category.NameInUrl" checked>@category.DisplayName</label>
                     }
                     else
                     {
-                        <label class="checkbox-inline"><input type="checkbox" id="category_@category.NameInUrl" name="categories" value="@category.NameInUrl">@category.DisplayName</label>
+                        <label class="checkbox-inline"><input type="checkbox" id="category_@category.NameInUrl" name="checkboxCategories" value="@category.NameInUrl">@category.DisplayName</label>
                     }
                 }
+                <input type="hidden" name="categories" id="categories" />
             </div>
             <button type="submit" class="btn btn-default">Submit</button>
         </form>
@@ -120,3 +124,30 @@
     @await Html.PartialAsync("_Pagination", Model.Pagination)
     <br /><br />
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var categoryCheckboxes = document.getElementsByName("checkboxCategories");
+
+        for (var i = 0; i < categoryCheckboxes.length; i++) {
+            categoryCheckboxes[i].onchange = function () {
+                var hdnCategories = document.getElementById("categories");
+                hdnCategories.value = "";
+
+                var paramValue = "";
+
+                for (var i = 0; i < categoryCheckboxes.length; i++) {
+                    if (categoryCheckboxes[i].checked) {
+                        if (paramValue.length > 0) {
+                            paramValue = paramValue + "+";
+                        }
+
+                        paramValue = paramValue + categoryCheckboxes[i].value;
+                    }
+                }
+
+                hdnCategories.value = paramValue;
+            };
+        }
+    });
+</script>

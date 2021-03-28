@@ -36,7 +36,7 @@ function loadMorePosts_updateView(response, postId, paramFrom, paramTake) {
         replyToAddToContainer.appendChild(userDisplay);
 
         let contentDisplay = document.createElement('p');
-        contentDisplay.innerText = item.content;
+        contentDisplay.innerHTML = item.content;
         replyToAddToContainer.appendChild(contentDisplay);
 
         let hr = document.createElement('hr');

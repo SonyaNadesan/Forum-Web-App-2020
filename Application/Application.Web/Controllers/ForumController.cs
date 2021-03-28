@@ -1,4 +1,5 @@
-﻿using Application.Domain.ApplicationEntities;
+﻿using Application.Domain;
+using Application.Domain.ApplicationEntities;
 using Application.Services.Filtering;
 using Application.Services.Forum;
 using Application.Services.Forum.Filters;
@@ -6,6 +7,7 @@ using Application.Services.Shared;
 using Application.Services.UserProfile;
 using Application.Web.ViewModels;
 using Application.Web.ViewModels.ViewModelHelpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System;
@@ -14,6 +16,7 @@ using System.Linq;
 
 namespace Application.Web.Controllers
 {
+    [Authorize]
     public class ForumController : Controller
     {
         private readonly IThreadService _threadService;
@@ -39,18 +42,19 @@ namespace Application.Web.Controllers
             _threadFilterService = threadFilterService;
         }
 
-        public IActionResult Index(int page = 1, int startPage = 1, string query = "", string topic = "", string categories = "")
+        public IActionResult Index(int page = 1, int startPage = 1, string query = "", string topic = "", string categories = "", Enums.MatchConditions matchCondition = Enums.MatchConditions.MatchAny)
         {
             topic = string.IsNullOrEmpty(topic) ? "all" : topic;
 
             categories = string.IsNullOrEmpty(categories) ? "all" : categories;
 
-            var categoryCollection = CollectionGenerationFromQueryParamService.GenerateCollection<HashSet<string>>(categories);
+            var categoryCollection = CollectionGenerationFromQueryParamService.GenerateCollection<HashSet<string>>(categories, "all", '+');
 
             var allThreads = _threadService.GetAll().Result.ToList();
 
             var filters = _threadFilterBuilder.AddTopicFilter(topic)
-                                              .AddCategoryFilter(categoryCollection)
+                                              .AddCategoryFilter(categoryCollection, matchCondition)
+                                              .AddQueryFilter(query)
                                               .Build();
 
             var results = _threadFilterService.GetFilteredList(allThreads, filters).OrderByDescending(t => t.DateTime);

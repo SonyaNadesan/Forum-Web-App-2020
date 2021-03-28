@@ -11,6 +11,23 @@ namespace Application.Services.Forum.Filters
 
         private bool isToBeCleared = false;
 
+        public IThreadFilterBuilder AddQueryFilter(string query)
+        {
+            ClearListIfNecessary();
+
+            if (!string.IsNullOrEmpty(query))
+            {
+                var queryFilter = new QueryFilter()
+                {
+                    Query = query
+                };
+
+                _filters.Add(queryFilter);
+            }
+
+            return this;
+        }
+
         public IThreadFilterBuilder AddCategoryFilter<T>(T categories, Enums.MatchConditions matchCondition) where T : ICollection<string>
         {
             ClearListIfNecessary();

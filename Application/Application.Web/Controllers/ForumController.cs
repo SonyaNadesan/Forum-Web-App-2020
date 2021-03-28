@@ -54,6 +54,7 @@ namespace Application.Web.Controllers
 
             var filters = _threadFilterBuilder.AddTopicFilter(topic)
                                               .AddCategoryFilter(categoryCollection, matchCondition)
+                                              .AddQueryFilter(query)
                                               .Build();
 
             var results = _threadFilterService.GetFilteredList(allThreads, filters).OrderByDescending(t => t.DateTime);

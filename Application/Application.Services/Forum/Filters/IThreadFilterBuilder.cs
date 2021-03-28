@@ -7,6 +7,8 @@ namespace Application.Services.Forum.Filters
 {
     public interface IThreadFilterBuilder
     {
+        IThreadFilterBuilder AddQueryFilter(string query);
+
         IThreadFilterBuilder AddTopicFilter(string topic);
 
         IThreadFilterBuilder AddCategoryFilter<T>(T categories, Enums.MatchConditions matchCondition) where T : ICollection<string>;

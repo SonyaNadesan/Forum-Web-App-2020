@@ -47,7 +47,7 @@ namespace Application.Web.Controllers
 
             categories = string.IsNullOrEmpty(categories) ? "all" : categories;
 
-            var categoryCollection = CollectionGenerationFromQueryParamService.GenerateCollection<HashSet<string>>(categories);
+            var categoryCollection = CollectionGenerationFromQueryParamService.GenerateCollection<HashSet<string>>(categories, "all", '+');
 
             var allThreads = _threadService.GetAll().Result.ToList();
 

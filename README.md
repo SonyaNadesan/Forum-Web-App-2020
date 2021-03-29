@@ -21,4 +21,4 @@ Developing my knowledge and skills based on what I have learnt during my time at
 
 ...and what I have learnt during my spare time!
 
-Taking a break from this project but looking forward to building a filter feature and hoping to improve security (oauth) :)
+Taking a break from this project but looking forward to improve security (using oauth) :)

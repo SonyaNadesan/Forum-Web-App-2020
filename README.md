@@ -1,4 +1,4 @@
-# WebApp2020
+# ForumWebApp2020
 Developing my knowledge and skills based on what I have learnt during my time at Kingston University including: 
 1) Programming in Java: Problem-Solving and Writing Algorithms, Data Structures, OOP, Singleton Pattern, Unit Testing, Desktop Automated GUI Testing
 2) Web Development in PHP and JavaScript: HTTP Requests, Sessions, Forms, DOM, AJAX, HTML, CSS, BootStrap, MVC

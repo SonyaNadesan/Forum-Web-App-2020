@@ -48,7 +48,7 @@ namespace Application.Web.Controllers
 
             categories = string.IsNullOrEmpty(categories) ? "all" : categories;
 
-            var categoryCollection = CollectionGenerationFromQueryParamService.GenerateCollection<HashSet<string>>(categories, "all", '+');
+            var categoryCollection = DelimitedQueryParamHelper.GenerateCollection<HashSet<string>>(categories, "all", '+');
 
             var allThreads = _threadService.GetAll().Result.ToList();
 
@@ -220,7 +220,7 @@ namespace Application.Web.Controllers
             throw new Exception();
         }
 
-        public JsonResult GetRepliesOnPost(string postId, int from, int take)
+        public JsonResult GetRepliesOnPost(string postId, int from, int take, string excludeIds)
         {
             var isPostIdGuid = Guid.TryParse(postId, out Guid postIdAsGuid);
 
@@ -229,11 +229,16 @@ namespace Application.Web.Controllers
                 throw new NullReferenceException();
             }
 
-            var replies = _postService.GetReplies(postIdAsGuid).Result.ToList();
-            var repliesToDisplay = replies.Skip(from).Take(take).ToList();
+            var postIdsToExclude = !string.IsNullOrEmpty(excludeIds) ? DelimitedQueryParamHelper.GenerateCollection<HashSet<string>>(excludeIds, "all", excludeIds.Contains('+') ? '+' : ' ')
+                                                                                                .Where(x => Guid.TryParse(x, out Guid guid))
+                                                                                                .Select(x => Guid.Parse(x))
+                                                                                                .ToList() : new List<Guid>();
+
+            var replies = _postService.GetReplies(postIdAsGuid).Result;
+            var repliesToDisplay = replies.Skip(from).Where(x => !postIdsToExclude.Contains(x.Id)).Take(take).ToList();
             var repliesAsViewModel = ViewModelHelper.Get(repliesToDisplay);
 
-            var numberOfItemsDiplayed = from + take;
+            var numberOfItemsDiplayed = from + repliesToDisplay.Count();
 
             var loadMoreViewModel = new LoadMoreViewModel<Post>()
             {
@@ -241,7 +246,7 @@ namespace Application.Web.Controllers
                 From = numberOfItemsDiplayed,
                 Take = take,
                 Id = postId,
-                HasMore = numberOfItemsDiplayed < replies.Count
+                HasMore = numberOfItemsDiplayed + postIdsToExclude.Count() < replies.Count()
             };
 
             var json = JsonConvert.SerializeObject(loadMoreViewModel, Formatting.Indented, new JsonSerializerSettings

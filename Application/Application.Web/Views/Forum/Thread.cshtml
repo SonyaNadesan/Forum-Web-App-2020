@@ -62,6 +62,7 @@
             {
                 <div style="margin-left:5%">
                     <input type="hidden" id="hasMoreFrom_@post.TopLevelPost.Id" value="@post.Replies.From" />
+                    <input type="hidden" id="excludeIdsFor_@post.TopLevelPost.Id" />
                     <input type="hidden" id="hasMoreTake_@post.TopLevelPost.Id" value="@post.Replies.Take" />
                     <button type="button" name="btnLoadMore" id="btnLoadMore_@post.TopLevelPost.Id" value="@post.TopLevelPost.Id">Load More</button>
                 </div>

@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Application.Services.Shared
 {
-    public class CollectionGenerationFromQueryParamService
+    public class DelimitedQueryParamHelper
     {
         public static T GenerateCollection<T>(string paramValue, string noFilterIndication = "all", char delimiter = ' ') where T : ICollection<string>, new()
         {

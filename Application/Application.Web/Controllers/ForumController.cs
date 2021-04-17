@@ -119,7 +119,7 @@ namespace Application.Web.Controllers
                     var loadMoreViewModel = new LoadMoreViewModel<Post>()
                     {
                         Id = topLevelPost.Id.ToString(),
-                        From = 0 + 2,
+                        From = 2,
                         Take = 2,
                         ItemsToDisplay = ViewModelHelper.Get(repliesToDisplay),
                         HasMore = allReplies.Count() > 2

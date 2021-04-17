@@ -14,7 +14,7 @@
     <div>
         <form action="~/Forum/Index" method="get" class="form-inline">
             <div class="form-group">
-                <input type="text" class="form-control" name="query" value="@Model.Pagination.Query" />
+                <input type="text" class="form-control" name="query" value="@Model.Pagination.MoreParametersAndValues["query"]" />
             </div>
             <div class="form-group">
                 <label for="topic">Topic:</label>

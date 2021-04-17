@@ -13,18 +13,18 @@ namespace Application.Web.ViewModels
 
         public int CurrentPage { get; set; }
 
-        public string Query { get; set; }
-
         public int NumberOfPages
         {
             get
             {
                 var result = 1;
+
                 if (TotalNumberOfResults >= PageSize)
                 {
                     var resultFromDivision = (double)TotalNumberOfResults / PageSize;
                     result = (int)Math.Ceiling(resultFromDivision);
                 }
+
                 return result;
             }
         }
@@ -33,13 +33,13 @@ namespace Application.Web.ViewModels
         {
             get
             {
-                if (CurrentPage > _startPage + 9)
+                if (CurrentPage > _startPage + (MaxNumberOfPagesToShowOnEachRequest - 1))
                 {
-                    return _startPage + 10;
+                    return _startPage + MaxNumberOfPagesToShowOnEachRequest;
                 }
                 else if (CurrentPage < _startPage)
                 {
-                    return _startPage - 10;
+                    return _startPage - MaxNumberOfPagesToShowOnEachRequest;
                 }
                 else
                 {
@@ -55,7 +55,7 @@ namespace Application.Web.ViewModels
         {
             get
             {
-                var last = StartPage + 9;
+                var last = StartPage + (MaxNumberOfPagesToShowOnEachRequest - 1);
 
                 if (last <= NumberOfPages)
                 {
@@ -69,5 +69,11 @@ namespace Application.Web.ViewModels
         }
 
         public string FormAction { get; set; }
+
+        public string FormMethod { get; set; }
+
+        public int MaxNumberOfPagesToShowOnEachRequest { get; set; }
+
+        public Dictionary<string, string> MoreParametersAndValues { get; set; }
     }
 }

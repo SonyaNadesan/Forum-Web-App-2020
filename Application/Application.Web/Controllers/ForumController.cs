@@ -28,6 +28,9 @@ namespace Application.Web.Controllers
         private readonly IThreadFilterBuilder _threadFilterBuilder;
         private readonly IFilterService<Thread> _threadFilterService;
 
+        private const int MAX_NUMBER_OF_PAGES_TO_SHOW_ON_EACH_REQUEST = 5;
+        private const int PAGE_SIZE = 2;
+
         public ForumController(IThreadService threadService, IPostService postService, IReactionService reactionService,
                                IUserProfileService userProfileService, ICategoryService categoryService, ITopicService topicService,
                                IThreadFilterBuilder threadFilterBuilder, IFilterService<Thread> threadFilterService)
@@ -59,17 +62,22 @@ namespace Application.Web.Controllers
 
             var results = _threadFilterService.GetFilteredList(allThreads, filters).OrderByDescending(t => t.DateTime);
 
-            var resultsToDisplay = PaginationHelper.GetItemsToDisplay(results, page, 5).ToList();
+            var resultsToDisplay = PaginationHelper.GetItemsToDisplay(results, page, PAGE_SIZE).ToList();
+
+            var otherParams = new Dictionary<string, string>();
+            otherParams.Add("query", query);
 
             var pagination = new Pagination<Thread>()
             {
                 CurrentPage = page,
                 FormAction = "../Forum/Index",
                 ItemsToDisplay = resultsToDisplay,
-                PageSize = 5,
+                PageSize = PAGE_SIZE,
                 StartPage = startPage,
-                Query = query,
-                TotalNumberOfResults = results.Count()
+                TotalNumberOfResults = results.Count(),
+                FormMethod = "get",
+                MaxNumberOfPagesToShowOnEachRequest = MAX_NUMBER_OF_PAGES_TO_SHOW_ON_EACH_REQUEST,
+                MoreParametersAndValues = otherParams
             };
 
             var viewModel = new ForumIndexViewModel()
@@ -99,7 +107,7 @@ namespace Application.Web.Controllers
 
                 var topLevelPosts = _postService.GetTopLevelPosts(treadIdAsGuid).Result.ToList();
 
-                var topLevelPostsForDisplay = PaginationHelper.GetItemsToDisplay<Post>(topLevelPosts, page, 10);
+                var topLevelPostsForDisplay = PaginationHelper.GetItemsToDisplay<Post>(topLevelPosts, page, PAGE_SIZE);
 
                 var topLevelPostsAsViewModels = new List<PostWithRepliesViewModel>();
 
@@ -126,17 +134,21 @@ namespace Application.Web.Controllers
                     topLevelPostsAsViewModels.Add(repliesViewModel);
                 }
 
-                var pagination = new PaginationWithId<PostWithRepliesViewModel>()
+                var otherParams = new Dictionary<string, string>();
+                otherParams.Add("id", threadId);
+                otherParams.Add("query", query);
+
+                var pagination = new Pagination<PostWithRepliesViewModel>()
                 {
-                    Id = threadId,
-                    NameOfIdFieldInView = "threadId",
                     CurrentPage = page,
                     FormAction = "../Forum/Thread",
                     ItemsToDisplay = topLevelPostsAsViewModels,
-                    PageSize = 10,
-                    Query = query,
+                    PageSize = PAGE_SIZE,
                     StartPage = startPage,
-                    TotalNumberOfResults = topLevelPosts.Count
+                    TotalNumberOfResults = topLevelPosts.Count,
+                    FormMethod = "get",
+                    MaxNumberOfPagesToShowOnEachRequest = MAX_NUMBER_OF_PAGES_TO_SHOW_ON_EACH_REQUEST,
+                    MoreParametersAndValues = otherParams
                 };
 
                 var viewModel = new ViewModelWithPagination<Thread, PostWithRepliesViewModel>()

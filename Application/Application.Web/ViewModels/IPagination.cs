@@ -1,4 +1,6 @@
-﻿namespace Application.Web.ViewModels
+﻿using System.Collections.Generic;
+
+namespace Application.Web.ViewModels
 {
     public interface IPagination
     {
@@ -12,10 +14,14 @@
 
         int PageSize { get; set; }
 
+        int MaxNumberOfPagesToShowOnEachRequest { get; set; }
+
         int NumberOfPages { get; }
 
-        string Query { get; set; }
-
         string FormAction { get; set; }
+
+        string FormMethod { get; set; }
+
+        Dictionary<string, string> MoreParametersAndValues { get; set; }
     }
 }

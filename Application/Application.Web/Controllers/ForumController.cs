@@ -3,6 +3,7 @@ using Application.Domain.ApplicationEntities;
 using Application.Services.Filtering;
 using Application.Services.Forum;
 using Application.Services.Forum.Filters;
+using Application.Services.Pagination;
 using Application.Services.Shared;
 using Application.Services.UserProfile;
 using Application.Web.ViewModels;
@@ -62,23 +63,12 @@ namespace Application.Web.Controllers
 
             var results = _threadFilterService.GetFilteredList(allThreads, filters).OrderByDescending(t => t.DateTime);
 
-            var resultsToDisplay = PaginationHelper.GetItemsToDisplay(results, page, PAGE_SIZE).ToList();
-
-            var otherParams = new Dictionary<string, string>();
-            otherParams.Add("query", query);
-
-            var pagination = new Pagination<Thread>()
-            {
-                CurrentPage = page,
-                FormAction = "../Forum/Index",
-                ItemsToDisplay = resultsToDisplay,
-                PageSize = PAGE_SIZE,
-                StartPage = startPage,
-                TotalNumberOfResults = results.Count(),
-                FormMethod = "get",
-                MaxNumberOfPagesToShowOnEachRequest = MAX_NUMBER_OF_PAGES_TO_SHOW_ON_EACH_REQUEST,
-                MoreParametersAndValues = otherParams
-            };
+            var pagination = new PaginationBuilder<Thread>()
+                                 .Create(page, PAGE_SIZE, startPage, results.Count(), MAX_NUMBER_OF_PAGES_TO_SHOW_ON_EACH_REQUEST)
+                                 .SeResults(results, false)
+                                 .ConfigureForm("../Forum/Index", "get")
+                                 .AdParameterAndValue("query", query)
+                                 .Build();
 
             var viewModel = new ForumIndexViewModel()
             {
@@ -102,7 +92,7 @@ namespace Application.Web.Controllers
 
                 if (!thread.IsValid)
                 {
-                    return View("Index");
+                    return RedirectToAction("Index");
                 }
 
                 var topLevelPosts = _postService.GetTopLevelPosts(treadIdAsGuid).Result.ToList();
@@ -119,7 +109,7 @@ namespace Application.Web.Controllers
                     var loadMoreViewModel = new LoadMoreViewModel<Post>()
                     {
                         Id = topLevelPost.Id.ToString(),
-                        From = 0 + 2,
+                        From = 2,
                         Take = 2,
                         ItemsToDisplay = ViewModelHelper.Get(repliesToDisplay),
                         HasMore = allReplies.Count() > 2
@@ -134,22 +124,13 @@ namespace Application.Web.Controllers
                     topLevelPostsAsViewModels.Add(repliesViewModel);
                 }
 
-                var otherParams = new Dictionary<string, string>();
-                otherParams.Add("id", threadId);
-                otherParams.Add("query", query);
-
-                var pagination = new Pagination<PostWithRepliesViewModel>()
-                {
-                    CurrentPage = page,
-                    FormAction = "../Forum/Thread",
-                    ItemsToDisplay = topLevelPostsAsViewModels,
-                    PageSize = PAGE_SIZE,
-                    StartPage = startPage,
-                    TotalNumberOfResults = topLevelPosts.Count,
-                    FormMethod = "get",
-                    MaxNumberOfPagesToShowOnEachRequest = MAX_NUMBER_OF_PAGES_TO_SHOW_ON_EACH_REQUEST,
-                    MoreParametersAndValues = otherParams
-                };
+                var pagination = new PaginationBuilder<PostWithRepliesViewModel>()
+                                     .Create(page, PAGE_SIZE, startPage, topLevelPosts.Count, MAX_NUMBER_OF_PAGES_TO_SHOW_ON_EACH_REQUEST)
+                                     .SeResults(topLevelPostsAsViewModels, true)
+                                     .ConfigureForm("../Forum/Thread", "get")
+                                     .AdParameterAndValue("query", query)
+                                     .AdParameterAndValue("threadId", threadId)
+                                     .Build();
 
                 var viewModel = new ViewModelWithPagination<Thread, PostWithRepliesViewModel>()
                 {

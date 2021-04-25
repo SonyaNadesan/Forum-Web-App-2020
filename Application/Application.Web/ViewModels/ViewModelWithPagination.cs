@@ -1,4 +1,6 @@
-﻿namespace Application.Web.ViewModels
+﻿using Application.Services.Pagination;
+
+namespace Application.Web.ViewModels
 {
     public class ViewModelWithPagination<TModel, TPagination>
     {

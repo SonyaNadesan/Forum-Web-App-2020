@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Application.Services.Shared
+namespace Application.Services.Pagination
 {
     public class PaginationHelper
     {

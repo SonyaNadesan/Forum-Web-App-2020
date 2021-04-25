@@ -1,5 +1,6 @@
 ﻿@using Application.Domain.ApplicationEntities
 @using Application.Web.ViewModels
+@using Application.Services.Pagination;
 @model ViewModelWithPagination<Thread, PostWithRepliesViewModel>
 @{
     Layout = "_Layout";
@@ -77,7 +78,7 @@
         <input type="hidden" id="hdnParentPostId_@Model.PageData.Id" name="ParentPostId" value="" />
         <button class="btn btn-primary" onclick="submitPost('@Model.PageData.Id')">Submit</button>
     </div>
-    @await Html.PartialAsync("_Pagination", Model.PaginationData)
+    @await Html.PartialAsync("_Pagination", (IPagination) Model.PaginationData)
 </div>
 
 <script>

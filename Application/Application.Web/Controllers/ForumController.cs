@@ -11,6 +11,7 @@ using Application.Web.ViewModels.ViewModelHelpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,13 +47,13 @@ namespace Application.Web.Controllers
             _threadFilterService = threadFilterService;
         }
 
-        public IActionResult Index(int page = 1, int startPage = 1, string query = "", string topic = "", string categories = "", Enums.MatchConditions matchCondition = Enums.MatchConditions.MatchAny)
+        public JsonResult Index(int page = 1, int startPage = 1, string query = "", string topic = "", string categories = "", Enums.MatchConditions matchCondition = Enums.MatchConditions.MatchAny)
         {
             topic = string.IsNullOrEmpty(topic) ? "all" : topic;
 
             categories = string.IsNullOrEmpty(categories) ? "all" : categories;
 
-            var categoryCollection = DelimitedQueryParamHelper.GenerateCollection<HashSet<string>>(categories, "all", '+');
+            var categoryCollection = DelimitedQueryParamHelper.GenerateCollection<HashSet<string>>(categories, "all", ' ');
 
             var allThreads = _threadService.GetAll().Result.ToList();
 
@@ -63,9 +64,9 @@ namespace Application.Web.Controllers
 
             var results = _threadFilterService.GetFilteredList(allThreads, filters).OrderByDescending(t => t.DateTime);
 
-            var pagination = new PaginationBuilder<Thread>()
+            var pagination = new PaginationBuilder<Thread, ListableThreadViewModel>()
                                  .Create(page, PAGE_SIZE, startPage, results.Count(), MAX_NUMBER_OF_PAGES_TO_SHOW_ON_EACH_REQUEST)
-                                 .SeResults(results, false)
+                                 .SeResults(results, false, ModelToViewModelHelper.ThreadToListableThreadViewModel)
                                  .ConfigureForm("../Forum/Index", "get")
                                  .AdParameterAndValue("query", query)
                                  .Build();
@@ -75,14 +76,21 @@ namespace Application.Web.Controllers
                 Pagination = pagination,
                 Categories = categoryCollection.ToArray(),
                 Topic = topic,
-                CategoryOptions = _categoryService.GetAll().Result.ToList(),
-                TopicOptions = _topicService.GetAll().Result.ToList()
+                CategoryOptions = _categoryService.GetAll().Result.Select(x => new SimpleModel(x.Id, x.NameInUrl, x.DisplayName)).ToList(),
+                TopicOptions = _topicService.GetAll().Result.Select(x => new SimpleModel(x.Id, x.NameInUrl, x.DisplayName)).ToList()
             };
 
-            return View(viewModel);
+            var json = JsonConvert.SerializeObject(viewModel, Formatting.Indented, new JsonSerializerSettings
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                NullValueHandling = NullValueHandling.Ignore,
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            });
+
+            return new JsonResult(json);
         }
 
-        public IActionResult Thread(string threadId, int page = 1, int startPage = 1, string query = "")
+        public JsonResult Thread(string threadId, int page = 1, int startPage = 1, string query = "")
         {
             var isThreadIdGuid = Guid.TryParse(threadId, out Guid treadIdAsGuid);
 
@@ -92,12 +100,12 @@ namespace Application.Web.Controllers
 
                 if (!thread.IsValid)
                 {
-                    return RedirectToAction("Index");
+                    throw new Exception();
                 }
 
                 var topLevelPosts = _postService.GetTopLevelPosts(treadIdAsGuid).Result.ToList();
 
-                var topLevelPostsForDisplay = PaginationHelper.GetItemsToDisplay<Post>(topLevelPosts, page, PAGE_SIZE);
+                var topLevelPostsForDisplay = PaginationHelper.GetItemsToDisplay(topLevelPosts, page, PAGE_SIZE);
 
                 var topLevelPostsAsViewModels = new List<PostWithRepliesViewModel>();
 
@@ -106,18 +114,18 @@ namespace Application.Web.Controllers
                     var allReplies = _postService.GetReplies(topLevelPost.Id).Result.ToList();
                     var repliesToDisplay = allReplies.Take(2).ToList();
 
-                    var loadMoreViewModel = new LoadMoreViewModel<Post>()
+                    var loadMoreViewModel = new LoadMoreViewModel<PostViewModel>()
                     {
                         Id = topLevelPost.Id.ToString(),
                         From = 2,
                         Take = 2,
-                        ItemsToDisplay = ViewModelHelper.Get(repliesToDisplay),
+                        ItemsToDisplay = repliesToDisplay.Select(x => new PostViewModel(x)).ToList(),
                         HasMore = allReplies.Count() > 2
                     };
 
                     var repliesViewModel = new PostWithRepliesViewModel()
                     {
-                        TopLevelPost = ViewModelHelper.Get(topLevelPost),
+                        TopLevelPost = new PostViewModel(topLevelPost),
                         Replies = loadMoreViewModel
                     };
 
@@ -138,10 +146,17 @@ namespace Application.Web.Controllers
                     PaginationData = pagination
                 };
 
-                return View(viewModel);
+                var json = JsonConvert.SerializeObject(viewModel, Formatting.Indented, new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore,
+                    ContractResolver = new CamelCasePropertyNamesContractResolver()
+                });
+
+                return new JsonResult(json);
             }
 
-            return View("Index");
+            throw new Exception();
         }
 
         public IActionResult CreateThread()
@@ -222,20 +237,21 @@ namespace Application.Web.Controllers
                 throw new NullReferenceException();
             }
 
-            var postIdsToExclude = !string.IsNullOrEmpty(excludeIds) ? DelimitedQueryParamHelper.GenerateCollection<HashSet<string>>(excludeIds, "all", excludeIds.Contains('+') ? '+' : ' ')
-                                                                                                .Where(x => Guid.TryParse(x, out Guid guid))
-                                                                                                .Select(x => Guid.Parse(x))
-                                                                                                .ToList() : new List<Guid>();
+            var postIdsToExclude = !string.IsNullOrEmpty(excludeIds) ?
+                                   DelimitedQueryParamHelper.GenerateCollection<HashSet<string>>(excludeIds, "all", excludeIds.Contains('+') ? '+' : ' ')
+                                                            .Where(x => Guid.TryParse(x, out Guid guid))
+                                                            .Select(x => Guid.Parse(x))
+                                                            .ToList() : new List<Guid>();
 
             var replies = _postService.GetReplies(postIdAsGuid).Result;
             var repliesToDisplay = replies.Skip(from).Where(x => !postIdsToExclude.Contains(x.Id)).Take(take).ToList();
-            var repliesAsViewModel = ViewModelHelper.Get(repliesToDisplay);
+            var repliesAsViewModel = repliesToDisplay;
 
             var numberOfItemsDiplayed = from + repliesToDisplay.Count();
 
-            var loadMoreViewModel = new LoadMoreViewModel<Post>()
+            var loadMoreViewModel = new LoadMoreViewModel<PostViewModel>()
             {
-                ItemsToDisplay = repliesAsViewModel,
+                ItemsToDisplay = repliesAsViewModel.Select(x => new PostViewModel(x)).ToList(),
                 From = numberOfItemsDiplayed,
                 Take = take,
                 Id = postId,
@@ -245,10 +261,11 @@ namespace Application.Web.Controllers
             var json = JsonConvert.SerializeObject(loadMoreViewModel, Formatting.Indented, new JsonSerializerSettings
             {
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-                NullValueHandling = NullValueHandling.Ignore
+                NullValueHandling = NullValueHandling.Ignore,
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
             });
 
-            return new JsonResult(JsonConvert.DeserializeObject<LoadMoreViewModel<Post>>(json));
+            return new JsonResult(json);
         }
 
         public JsonResult GetReactions(string threadId, int returnCount = 3)
@@ -281,7 +298,14 @@ namespace Application.Web.Controllers
                 TotalReactions = reactions.Count()
             };
 
-            return new JsonResult(viewModel);
+            var json = JsonConvert.SerializeObject(viewModel, Formatting.Indented, new JsonSerializerSettings
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                NullValueHandling = NullValueHandling.Ignore,
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            });
+
+            return new JsonResult(json);
         }
 
         [HttpPost]

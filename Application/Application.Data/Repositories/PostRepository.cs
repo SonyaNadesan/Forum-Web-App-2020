@@ -17,12 +17,19 @@ namespace Application.Data.Repositories
 
         public Post Get(Guid postId)
         {
-            return Context.Posts.Include(p => p.User).Include(p => p.Thread).Include(p => p.ParentPost).Include(p => p.ParentPost.User).Include(p => p.Thread.User).SingleOrDefault(p => p.Id == postId);
+            return Context.Posts.Include(p => p.User)
+                                .Include(p => p.Thread)
+                                .Include(p => p.ParentPost)
+                                .Include(p => p.ParentPost.User)
+                                .Include(p => p.Thread.User)
+                                .Include(p => p.TopLevelPost)
+                                .Include(p => p.TopLevelPost.User)
+                                .SingleOrDefault(p => p.Id == postId);
         }
 
         public IEnumerable<Post> GetAll()
         {
-            return Context.Posts.Include(p => p.User).Include(p => p.Thread).Include(p => p.ParentPost);
+            return Context.Posts.Include(p => p.User).Include(p => p.Thread).Include(p => p.ParentPost).Include(p => p.TopLevelPost);
         }
 
         public void Delete(Guid postId)
@@ -48,8 +55,14 @@ namespace Application.Data.Repositories
                 {
                     post.ParentPost = post;
                 }
-                
+
+                if (post.TopLevelPost == null)
+                {
+                    post.TopLevelPost = post;
+                }
+
                 Context.Entry(post.ParentPost).State = EntityState.Unchanged;
+                Context.Entry(post.TopLevelPost).State = EntityState.Unchanged;
                 Context.Entry(post).State = EntityState.Added;
                 Context.Posts.Add(post);
             }

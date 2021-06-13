@@ -66,6 +66,9 @@ namespace Application.Data.Migrations
                     b.Property<Guid>("ThreadId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("TopLevelPostId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -75,6 +78,8 @@ namespace Application.Data.Migrations
                     b.HasIndex("ParentPostId");
 
                     b.HasIndex("ThreadId");
+
+                    b.HasIndex("TopLevelPostId");
 
                     b.HasIndex("UserId");
 
@@ -206,6 +211,10 @@ namespace Application.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Application.Domain.ApplicationEntities.Post", "TopLevelPost")
+                        .WithMany()
+                        .HasForeignKey("TopLevelPostId");
+
                     b.HasOne("Application.Domain.ApplicationEntities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
@@ -215,6 +224,8 @@ namespace Application.Data.Migrations
                     b.Navigation("ParentPost");
 
                     b.Navigation("Thread");
+
+                    b.Navigation("TopLevelPost");
 
                     b.Navigation("User");
                 });

@@ -23,10 +23,15 @@ namespace Application.Domain.ApplicationEntities
 
         public Guid? ParentPostId { get; set; }
 
+        public Guid? TopLevelPostId { get; set; }
+
         public bool HasParentPost {get ; set;}
 
         [ForeignKey("ParentPostId")]
         public virtual Post ParentPost { get; set; }
+
+        [ForeignKey("TopLevelPostId")]
+        public virtual Post TopLevelPost { get; set; }
 
         public int LevelInHierarchy { get; set; }
 

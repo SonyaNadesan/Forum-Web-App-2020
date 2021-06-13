@@ -33,7 +33,7 @@ namespace Application.Services.Pagination
             PageSize = pageSize;
             MaxNumberOfPagesToShowOnEachRequest = maxNumberOfPagesToShowOnEachRequest;
             TotalNumberOfResults = totalNumberOfResults;
-
+            ItemsToDisplay = new List<T>();
             MoreParametersAndValues = new Dictionary<string, string>();
 
             SetNumberOfPages();
@@ -56,17 +56,24 @@ namespace Application.Services.Pagination
 
         private void SetStartAndLastPages(int startPage)
         {
-            if (CurrentPage > startPage + (MaxNumberOfPagesToShowOnEachRequest - 1))
+            if (MaxNumberOfPagesToShowOnEachRequest == 1)
             {
-                StartPage = startPage + MaxNumberOfPagesToShowOnEachRequest;
-            }
-            else if (CurrentPage < startPage)
-            {
-                StartPage = startPage - MaxNumberOfPagesToShowOnEachRequest;
+                StartPage = CurrentPage;
             }
             else
             {
-                StartPage = startPage;
+                if (CurrentPage > startPage + (MaxNumberOfPagesToShowOnEachRequest - 1))
+                {
+                    StartPage = startPage + MaxNumberOfPagesToShowOnEachRequest;
+                }
+                else if (CurrentPage < startPage)
+                {
+                    StartPage = startPage - MaxNumberOfPagesToShowOnEachRequest;
+                }
+                else
+                {
+                    StartPage = startPage;
+                }
             }
 
             var last = StartPage + (MaxNumberOfPagesToShowOnEachRequest - 1);

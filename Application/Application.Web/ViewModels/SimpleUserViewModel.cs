@@ -13,7 +13,7 @@ namespace Application.Web.ViewModels
         {
             Id = user.Id;
             Name = user.FirstName + " " + user.LastName;
-            AvatarSrc = user.ProfilePictureImageSrc;
+            AvatarSrc = string.IsNullOrEmpty(user.ProfilePictureImageSrc) ? "" : user.ProfilePictureImageSrc;
             Email = user.Email;
         }
     }

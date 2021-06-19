@@ -4,7 +4,7 @@ namespace Application.Services.Pagination
 {
     public interface IPagination
     {
-        int CurrentPage { get;}
+        int CurrentPage { get; }
 
         int StartPage { get; }
 

@@ -63,9 +63,9 @@ namespace Application.Web.Controllers
 
             var results = _threadFilterService.GetFilteredList(allThreads, filters).OrderByDescending(t => t.DateTime);
 
-            var pagination = new PaginationBuilder<Thread>()
+            var pagination = new PaginationBuilder<Thread, ListableThreadViewModel>()
                                  .Create(page, PAGE_SIZE, startPage, results.Count(), MAX_NUMBER_OF_PAGES_TO_SHOW_ON_EACH_REQUEST)
-                                 .SeResults(results, false)
+                                 .SeResults(results, false, ModelToViewModelHelper.ThreadToListableThreadViewModel)
                                  .ConfigureForm("../Forum/Index", "get")
                                  .AdParameterAndValue("query", query)
                                  .Build();

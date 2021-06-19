@@ -69,21 +69,21 @@
                 {
                     <tr>
                         <td>@thread.Heading</td>
-                        <td>@thread.User.FirstName @thread.User.LastName</td>
+                        <td>@thread.UserFirstName @thread.UserLastName</td>
                         <td>@thread.DateTime.ToString("dddd, dd MMMM yyyy HH:mm")</td>
                         <td>
                             <form action="~/Forum/Thread" method="get">
-                                <button type="submit" name="threadId" value="@thread.Id" class="btn btn-link"><span class="glyphicon glyphicon-edit"></span></button>
+                                <button type="submit" name="threadId" value="@thread.ThreadId" class="btn btn-link"><span class="glyphicon glyphicon-edit"></span></button>
                             </form>
                         </td>
                         <td>
-                            @if (thread.User.Email == User.Identity.Name)
+                            @if (thread.UserEmail == User.Identity.Name)
                             {
                                 <!-- Trigger the modal with a button -->
-                                <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal_@thread.Id"><span class="glyphicon glyphicon-trash"></span></button>
+                                <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal_@thread.ThreadId"><span class="glyphicon glyphicon-trash"></span></button>
 
                                 <!-- Modal -->
-                                <div id="myModal_@thread.Id" class="modal fade" role="dialog">
+                                <div id="myModal_@thread.ThreadId" class="modal fade" role="dialog">
                                     <div class="modal-dialog">
 
                                         <!-- Modal content-->
@@ -96,7 +96,7 @@
                                                 <div class="inline-block">
                                                     <form action="~/Thread/Delete" method="post">
                                                         @Html.AntiForgeryToken()
-                                                        <button type="submit" name="threadId" value="@thread.Id" class="btn btn-link jsBtnDelete"><span class="glyphicon glyphicon-trash"></span></button>
+                                                        <button type="submit" name="threadId" value="@thread.ThreadId" class="btn btn-link jsBtnDelete"><span class="glyphicon glyphicon-trash"></span></button>
                                                     </form>
                                                     <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
                                                 </div>

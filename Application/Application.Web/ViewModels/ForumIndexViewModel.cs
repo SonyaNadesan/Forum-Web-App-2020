@@ -6,7 +6,7 @@ namespace Application.Web.ViewModels
 {
     public class ForumIndexViewModel
     {
-        public Pagination<Thread> Pagination { get; set; }
+        public Pagination<ListableThreadViewModel> Pagination { get; set; }
         public string Topic { get; set; }
         public string[] Categories { get; set; }
         public List<Topic> TopicOptions { get; set; }

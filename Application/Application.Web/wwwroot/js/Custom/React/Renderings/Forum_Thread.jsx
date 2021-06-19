@@ -118,17 +118,18 @@ export class ForumThread extends React.Component {
             },
             body: JSON.stringify(this.props.threadId)
         })
-            .then(data => data.json())
-            .then(response => {
+        .then(data => data.json())
+        .then(response => {
 
-                this.updateReactions(response.value);
+            this.updateReactions(response.value);
 
-                let json = JSON.parse(response.value);
-                console.log(json);
-                reactionsListener.invoke('SendMessage', json.threadId, json.loggedOnUser.id).catch(function (err) {
-                        return console.error(err.toString());
-                    });
+            let json = JSON.parse(response.value);
+            console.log(json);
+
+            this.props.reactionsListener.invoke('SendMessage', json.threadId, json.loggedOnUser.id).catch(function (err) {
+                return console.error(err.toString());
             });
+        });
     }
 
     submitPost(event) {
@@ -147,7 +148,7 @@ export class ForumThread extends React.Component {
         })
             .then(data => data.json())
             .then(response => {
-                postsListener.invoke('SendMessage', response.id)
+                this.props.postsListener.invoke('SendMessage', response.id)
                     .catch(function (err) {
                         return console.error(err.toString());
                     });

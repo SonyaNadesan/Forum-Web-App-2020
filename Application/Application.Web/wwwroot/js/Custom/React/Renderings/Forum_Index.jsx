@@ -4,7 +4,6 @@ import { CreateButton } from '../Components/Shared/Button.jsx';
 import { ViewButton } from '../Components/Shared/Button.jsx';
 import { Pagination } from '../Components/Shared/Pagination.jsx';
 import { ForumThread } from '../Renderings/Forum_Thread.jsx';
-import { FileUpload } from '../Components/Shared/FileUpload.jsx';
 
 export class ForumIndex extends React.Component {
 
@@ -24,6 +23,7 @@ export class ForumIndex extends React.Component {
         this.categoryChangeHandler = this.categoryChangeHandler.bind(this);
         this.filterHandler = this.filterHandler.bind(this);
         this.pageClickHandler = this.pageClickHandler.bind(this);
+        this.navigateToThread = this.navigateToThread.bind(this);
     }
 
     componentDidMount() {
@@ -131,7 +131,7 @@ export class ForumIndex extends React.Component {
 
         for (let i = 0; i < items.length; i++) {
             let item = items[i];
-            let link = <ViewButton value={item.threadId} onClick={this.navigateToThread} />;
+            let link = <ViewButton value={item.threadId} onClick={this.navigateToThread}  />;
 
             itemsToDisplay.push(
                 {
@@ -153,6 +153,9 @@ export class ForumIndex extends React.Component {
     }
 
     navigateToThread(event) {
+        let reactionsListener = this.props.reactionsListener;
+        let postsListener = this.props.postsListener;
+
         fetch('../../../../../Forum/Thread?threadId=' + event.target.value)
             .then(dataFromApi => dataFromApi.json())
             .then(response => {
@@ -168,6 +171,8 @@ export class ForumIndex extends React.Component {
                         body={json.pageData.body}
                         posts={json.paginationData.itemsToDisplay}
                         threadId={json.pageData.id}
+                        reactionsListener={reactionsListener}
+                        postsListener={postsListener}
                     />,
                     document.getElementById('content')
                 );

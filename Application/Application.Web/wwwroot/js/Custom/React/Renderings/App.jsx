@@ -1,5 +1,7 @@
 ﻿import { FileUpload } from '../Components/Shared/FileUpload.jsx';
 import { ForumIndex } from '../Renderings/Forum_Index.jsx';
+import { reactionsListener } from '../Global/Notification.js';
+import { postsListener } from '../Global/Notification.js';
 
 export class App extends React.Component {
 
@@ -13,7 +15,10 @@ export class App extends React.Component {
                     formAction="/Profile/UploadProfilePicture"
                 />
                 <div>
-                    <ForumIndex />
+                    <ForumIndex
+                        reactionsListener={reactionsListener}
+                        postsListener={postsListener}
+                    />
                 </div>
             </div>
         );

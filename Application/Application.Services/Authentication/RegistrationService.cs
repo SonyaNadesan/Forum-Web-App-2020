@@ -12,18 +12,18 @@ namespace Application.Services.Authentication
     {
         private readonly IConfiguration Configuration;
         private readonly IEmailSenderService _emailService;
-        private readonly IEmailGeneratorService _emailGeneratorService;
+        private readonly IEmailBuilder _emailBuilder;
         private readonly IPasswordAssignmentService _passwordAssignmentService;
         private readonly IPdfGeneratorService<string> _pdfGeneratorService;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public RegistrationService(IConfiguration configuration, IEmailSenderService emailService, IEmailGeneratorService emailGeneratorService,
+        public RegistrationService(IConfiguration configuration, IEmailSenderService emailService, IEmailBuilder emailGeneratorService,
                                    IPasswordAssignmentService passwordAssignmentService, IPdfGeneratorService<string> pdfGeneratorService, 
                                    UserManager<ApplicationUser> userManager)
         {
             Configuration = configuration;
             _emailService = emailService;
-            _emailGeneratorService = emailGeneratorService;
+            _emailBuilder = emailGeneratorService;
             _passwordAssignmentService = passwordAssignmentService;
             _pdfGeneratorService = pdfGeneratorService;
             _userManager = userManager;
@@ -83,12 +83,12 @@ namespace Application.Services.Authentication
             var attachment1 = new FileStreamAndName() { AttachmentStream = _pdfGeneratorService.Generate(htmlBody), FileName = "Attachment 1" };
             var attachment2 = new FileStreamAndName() { AttachmentStream = _pdfGeneratorService.Generate(htmlBody), FileName = "Attachment 2" };
 
-            var mail = _emailGeneratorService.SetBody(htmlBody, Enums.EmailBodyType.HtmlString)
-                                             .SetSubject("Registration")
-                                             .SetRecipients(email)
-                                             .AddFile(attachment1)
-                                             .AddFile(attachment2)
-                                             .CreateEmail();
+            var mail = _emailBuilder.SetRecipientsAndFromAddress(email, Configuration.GetSection("FromEmail").Value)
+                                    .SetBody(htmlBody, Enums.EmailBodyType.HtmlString)
+                                    .SetSubject("Registration")
+                                    .AddFile(attachment1)
+                                    .AddFile(attachment2)
+                                    .Build();
 
             return _emailService.Send(mail);
         }

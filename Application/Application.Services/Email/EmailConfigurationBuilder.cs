@@ -1,5 +1,4 @@
 ﻿using Application.Domain;
-using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,22 +8,22 @@ using static Application.Domain.Enums;
 
 namespace Application.Services.Email
 {
-    public class EmailGeneratorService : IEmailGeneratorService
+    public class EmailConfigurationBuilder
     {
-        private readonly IConfiguration Configuration;
-
         private string _body;
         private bool _isBodyHtml;
         private string _subject;
         private string _recipients;
+        private string _fromAddress;
         private List<FileStreamAndName> _files = new List<FileStreamAndName>();
 
-        public EmailGeneratorService(IConfiguration configuration)
+        internal EmailConfigurationBuilder(string recipients, string fromAddress)
         {
-            Configuration = configuration;
+            _recipients = recipients;
+            _fromAddress = fromAddress;
         }
 
-        public EmailGeneratorService SetBody(string body, EmailBodyType bodyType)
+        public EmailConfigurationBuilder SetBody(string body, EmailBodyType bodyType)
         {
             switch (bodyType)
             {
@@ -48,13 +47,7 @@ namespace Application.Services.Email
             return this;
         }
 
-        public EmailGeneratorService SetRecipients(string recipients)
-        {
-            _recipients = recipients;
-            return this;
-        }
-
-        public EmailGeneratorService AddFile(MemoryStream attachmentStream, string filename)
+        public EmailConfigurationBuilder AddFile(MemoryStream attachmentStream, string filename)
         {
             if (attachmentStream != null)
             {
@@ -66,7 +59,7 @@ namespace Application.Services.Email
             return this;
         }
 
-        public EmailGeneratorService AddFile(FileStreamAndName file)
+        public EmailConfigurationBuilder AddFile(FileStreamAndName file)
         {
             if (file.AttachmentStream != null)
             {
@@ -77,19 +70,19 @@ namespace Application.Services.Email
             return this;
         }
 
-        public EmailGeneratorService SetSubject(string subject)
+        public EmailConfigurationBuilder SetSubject(string subject)
         {
             _subject = subject;
             return this;
         }
 
-        public MailMessage CreateEmail()
+        public MailMessage Build()
         {
             Attachment attachment = null;
 
             var msg = new MailMessage()
             {
-                From = new MailAddress(Configuration.GetSection("FromEmail").Value),
+                From = new MailAddress(_fromAddress),
                 Subject = _subject,
                 Body = _body,
                 IsBodyHtml = _isBodyHtml

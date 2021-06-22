@@ -96,7 +96,7 @@ namespace Application.Web
             services.AddScoped<ILogoutService, LogoutService>();
 
             //Email
-            services.AddScoped<IEmailGeneratorService, EmailGeneratorService>();
+            services.AddScoped<IEmailBuilder, EmailBuilder>();
             services.AddScoped<IEmailSenderService, EmailSenderService>();
 
             //Documents

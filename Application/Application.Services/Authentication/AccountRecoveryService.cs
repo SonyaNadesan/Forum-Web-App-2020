@@ -1,22 +1,25 @@
 ﻿using Application.Domain;
 using Application.Services.Email;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
 
 namespace Application.Services.Authentication
 {
     public class AccountRecoveryService : IAccountRecoveryService
     {
+        private readonly IConfiguration Configuration;
         private readonly IEmailSenderService _emailSenderService;
-        private readonly IEmailGeneratorService _emailGeneratorService;
+        private readonly IEmailBuilder _emailBuilder;
         private readonly IPasswordAssignmentService _passwordAssignmentService;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public AccountRecoveryService(IEmailSenderService emailSenderService, IEmailGeneratorService emailGeneratorService,
+        public AccountRecoveryService(IConfiguration configuration, IEmailSenderService emailSenderService, IEmailBuilder emailGeneratorService,
                                    IPasswordAssignmentService passwordAssignmentService, UserManager<ApplicationUser> userManager)
         {
+            Configuration = configuration;
             _emailSenderService = emailSenderService;
-            _emailGeneratorService = emailGeneratorService;
+            _emailBuilder = emailGeneratorService;
             _passwordAssignmentService = passwordAssignmentService;
             _userManager = userManager;
         }
@@ -54,10 +57,10 @@ namespace Application.Services.Authentication
 
             var message = "Your new password is: " + newPassword;
 
-            var mail = _emailGeneratorService.SetBody(message, Enums.EmailBodyType.RegularString)
-                                             .SetRecipients(user.Email)
-                                             .SetSubject("Account Recovery")
-                                             .CreateEmail();
+            var mail = _emailBuilder.SetRecipientsAndFromAddress(user.Email, Configuration.GetSection("FromEmail").Value)
+                                    .SetSubject("Account Recovery")
+                                    .SetBody(message, Enums.EmailBodyType.RegularString)
+                                    .Build();
 
             var emailResponse = _emailSenderService.Send(mail);
 

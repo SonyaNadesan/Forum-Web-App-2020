@@ -14,18 +14,18 @@ namespace Application.Services.Authentication
         private readonly IEmailSenderService _emailService;
         private readonly IEmailBuilder _emailBuilder;
         private readonly IPasswordAssignmentService _passwordAssignmentService;
-        private readonly IPdfBuilder<string> _pdfGeneratorService;
+        private readonly IPdfBuilder<string> _pdfBuilder;
         private readonly UserManager<ApplicationUser> _userManager;
 
         public RegistrationService(IConfiguration configuration, IEmailSenderService emailService, IEmailBuilder emailGeneratorService,
-                                   IPasswordAssignmentService passwordAssignmentService, IPdfBuilder<string> pdfGeneratorService, 
+                                   IPasswordAssignmentService passwordAssignmentService, IPdfBuilder<string> pdfBuilder, 
                                    UserManager<ApplicationUser> userManager)
         {
             Configuration = configuration;
             _emailService = emailService;
             _emailBuilder = emailGeneratorService;
             _passwordAssignmentService = passwordAssignmentService;
-            _pdfGeneratorService = pdfGeneratorService;
+            _pdfBuilder = pdfBuilder;
             _userManager = userManager;
         }
 
@@ -80,8 +80,8 @@ namespace Application.Services.Authentication
         {
             var htmlBody = File.ReadAllText(Configuration.GetSection("RegistrationEmail").Value).Replace("#password#", password);
 
-            var attachment1 = new FileStreamAndName() { AttachmentStream = _pdfGeneratorService.Generate(htmlBody), FileName = "Attachment 1" };
-            var attachment2 = new FileStreamAndName() { AttachmentStream = _pdfGeneratorService.Generate(htmlBody), FileName = "Attachment 2" };
+            var attachment1 = new FileStreamAndName() { AttachmentStream = _pdfBuilder.Generate(htmlBody), FileName = "Attachment 1" };
+            var attachment2 = new FileStreamAndName() { AttachmentStream = _pdfBuilder.Generate(htmlBody), FileName = "Attachment 2" };
 
             var mail = _emailBuilder.SetRecipientsAndFromAddress(email, Configuration.GetSection("FromEmail").Value)
                                     .SetBody(htmlBody, Enums.EmailBodyType.HtmlString)

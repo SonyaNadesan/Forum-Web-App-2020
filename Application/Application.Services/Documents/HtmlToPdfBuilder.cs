@@ -4,7 +4,7 @@ using iText.Kernel.Pdf;
 
 namespace Application.Services.Documents
 {
-    public class PdfGeneratorFromHtmlService : IPdfGeneratorService<string>
+    public class HtmlToPdfBuilder : IPdfBuilder<string>
     {
         public MemoryStream Generate(string html)
         {

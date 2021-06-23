@@ -100,7 +100,7 @@ namespace Application.Web
             services.AddScoped<IEmailSenderService, EmailSenderService>();
 
             //Documents
-            services.AddScoped<IPdfGeneratorService<string>, PdfGeneratorFromHtmlService>();
+            services.AddScoped<IPdfBuilder<string>, HtmlToPdfBuilder>();
 
             //Files
             services.AddScoped<IFileDownloadService, FileDownloadService>();

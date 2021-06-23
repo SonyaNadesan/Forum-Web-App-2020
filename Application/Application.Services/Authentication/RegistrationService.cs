@@ -14,11 +14,11 @@ namespace Application.Services.Authentication
         private readonly IEmailSenderService _emailService;
         private readonly IEmailBuilder _emailBuilder;
         private readonly IPasswordAssignmentService _passwordAssignmentService;
-        private readonly IPdfGeneratorService<string> _pdfGeneratorService;
+        private readonly IPdfBuilder<string> _pdfGeneratorService;
         private readonly UserManager<ApplicationUser> _userManager;
 
         public RegistrationService(IConfiguration configuration, IEmailSenderService emailService, IEmailBuilder emailGeneratorService,
-                                   IPasswordAssignmentService passwordAssignmentService, IPdfGeneratorService<string> pdfGeneratorService, 
+                                   IPasswordAssignmentService passwordAssignmentService, IPdfBuilder<string> pdfGeneratorService, 
                                    UserManager<ApplicationUser> userManager)
         {
             Configuration = configuration;

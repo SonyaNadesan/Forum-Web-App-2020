@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Application.Services.Shared
+namespace Application.Services.Hierarchy
 {
     class FlattenHierarchyService<T, TId> where T : IHierarchyItem<TId>
     {

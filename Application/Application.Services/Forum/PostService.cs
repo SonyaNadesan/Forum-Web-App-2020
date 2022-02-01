@@ -1,6 +1,6 @@
 ﻿using Application.Data;
 using Application.Domain.ApplicationEntities;
-using Application.Services.Shared;
+using Application.Services.Hierarchy;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -161,8 +161,6 @@ namespace Application.Services.Forum
             }
 
             var allPosts = _unitOfWork.PostRepository.GetAll().ToList();
-
-            var result = new FlattenHierarchyService<Post, Guid>(allPosts).Flatten((x, y) => x == y);
 
             response.Result = new FlattenHierarchyService<Post, Guid>(allPosts).GetDescendants(post, (x, y) => x == y);
 

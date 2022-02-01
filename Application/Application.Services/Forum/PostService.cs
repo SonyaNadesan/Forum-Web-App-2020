@@ -186,24 +186,5 @@ namespace Application.Services.Forum
 
             return response;
         }
-
-        private void DrillDown(List<Post> allPosts, Post post, List<Post> results)
-        {
-            var replies = allPosts.Where(p => p.ThreadId == post.ThreadId && p.HasParent && p.ParentId == post.Id).ToList();
-
-            var drillDown = replies.Any();
-
-            while (drillDown)
-            {
-                foreach (var reply in replies)
-                {
-                    results.Add(reply);
-
-                    DrillDown(allPosts, reply, results);
-                }
-
-                drillDown = false;
-            }
-        }
     }
 }

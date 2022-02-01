@@ -31,7 +31,7 @@ namespace Application.Services.Forum
 
             var response = new ServiceResponse<Post>(post);
 
-            if(post == null)
+            if (post == null)
             {
                 response.ErrorMessage = "Post Not Found";
                 return response;
@@ -47,7 +47,7 @@ namespace Application.Services.Forum
 
             var response = new ServiceResponse<Post>(postFromDb);
 
-            if(postFromDb == null)
+            if (postFromDb == null)
             {
                 response.ErrorMessage = "Post Not Found";
             }
@@ -56,7 +56,7 @@ namespace Application.Services.Forum
             {
                 _unitOfWork.PostRepository.Edit(post);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 response.ErrorMessage = "Sorry, something went wrong.";
             }
@@ -70,7 +70,7 @@ namespace Application.Services.Forum
 
             var response = new ServiceResponse<Post>(postFromDb);
 
-            if(postFromDb == null)
+            if (postFromDb == null)
             {
                 response.ErrorMessage = "Post Not Found.";
             }
@@ -79,7 +79,7 @@ namespace Application.Services.Forum
             {
                 _unitOfWork.PostRepository.Delete(post.Id);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 response.ErrorMessage = "Sorry, something went wrong.";
             }
@@ -93,7 +93,7 @@ namespace Application.Services.Forum
 
             var user = _unitOfWork.UserRepository.Get(email);
 
-            if(user == null)
+            if (user == null)
             {
                 response.ErrorMessage = "User Not Set";
                 return response;
@@ -101,7 +101,7 @@ namespace Application.Services.Forum
 
             var thread = _unitOfWork.ThreadRepository.Get(threadId);
 
-            if(thread == null)
+            if (thread == null)
             {
                 response.ErrorMessage = "Thread Not Set";
                 return response;
@@ -134,7 +134,7 @@ namespace Application.Services.Forum
                 _unitOfWork.PostRepository.Add(newPost);
                 _unitOfWork.Save();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 response.ErrorMessage = "Sorry, something went wrong.";
             }
@@ -155,42 +155,16 @@ namespace Application.Services.Forum
 
             var response = new ServiceResponse<IEnumerable<Post>>();
 
-            if(post == null)
+            if (post == null)
             {
                 response.ErrorMessage = "Post Not Found.";
             }
 
-            var repliesToDisplay = new List<Post>();
-
             var allPosts = _unitOfWork.PostRepository.GetAll().ToList();
 
-            DrillDown(allPosts, post, repliesToDisplay);
+            var result = new FlattenHierarchyService<Post, Guid>(allPosts).Flatten((x, y) => x == y);
 
-            response.Result = repliesToDisplay;
-
-            var result = new FlattenHierarchyService<Post, Guid>(allPosts).Flatten((x, y) => x == y );
-
-            return response;
-        }
-
-        public ServiceResponse<IEnumerable<Post>> GetPostHierarchy(Guid threadId)
-        {
-            var response = new ServiceResponse<IEnumerable<Post>>();
-
-            var posts = _unitOfWork.PostRepository.GetAll().Where(p => p.ThreadId == threadId && !p.HasParent).ToList();
-
-            var allPostsInOrder = new List<Post>();
-
-            foreach (var post in posts)
-            {
-                allPostsInOrder.Add(post);
-
-                var replies = GetReplies(post.Id).Result.ToList();
-
-                allPostsInOrder.AddRange(replies);
-            }
-
-            response.Result = allPostsInOrder;
+            response.Result = new FlattenHierarchyService<Post, Guid>(allPosts).GetDescendants(post, (x, y) => x == y);
 
             return response;
         }

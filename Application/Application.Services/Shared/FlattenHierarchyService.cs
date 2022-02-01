@@ -23,7 +23,7 @@ namespace Application.Services.Shared
             {
                 flattenedHierarchy.Add(item);
 
-                var children = GetChildren(item, isEqualMethod);
+                var children = GetDescendants(item, isEqualMethod);
 
                 flattenedHierarchy.AddRange(children);
             }
@@ -31,7 +31,7 @@ namespace Application.Services.Shared
             return flattenedHierarchy;
         }
 
-        private List<T> GetChildren(T item, SharedDelegates.IsEqual<TId> isEqualMethod)
+        public List<T> GetDescendants(T item, SharedDelegates.IsEqual<TId> isEqualMethod)
         {
             var children = new List<T>();
 
@@ -42,7 +42,7 @@ namespace Application.Services.Shared
 
         private void DrillDown(List<T> allItemsUnordered, T item, List<T> results, SharedDelegates.IsEqual<TId> isEqualMethod)
         {
-            var children = _allItemsUnordered.Where(x => isEqualMethod.Invoke(x.Id, item.Id) && x.HasParent && isEqualMethod.Invoke(x.ParentId, item.Id)).ToList();
+            var children = _allItemsUnordered.Where(x => x.HasParent && isEqualMethod.Invoke(x.ParentId, item.Id)).ToList();
 
             var drillDown = children.Any();
 

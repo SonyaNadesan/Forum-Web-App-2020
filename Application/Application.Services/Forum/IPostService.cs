@@ -13,7 +13,6 @@ namespace Application.Services.Forum
         ServiceResponse<Post> Create(string email, string content, Guid threadId, Guid? parentPostId = null);
         ServiceResponse<IEnumerable<Post>> GetTopLevelPosts(Guid threadId);
         ServiceResponse<IEnumerable<Post>> GetReplies(Guid postId);
-        ServiceResponse<IEnumerable<Post>> GetPostHierarchy(Guid threadId);
         ServiceResponse<IEnumerable<Post>> GetAncestors(Guid postId);
     }
 }

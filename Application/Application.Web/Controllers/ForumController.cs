@@ -58,7 +58,7 @@ namespace Application.Web.Controllers
 
             var filters = _threadFilterBuilder.AddTopicFilter(topic)
                                               .AddCategoryFilter(categoryCollection, matchCondition)
-                                              .AddQueryFilter(query)
+                                              .SetQueryFilter(query)
                                               .Build();
 
             var results = _threadFilterService.GetFilteredList(allThreads, filters).OrderByDescending(t => t.DateTime);
@@ -306,7 +306,7 @@ namespace Application.Web.Controllers
 
             var post = _postService.Get(postIdAsGuid).Result;
 
-            if (post.HasParentPost && !post.HasBeenViewedByParentPostOwner.Value && post.ParentPost.User.Email == User.Identity.Name)
+            if (post.HasParent && !post.HasBeenViewedByParentPostOwner.Value && post.ParentPost.User.Email == User.Identity.Name)
             {
                 post.HasBeenViewedByParentPostOwner = true;
             }

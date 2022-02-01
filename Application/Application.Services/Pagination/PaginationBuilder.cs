@@ -8,9 +8,9 @@
         {
             _pagination = new Pagination<T>(currentPage, pageSize, startPage, totalNumberOfResults, maxNumberOfPagesToShowOnEachRequest);
 
-            var paginationConfigurationBuilder = new PaginationResultsBuilder<T>(_pagination);
+            var paginationResultsBuilder = new PaginationResultsBuilder<T>(_pagination);
 
-            return paginationConfigurationBuilder;
+            return paginationResultsBuilder;
         }
     }
 

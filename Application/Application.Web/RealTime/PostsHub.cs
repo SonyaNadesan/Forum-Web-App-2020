@@ -18,9 +18,9 @@ namespace Application.Web.RealTime
         {
             var post = _postService.Get(Guid.Parse(postId)).Result;
 
-            var recipient = post.HasParentPost ? post.ParentPost.User.Id : post.Thread.User.Id;
+            var recipient = post.HasParent ? post.ParentPost.User.Id : post.Thread.User.Id;
 
-            var postParentType = post.HasParentPost ? "POST" : "THREAD";
+            var postParentType = post.HasParent ? "POST" : "THREAD";
 
             await Clients.Users(recipient).SendAsync("NotifyUserOfPost", postParentType, post.Id, post.User.FirstName, post.Content, post.Thread.Id);
         }

@@ -2,9 +2,7 @@
 {
     public interface IFileDownloadService
     {
-        string FilePath { get; set; }
-        string FileNameUponDownload { get; set; }
-        string FolderPath { get; set; }
-        void Download();
+        ServiceResponse<IDownloadedFile> Download(string filePath, string desiredFileNameUponDownload, string folderPath);
+        void DownloadWithoutResponse(string filePath, string desiredFileNameUponDownload, string folderPath);
     }
 }

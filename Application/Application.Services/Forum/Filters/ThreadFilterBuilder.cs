@@ -2,6 +2,7 @@
 using Application.Domain.ApplicationEntities;
 using Application.Services.Filtering;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Application.Services.Forum.Filters
 {
@@ -9,20 +10,28 @@ namespace Application.Services.Forum.Filters
     {
         private List<IFilter<Thread>> _filters = new List<IFilter<Thread>>();
 
-        private bool isToBeCleared = false;
+        private bool _isToBeCleared = false;
 
-        public IThreadFilterBuilder AddQueryFilter(string query)
+        private int _queryFilterPosition = -1;
+        private int _categoryFilterPosition = -1;
+        private int _topicFilterPosition = -1;
+
+        public IThreadFilterBuilder SetQueryFilter(string query)
         {
             ClearListIfNecessary();
 
             if (!string.IsNullOrEmpty(query))
             {
+                RemoveIfFilterHasBeenAddedPreviously(_queryFilterPosition);
+
                 var queryFilter = new QueryFilter()
                 {
                     Query = query
                 };
 
                 _filters.Add(queryFilter);
+
+                _queryFilterPosition = _filters.Count() - 1;
             }
 
             return this;
@@ -34,6 +43,8 @@ namespace Application.Services.Forum.Filters
 
             if (matchCondition == Enums.MatchConditions.MatchAny)
             {
+                RemoveIfFilterHasBeenAddedPreviously(_categoryFilterPosition);
+
                 var anyCategoryFilter = new AnyCategoryFilter<T>()
                 {
                     Categories = categories
@@ -43,6 +54,8 @@ namespace Application.Services.Forum.Filters
             }
             else if(matchCondition == Enums.MatchConditions.MatchAll)
             {
+                RemoveIfFilterHasBeenAddedPreviously(_categoryFilterPosition);
+
                 var allCategoryFilter = new AllCategoryFilter<T>()
                 {
                     Categories = categories
@@ -51,12 +64,16 @@ namespace Application.Services.Forum.Filters
                 _filters.Add(allCategoryFilter);
             }
 
+            _categoryFilterPosition = _filters.Count() - 1;
+
             return this;
         }
 
         public IThreadFilterBuilder AddTopicFilter(string topic)
         {
             ClearListIfNecessary();
+
+            RemoveIfFilterHasBeenAddedPreviously(_topicFilterPosition);
 
             var topicFilter = new TopicFilter()
             {
@@ -65,21 +82,32 @@ namespace Application.Services.Forum.Filters
 
             _filters.Add(topicFilter);
 
+            _topicFilterPosition = _filters.Count() - 1;
+
             return this;
         }
 
         public List<IFilter<Thread>> Build()
         {
-            isToBeCleared = true;
+            _isToBeCleared = true;
+
             return _filters;
         }
 
         private void ClearListIfNecessary()
         {
-            if (isToBeCleared)
+            if (_isToBeCleared)
             {
-                isToBeCleared = false;
+                _isToBeCleared = false;
                 _filters.Clear();
+            }
+        }
+
+        private void RemoveIfFilterHasBeenAddedPreviously(int indexOfFilter)
+        {
+            if(indexOfFilter > -1)
+            {
+                _filters.RemoveAt(indexOfFilter);
             }
         }
     }

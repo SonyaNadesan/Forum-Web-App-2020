@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Application.Domain.ApplicationEntities
 {
-    public class Post
+    public class Post : IHierarchyItem<Guid>
     {
         public Guid Id { get; set; }
         public string Content { get; set; }
@@ -21,11 +21,11 @@ namespace Application.Domain.ApplicationEntities
         [ForeignKey("ThreadId")]
         public virtual Thread Thread { get; set; }
 
-        public Guid? ParentPostId { get; set; }
+        public Guid ParentId { get; set; }
 
-        public bool HasParentPost {get ; set;}
+        public bool HasParent {get ; set;}
 
-        [ForeignKey("ParentPostId")]
+        [ForeignKey("ParentId")]
         public virtual Post ParentPost { get; set; }
 
         public int LevelInHierarchy { get; set; }

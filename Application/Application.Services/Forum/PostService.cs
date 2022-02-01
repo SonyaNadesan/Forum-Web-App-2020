@@ -1,5 +1,6 @@
 ﻿using Application.Data;
 using Application.Domain.ApplicationEntities;
+using Application.Services.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -107,12 +108,13 @@ namespace Application.Services.Forum
             }
 
             var parentPost = parentPostId.HasValue ? _unitOfWork.PostRepository.Get(parentPostId.Value) : null;
+            var newId = Guid.NewGuid();
 
             var newPost = new Post()
             {
-                Id = Guid.NewGuid(),
+                Id = newId,
                 Content = content,
-                ParentPostId = parentPost?.Id,
+                ParentId = parentPost != null ? parentPost.Id : newId,
                 ParentPost = parentPost,
                 HasBeenViewedByParentPostOwner = false,
                 HasBeenViewedByThreadOwner = false,
@@ -121,7 +123,7 @@ namespace Application.Services.Forum
                 DateTime = DateTime.Now,
                 UserId = user.Id,
                 User = user,
-                HasParentPost = parentPost != null,
+                HasParent = parentPost != null,
                 LevelInHierarchy = parentPost == null ? 1 : parentPost.LevelInHierarchy + 1
             };
 
@@ -142,7 +144,7 @@ namespace Application.Services.Forum
 
         public ServiceResponse<IEnumerable<Post>> GetTopLevelPosts(Guid threadId)
         {
-            var posts = _unitOfWork.PostRepository.GetAll().Where(p => p.ThreadId == threadId && !p.HasParentPost).ToList();
+            var posts = _unitOfWork.PostRepository.GetAll().Where(p => p.ThreadId == threadId && !p.HasParent).ToList();
 
             return new ServiceResponse<IEnumerable<Post>>(posts);
         }
@@ -166,6 +168,8 @@ namespace Application.Services.Forum
 
             response.Result = repliesToDisplay;
 
+            var result = new FlattenHierarchyService<Post, Guid>(allPosts).Flatten((x, y) => x == y );
+
             return response;
         }
 
@@ -173,7 +177,7 @@ namespace Application.Services.Forum
         {
             var response = new ServiceResponse<IEnumerable<Post>>();
 
-            var posts = _unitOfWork.PostRepository.GetAll().Where(p => p.ThreadId == threadId && !p.HasParentPost).ToList();
+            var posts = _unitOfWork.PostRepository.GetAll().Where(p => p.ThreadId == threadId && !p.HasParent).ToList();
 
             var allPostsInOrder = new List<Post>();
 
@@ -199,7 +203,7 @@ namespace Application.Services.Forum
 
             var allPostsInOrder = new List<Post>();
 
-            while (post != null && post.HasParentPost)
+            while (post != null && post.HasParent)
             {
                 allPostsInOrder.Add(post);
 
@@ -213,7 +217,7 @@ namespace Application.Services.Forum
 
         private void DrillDown(List<Post> allPosts, Post post, List<Post> results)
         {
-            var replies = allPosts.Where(p => p.ThreadId == post.ThreadId && p.HasParentPost && p.ParentPostId == post.Id).ToList();
+            var replies = allPosts.Where(p => p.ThreadId == post.ThreadId && p.HasParent && p.ParentId == post.Id).ToList();
 
             var drillDown = replies.Any();
 

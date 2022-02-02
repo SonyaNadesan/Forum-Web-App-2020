@@ -173,14 +173,7 @@ namespace Application.Services.Forum
 
             var post = _unitOfWork.PostRepository.Get(postId);
 
-            var allPostsInOrder = new List<Post>();
-
-            while (post != null && post.HasParent)
-            {
-                allPostsInOrder.Add(post);
-
-                post = post?.ParentPost;
-            }
+            var allPostsInOrder = new FlattenHierarchyService<Post>().ConfigureToGetAncestors(post, "ParentPost").Flatten();
 
             response.Result = allPostsInOrder.Reverse<Post>();
 

@@ -41,6 +41,20 @@ namespace Application.Services.Hierarchy
             return children;
         }
 
+        public List<T> GetAncestors(T item, SharedDelegates.IsEqual<TId> isEqualMethod)
+        {
+            var ancestors = new List<T>();
+
+            while(item != null && item.HasParent)
+            {
+                ancestors.Add(item);
+
+                item = _allItemsUnordered.SingleOrDefault(x => isEqualMethod.Invoke(x.Id, item.ParentId));
+            }
+
+            return ancestors;
+        }
+
         private void DrillDown(List<T> allItemsUnordered, T item, List<T> results, SharedDelegates.IsEqual<TId> isEqualMethod)
         {
             var children = _allItemsUnordered.Where(x => x.HasParent && isEqualMethod.Invoke(x.ParentId, item.Id)).ToList();

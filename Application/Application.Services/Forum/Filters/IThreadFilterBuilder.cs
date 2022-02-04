@@ -9,9 +9,9 @@ namespace Application.Services.Forum.Filters
     {
         IThreadFilterBuilder SetQueryFilter(string query);
 
-        IThreadFilterBuilder AddTopicFilter(string topic);
+        IThreadFilterBuilder SetTopicFilter(string topic);
 
-        IThreadFilterBuilder AddCategoryFilter<T>(T categories, Enums.MatchConditions matchCondition) where T : ICollection<string>;
+        IThreadFilterBuilder SetCategoryFilter<T>(T categories, Enums.MatchConditions matchCondition) where T : ICollection<string>;
 
         List<IFilter<Thread>> Build();
     }

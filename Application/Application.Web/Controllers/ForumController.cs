@@ -56,8 +56,8 @@ namespace Application.Web.Controllers
 
             var allThreads = _threadService.GetAll().Result.ToList();
 
-            var filters = _threadFilterBuilder.AddTopicFilter(topic)
-                                              .AddCategoryFilter(categoryCollection, matchCondition)
+            var filters = _threadFilterBuilder.SetTopicFilter(topic)
+                                              .SetCategoryFilter(categoryCollection, matchCondition)
                                               .SetQueryFilter(query)
                                               .Build();
 

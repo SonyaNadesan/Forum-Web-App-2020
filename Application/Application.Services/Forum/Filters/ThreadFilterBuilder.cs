@@ -37,7 +37,7 @@ namespace Application.Services.Forum.Filters
             return this;
         }
 
-        public IThreadFilterBuilder AddCategoryFilter<T>(T categories, Enums.MatchConditions matchCondition) where T : ICollection<string>
+        public IThreadFilterBuilder SetCategoryFilter<T>(T categories, Enums.MatchConditions matchCondition) where T : ICollection<string>
         {
             ClearListIfNecessary();
 
@@ -69,7 +69,7 @@ namespace Application.Services.Forum.Filters
             return this;
         }
 
-        public IThreadFilterBuilder AddTopicFilter(string topic)
+        public IThreadFilterBuilder SetTopicFilter(string topic)
         {
             ClearListIfNecessary();
 

@@ -19,6 +19,8 @@ Developing my knowledge and skills based on what I have learnt during my time at
 6) JavaScript: Fetch API, Closures, Minification
 7) CMS Development using EpiServer (this project will not be using EpiServer nor other CMS)
 
+....I then joined global cybersecurity company, Mimecast where I was working on EpiServer projects, and after a year joined global investment bank, Jefferies where I learnt Angular/TypeScript
+
 ...and what I have learnt during my spare time!
 
 Taking a break from this project but looking forward to re-doing JavaScript code!

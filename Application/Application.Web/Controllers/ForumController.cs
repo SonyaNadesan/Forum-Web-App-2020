@@ -8,6 +8,7 @@ using Application.Web.ViewModels.ViewModelHelpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using Sonya.AspNetCore.Common.Filtering;
 using Sonya.AspNetCore.Common.Pagination;
 using Sonya.AspNetCore.Common.Shared;
@@ -66,8 +67,6 @@ namespace Application.Web.Controllers
             var pagination = new PaginationBuilder<Thread, ListableThreadViewModel>()
                                  .Create(page, PAGE_SIZE, startPage, results.Count(), MAX_NUMBER_OF_PAGES_TO_SHOW_ON_EACH_REQUEST)
                                  .SeResults(results, false, ModelToViewModelHelper.ThreadToListableThreadViewModel)
-                                 .ConfigureForm("../Forum/Index", "get")
-                                 .AdParameterAndValue("query", query)
                                  .Build();
 
             var viewModel = new ForumIndexViewModel()
@@ -79,7 +78,14 @@ namespace Application.Web.Controllers
                 TopicOptions = _topicService.GetAll().Result.ToList()
             };
 
-            return View(viewModel);
+            var json = JsonConvert.SerializeObject(viewModel, Formatting.Indented, new JsonSerializerSettings
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                NullValueHandling = NullValueHandling.Ignore,
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            });
+
+            return new JsonResult(json);
         }
 
         public IActionResult Thread(string threadId, int page = 1, int startPage = 1, string query = "")
@@ -97,7 +103,7 @@ namespace Application.Web.Controllers
 
                 var topLevelPosts = _postService.GetTopLevelPosts(treadIdAsGuid).Result.ToList();
 
-                var topLevelPostsForDisplay = PaginationHelper.GetItemsToDisplay<Post>(topLevelPosts, page, PAGE_SIZE);
+                var topLevelPostsForDisplay = PaginationHelper.GetItemsToDisplay(topLevelPosts, page, PAGE_SIZE);
 
                 var topLevelPostsAsViewModels = new List<PostWithRepliesViewModel>();
 
@@ -127,9 +133,6 @@ namespace Application.Web.Controllers
                 var pagination = new PaginationBuilder<PostWithRepliesViewModel>()
                                      .Create(page, PAGE_SIZE, startPage, topLevelPosts.Count, MAX_NUMBER_OF_PAGES_TO_SHOW_ON_EACH_REQUEST)
                                      .SeResults(topLevelPostsAsViewModels, true)
-                                     .ConfigureForm("../Forum/Thread", "get")
-                                     .AdParameterAndValue("query", query)
-                                     .AdParameterAndValue("threadId", threadId)
                                      .Build();
 
                 var viewModel = new ViewModelWithPagination<Thread, PostWithRepliesViewModel>()
@@ -138,7 +141,14 @@ namespace Application.Web.Controllers
                     PaginationData = pagination
                 };
 
-                return View(viewModel);
+                var json = JsonConvert.SerializeObject(viewModel, Formatting.Indented, new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore,
+                    ContractResolver = new CamelCasePropertyNamesContractResolver()
+                });
+
+                return new JsonResult(json);
             }
 
             return View("Index");

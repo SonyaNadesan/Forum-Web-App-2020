@@ -1,5 +1,5 @@
 ﻿using Application.Domain.ApplicationEntities;
-using Application.Services.Filtering;
+using Sonya.AspNetCore.Common.Filtering;
 
 namespace Application.Services.Forum.Filters
 {

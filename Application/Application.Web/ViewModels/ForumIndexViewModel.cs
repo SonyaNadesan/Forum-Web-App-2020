@@ -1,5 +1,5 @@
 ﻿using Application.Domain.ApplicationEntities;
-using Application.Services.Pagination;
+using Sonya.AspNetCore.Common.Pagination;
 using System.Collections.Generic;
 
 namespace Application.Web.ViewModels

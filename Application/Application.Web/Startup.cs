@@ -3,13 +3,8 @@ using Application.Data.Repositories;
 using Application.Domain;
 using Application.Domain.ApplicationEntities;
 using Application.Services.Authentication;
-using Application.Services.Documents;
-using Application.Services.Email;
-using Application.Services.Files;
-using Application.Services.Filtering;
 using Application.Services.Forum;
 using Application.Services.Forum.Filters;
-using Application.Services.Shared;
 using Application.Services.UserProfile;
 using Application.Web.Models;
 using Application.Web.RealTime;
@@ -22,6 +17,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Sonya.AspNetCore.Common.Documents;
+using Sonya.AspNetCore.Common.Email;
+using Sonya.AspNetCore.Common.Files;
+using Sonya.AspNetCore.Common.Filtering;
+using Sonya.AspNetCore.Common.Shared;
 using System.Reflection;
 
 namespace Application.Web

@@ -1,10 +1,13 @@
 ﻿using Application.Domain;
-using Application.Services.Documents;
-using Application.Services.Email;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using Sonya.AspNetCore.Common;
+using Sonya.AspNetCore.Common.Documents;
+using Sonya.AspNetCore.Common.Domain;
+using Sonya.AspNetCore.Common.Email;
 using System.IO;
 using System.Threading.Tasks;
+using static Sonya.AspNetCore.Common.Domain.Enums;
 
 namespace Application.Services.Authentication
 {
@@ -84,7 +87,7 @@ namespace Application.Services.Authentication
             var attachment2 = new FileStreamAndName() { AttachmentStream = _pdfBuilder.Generate(htmlBody), FileName = "Attachment 2" };
 
             var mail = _emailBuilder.SetRecipientsAndFromAddress(email, Configuration.GetSection("FromEmail").Value)
-                                    .SetBody(htmlBody, Enums.EmailBodyType.HtmlString)
+                                    .SetBody(htmlBody, EmailBodyType.HtmlString)
                                     .SetSubject("Registration")
                                     .AddFile(attachment1)
                                     .AddFile(attachment2)

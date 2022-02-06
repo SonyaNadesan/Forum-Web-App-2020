@@ -1,5 +1,6 @@
 ﻿using Application.Domain;
 using Microsoft.AspNetCore.Identity;
+using Sonya.AspNetCore.Common;
 using System.Threading.Tasks;
 
 namespace Application.Services.Authentication

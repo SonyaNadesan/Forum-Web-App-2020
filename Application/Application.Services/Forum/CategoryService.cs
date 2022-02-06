@@ -1,6 +1,7 @@
 ﻿using Application.Data;
 using Application.Domain.ApplicationEntities;
-using Application.Services.Shared;
+using Sonya.AspNetCore.Common;
+using Sonya.AspNetCore.Common.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;

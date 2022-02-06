@@ -1,6 +1,7 @@
 ﻿using Application.Data;
 using Application.Domain.ApplicationEntities;
-using Application.Services.Hierarchy;
+using Sonya.AspNetCore.Common;
+using Sonya.AspNetCore.Common.Hierarchy;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -162,7 +163,7 @@ namespace Application.Services.Forum
 
             var allPosts = _unitOfWork.PostRepository.GetAll().ToList();
 
-            response.Result = new FlattenHierarchyService<Post, Guid>(allPosts).GetDescendants(post, (x, y) => x == y);
+            response.Result = new FlattenHierarchyService<Post, Guid, Guid>(allPosts).GetDescendants(post, (x, y) => x == y);
 
             return response;
         }

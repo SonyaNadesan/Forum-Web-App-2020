@@ -1,8 +1,10 @@
 ﻿using Application.Domain;
-using Application.Services.Email;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using Sonya.AspNetCore.Common;
+using Sonya.AspNetCore.Common.Email;
 using System.Threading.Tasks;
+using static Sonya.AspNetCore.Common.Domain.Enums;
 
 namespace Application.Services.Authentication
 {
@@ -59,7 +61,7 @@ namespace Application.Services.Authentication
 
             var mail = _emailBuilder.SetRecipientsAndFromAddress(user.Email, Configuration.GetSection("FromEmail").Value)
                                     .SetSubject("Account Recovery")
-                                    .SetBody(message, Enums.EmailBodyType.RegularString)
+                                    .SetBody(message, EmailBodyType.RegularString)
                                     .Build();
 
             var emailResponse = _emailSenderService.Send(mail);

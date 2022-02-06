@@ -1,6 +1,7 @@
 ﻿using Application.Domain.ApplicationEntities;
-using Application.Services.Files;
 using Microsoft.AspNetCore.Http;
+using Sonya.AspNetCore.Common;
+using Sonya.AspNetCore.Common.Files;
 using System.Threading.Tasks;
 
 namespace Application.Services.UserProfile

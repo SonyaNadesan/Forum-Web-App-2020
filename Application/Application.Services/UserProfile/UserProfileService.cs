@@ -1,8 +1,9 @@
 ﻿using Application.Data;
 using Application.Domain.ApplicationEntities;
-using Application.Services.Files;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Sonya.AspNetCore.Common;
+using Sonya.AspNetCore.Common.Files;
 using System;
 using System.Threading.Tasks;
 

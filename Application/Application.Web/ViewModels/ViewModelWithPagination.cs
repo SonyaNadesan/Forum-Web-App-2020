@@ -1,4 +1,4 @@
-﻿using Application.Services.Pagination;
+﻿using Sonya.AspNetCore.Common.Pagination;
 
 namespace Application.Web.ViewModels
 {

@@ -1,6 +1,6 @@
 ﻿using Application.Domain;
 using Application.Domain.ApplicationEntities;
-using Application.Services.Filtering;
+using Sonya.AspNetCore.Common.Filtering;
 using System.Collections.Generic;
 using System.Linq;
 

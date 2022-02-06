@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Sonya.AspNetCore.Domain;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Application.Domain.ApplicationEntities
 {
-    public class Post : IHierarchyItem<Guid>
+    public class Post : IHierarchyItem<Guid, Guid>
     {
         public Guid Id { get; set; }
         public string Content { get; set; }

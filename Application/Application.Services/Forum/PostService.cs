@@ -163,7 +163,7 @@ namespace Application.Services.Forum
 
             var allPosts = _unitOfWork.PostRepository.GetAll().ToList();
 
-            response.Result = new FlattenHierarchyService<Post, Guid, Guid>(allPosts).GetDescendants(post, (x, y) => x == y);
+            response.Result = new FlattenHierarchyService<Post, Guid, Guid>(allPosts).GetDescendants(post, (x, y) => x == y, x => x.OrderBy(y => y.DateTime).ToList());
 
             return response;
         }

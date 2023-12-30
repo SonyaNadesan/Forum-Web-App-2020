@@ -14,12 +14,20 @@ Developing my knowledge and skills based on what I have learnt during my time at
 1) A deeper understanding of the .NET Framework, coding standards and ASP.NET MVC (C#); in this project, I will be exploring .NET Core
 2) ORMs - Entity Framework 6 (code first and DB first) as well as LINQ; in this project, I will be exploring EF Core using a code-first approach
 3) Security : ASP.NET Identity, authenitcation cookies,XSRF, salts; in this project, I will be exploring ASP.NET Identity Core
-4) Generics, Various Design Patterns and SOLID
+4) Generics, Various Design Patterns and SOLID e.g.Repository, Service, Builder, Factory, Unit of Work (which I did not implement properly in this project!) etc.
 5) Async, Await and Tasks, Multithreaded programming, lcoks, smeaphores, race conditions
 6) JavaScript: Fetch API, Closures, Minification
 7) CMS Development using EpiServer (this project will not be using EpiServer nor other CMS)
 
-....I then joined global cybersecurity company, Mimecast where I was working on EpiServer projects, and after a year joined global investment bank, Jefferies where I learnt Angular/TypeScript
+....I then joined global cybersecurity company, Mimecast where I was working on EpiServer projects, and after a year joined global investment bank, Jefferies where I learnt/gained:
+1) Angular/TypeScript & Full-Stack Deevelopment with .NET Core, SignalR and MS SQL Server
+2) Windows Service Development
+3) Greenfield Web Development using .NET 6, AutoFac, NLog, Angular, DevExteme and Entity Framework
+4) Third PArty Component Library, DevExtreme
+5) Message Queues (IBM MQ)
+6) Treasury Concepts: Trading, Cash Management, Liquidity Stress Analysis and Swift
+7) Unit Testing with xUnit and mocking framework, Moq
+8) A Working Knowledge of AWS
 
 ...and what I have learnt during my spare time!
 
